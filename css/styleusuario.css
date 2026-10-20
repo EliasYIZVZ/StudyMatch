@@ -1,0 +1,324 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   Study Match - Estilos del Panel de Usuario / Dashboard (styleusuario.css)
+   ========================================================================== */
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   Sidebar Lateral (Más Ancho y Contraíble con Animaciones Suaves)
+   ========================================================================== */
+.sidebar {
+  width: 280px;
+  min-height: 100vh;
+  background-color: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), padding 0.3s ease;
+  z-index: 1030;
+  flex-shrink: 0;
+}
+
+/* Estado Contraído */
+.sidebar.collapsed {
+  width: 82px;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+}
+
+.sidebar.collapsed .sidebar-text,
+.sidebar.collapsed .logo-text,
+.sidebar.collapsed .sidebar-hide-collapsed {
+  display: none !important;
+}
+
+.sidebar.collapsed .sidebar-link {
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
+  font-size: 1.15rem;
+}
+
+.sidebar.collapsed .sidebar-link i {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.sidebar.collapsed .logo-container {
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+/* Enlaces del Sidebar */
+.sidebar-link {
+  color: #475569;
+  padding: 0.7rem 1rem;
+  border-radius: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.92rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidebar-link:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  transform: translateX(2px);
+}
+
+.sidebar.collapsed .sidebar-link:hover {
+  transform: none;
+}
+
+.sidebar-link.active {
+  background-color: #eff6ff;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* Tarjeta de usuario en el pie del sidebar */
+.user-sidebar-card {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.user-sidebar-card:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* ==========================================================================
+   Avatares de Usuario e Iniciales
+   ========================================================================== */
+.avatar-user-display {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1d4ed8;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.avatar-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #334155;
+  font-size: 0.85rem;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Vista previa de avatar en el modal de foto */
+.preview-avatar-box {
+  width: 100px;
+  height: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1d4ed8;
+  font-size: 2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  background-size: cover;
+  background-position: center;
+}
+
+/* Avatares predefinidos seleccionables */
+.preset-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.preset-avatar:hover {
+  transform: scale(1.1);
+  border-color: #2563eb;
+}
+
+.preset-avatar.selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* ==========================================================================
+   Topbar / Encabezado Superior Glassmorphism
+   ========================================================================== */
+.topbar-header {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #e2e8f0;
+  z-index: 1020;
+}
+
+.hover-bg-light {
+  transition: background-color 0.2s ease;
+}
+
+.hover-bg-light:hover {
+  background-color: #f1f5f9;
+}
+
+/* ==========================================================================
+   Tarjetas de Tutores y Componentes
+   ========================================================================== */
+.tutor-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.15rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+.tutor-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 20px -5px rgba(0, 0, 0, 0.06);
+  border-color: #cbd5e1;
+}
+
+/* Switch Alumno / Tutor */
+.form-switch .form-check-input {
+  width: 2.85rem;
+  height: 1.45rem;
+  cursor: pointer;
+}
+
+/* Botones de filtros */
+.filter-btn {
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.45rem 1.15rem;
+  transition: all 0.2s ease;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+
+/* Modal Discord Brand Color */
+.discord-brand-bg {
+  background-color: #5865F2;
+}
+
+.discord-brand-text {
+  color: #5865F2;
+}
+
+/* ==========================================================================
+   Modo Oscuro para el Panel de Usuario (styleusuario.css)
+   ========================================================================== */
+[data-bs-theme="dark"] body {
+  background-color: #0b0f19;
+  color: #f1f5f9;
+}
+
+[data-bs-theme="dark"] .sidebar {
+  background-color: #0f172a;
+  border-right-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-bs-theme="dark"] .sidebar-link {
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #f8fafc;
+}
+
+[data-bs-theme="dark"] .sidebar-link.active {
+  background-color: rgba(37, 99, 235, 0.18);
+  color: #60a5fa;
+}
+
+[data-bs-theme="dark"] .user-sidebar-card {
+  background-color: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-bs-theme="dark"] .user-sidebar-card:hover {
+  background-color: #334155;
+}
+
+[data-bs-theme="dark"] .topbar-header {
+  background: rgba(15, 23, 42, 0.88);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-bs-theme="dark"] .tutor-card {
+  background-color: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-bs-theme="dark"] .tutor-card:hover {
+  border-color: rgba(96, 165, 250, 0.4);
+  box-shadow: 0 14px 24px -5px rgba(0, 0, 0, 0.4);
+}
+
+[data-bs-theme="dark"] .avatar-circle {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  color: #f1f5f9;
+  border-color: #475569;
+}
+
+[data-bs-theme="dark"] .modal-content {
+  background-color: #0f172a;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+}
+
+[data-bs-theme="dark"] .modal-footer {
+  background-color: #1e293b !important;
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-bs-theme="dark"] .dropdown-menu {
+  background-color: #1e293b;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .dropdown-item {
+  color: #cbd5e1;
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover {
+  background-color: #334155;
+  color: #ffffff;
+}
+
