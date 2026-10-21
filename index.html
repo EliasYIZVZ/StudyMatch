@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,30 +18,33 @@
 
   <!-- Estilos Personalizados -->
   <link rel="stylesheet" href="css/styles.css">
-  
+
 </head>
+
 <body class="d-flex flex-column min-vh-100 justify-content-between">
 
   <!-- NAVBAR CON BOOTSTRAP 5 -->
   <header class="sticky-top">
     <nav class="navbar navbar-expand-lg navbar-glass py-3">
       <div class="container-xl">
-        <!-- Logo Study Match -->
+        <!-- Logo Study Match REEMPLAZAR? -->
         <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="index.html">
           <!-- Dibujo vectorial del Birrete + Tilde OK -->
-          <svg class="logo-svg" width="46" height="46" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg class="logo-svg" width="46" height="46" viewBox="0 0 100 100" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
             <!-- Base inferior del gorro -->
-            <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
+            <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554" />
             <!-- Mitad izquierda del birrete (Azul oscuro) -->
-            <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
+            <polygon points="50,20 10,42 50,62" fill="#1e3a8a" />
             <!-- Mitad derecha del birrete (Azul eléctrico) -->
-            <polygon points="50,20 90,42 50,62" fill="#2563eb"/>
+            <polygon points="50,20 90,42 50,62" fill="#2563eb" />
             <!-- Borla colgante derecha -->
-            <line x1="78" y1="48" x2="78" y2="70" stroke="#3b82f6" stroke-width="3.5" stroke-linecap="round"/>
-            <circle cx="78" cy="68" r="3.5" fill="#2563eb"/>
-            <polygon points="78,68 73,82 83,82" fill="#2563eb"/>
+            <line x1="78" y1="48" x2="78" y2="70" stroke="#3b82f6" stroke-width="3.5" stroke-linecap="round" />
+            <circle cx="78" cy="68" r="3.5" fill="#2563eb" />
+            <polygon points="78,68 73,82 83,82" fill="#2563eb" />
             <!-- Tilde blanca de OK / Match integrada -->
-            <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="2"/>
+            <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff"
+              stroke-linejoin="round" stroke-width="2" />
           </svg>
 
           <!-- Texto del Logo -->
@@ -50,7 +54,9 @@
         </a>
 
         <!-- Botón Hamburguesa para Mobile -->
-        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Abrir navegación">
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+          data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false"
+          aria-label="Abrir navegación">
           <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -73,7 +79,8 @@
             </li>
             <!-- Botón Interruptor de Modo Oscuro / Claro -->
             <li class="nav-item ms-lg-2 mt-2 mt-lg-0 d-flex align-items-center">
-              <button id="themeToggleBtn" class="theme-toggle-btn shadow-sm" title="Alternar Modo Oscuro / Claro" aria-label="Alternar tema">
+              <button id="themeToggleBtn" class="theme-toggle-btn shadow-sm" title="Alternar Modo Oscuro / Claro"
+                aria-label="Alternar tema">
                 <i id="themeToggleIcon" class="bi bi-moon-stars-fill"></i>
               </button>
             </li>
@@ -85,12 +92,11 @@
 
   <!-- CONTENIDO PRINCIPAL CON FONDO DE COMUNIDAD / PARES -->
   <div class="hero-wrapper">
-    
+
     <!-- Capa de Fondo: Imagen con Gradientes -->
     <div class="hero-bg-container">
-      <img src="img/Gemini_Generated_Image_o8fa80o8fa80o8fa.jpg" 
-           alt="Comunidad universitaria Study Match" 
-           class="hero-bg-img">
+      <img src="img/Gemini_Generated_Image_o8fa80o8fa80o8fa.jpg" alt="Comunidad universitaria Study Match"
+        class="hero-bg-img">
       <div class="hero-overlay-horizontal"></div>
       <div class="hero-overlay-vertical"></div>
     </div>
@@ -98,24 +104,26 @@
     <!-- Contenido Principal (Sobre el Fondo) -->
     <main class="container-xl position-relative py-5" style="z-index: 1;">
       <div class="row align-items-center g-5">
-        
+
         <!-- Columna Izquierda: Presentación de Study Match -->
         <div class="col-lg-7">
           <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-4 border shadow-sm badge-utn">
             <i class="bi bi-mortarboard-fill"></i>
             <span>Apoyo Académico Universitario</span>
           </div>
-          
+
           <h1 class="display-5 fw-bold lh-sm mb-4">
             Hacé <span class="text-gradient">match</span> con el tutor ideal para tus materias de la UTN
           </h1>
-          
+
           <p class="lead text-secondary mb-4 fs-6 lh-lg">
-            <strong>Study Match</strong> conecta a estudiantes de la Universidad Tecnológica Nacional con tutores y alumnos avanzados. Buscá ayuda específica según tu carrera y plan de estudios, o sumate como tutor en las materias que ya aprobaste.
+            <strong>Study Match</strong> conecta a estudiantes de la Universidad Tecnológica Nacional con tutores y
+            alumnos avanzados. Buscá ayuda específica según tu carrera y plan de estudios, o sumate como tutor en las
+            materias que ya aprobaste.
           </p>
           <!-- Micro-estadísticas de la comunidad UTN Armonizadas -->
           <div class="stats-bar p-3 my-4 d-flex align-items-center justify-content-around">
-            
+
             <!-- Métrica 1 -->
             <div class="stat-item text-center px-2">
               <span class="d-block stat-number mb-1"><span class="stat-accent">+</span>45</span>
@@ -151,7 +159,8 @@
                   <i class="bi bi-journal-bookmark-fill"></i>
                 </div>
                 <p class="fw-bold mb-1 small" style="color: #172554;">Planes y Materias UTN</p>
-                <p class="text-secondary mb-0" style="font-size: 0.8rem;">Filtrá tutores exactamente por tu carrera y asignatura.</p>
+                <p class="text-secondary mb-0" style="font-size: 0.8rem;">Filtrá tutores exactamente por tu carrera y
+                  asignatura.</p>
               </div>
             </div>
             <div class="col-sm-4">
@@ -160,7 +169,8 @@
                   <i class="bi bi-people-fill"></i>
                 </div>
                 <p class="fw-bold mb-1 small" style="color: #172554;">Alumno y Tutor</p>
-                <p class="text-secondary mb-0" style="font-size: 0.8rem;">Con una sola cuenta podés recibir apoyo y dar tutorías.</p>
+                <p class="text-secondary mb-0" style="font-size: 0.8rem;">Con una sola cuenta podés recibir apoyo y dar
+                  tutorías.</p>
               </div>
             </div>
             <div class="col-sm-4">
@@ -169,7 +179,8 @@
                   <i class="bi bi-discord"></i>
                 </div>
                 <p class="fw-bold mb-1 small" style="color: #172554;">Discord y Mensajería</p>
-                <p class="text-secondary mb-0" style="font-size: 0.8rem;">Coordiná tus clases por chat interno o directo en Discord.</p>
+                <p class="text-secondary mb-0" style="font-size: 0.8rem;">Coordiná tus clases por chat interno o directo
+                  en Discord.</p>
               </div>
             </div>
           </div>
@@ -191,7 +202,7 @@
                 <label for="email" class="form-label small fw-medium text-dark mb-1">Correo Electrónico</label>
                 <div class="input-group input-group-custom">
                   <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                  <input type="email" id="email" name="email" required placeholder="alumno@utn.edu.ar" 
+                  <input type="email" id="email" name="email" required placeholder="alumno@utn.edu.ar"
                     class="form-control py-2.5">
                 </div>
               </div>
@@ -203,12 +214,13 @@
                 </div>
                 <div class="input-group input-group-custom">
                   <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                  <input type="password" id="password" name="password" required placeholder="••••••••" 
+                  <input type="password" id="password" name="password" required placeholder="••••••••"
                     class="form-control py-2.5">
                 </div>
               </div>
 
-              <button type="submit" class="btn btn-utn w-100 py-3 rounded-3 fw-semibold shadow-sm mt-2 d-flex align-items-center justify-content-center gap-2">
+              <button type="submit"
+                class="btn btn-utn w-100 py-3 rounded-3 fw-semibold shadow-sm mt-2 d-flex align-items-center justify-content-center gap-2">
                 <i class="bi bi-box-arrow-in-right"></i>
                 <span>Ingresar</span>
               </button>
@@ -217,7 +229,8 @@
             <!-- Separador y redirección a registro.html -->
             <div class="mt-4 pt-4 border-top text-center">
               <p class="small text-secondary mb-3">¿Todavía no tenés una cuenta en Study Match?</p>
-              <a href="registro.html" class="btn btn-outline-primary w-100 py-2.5 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2">
+              <a href="registro.html"
+                class="btn btn-outline-primary w-100 py-2.5 rounded-3 fw-semibold d-flex align-items-center justify-content-center gap-2">
                 <i class="bi bi-person-plus"></i>
                 <span>Crear cuenta nueva</span>
               </a>
@@ -234,9 +247,11 @@
     <div class="container-xl d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
       <p class="mb-0 text-muted" style="font-size: 0.8rem;">© 2026 <strong>Study Match</strong> — Proyecto UTN (TUP)</p>
       <div class="d-flex align-items-center gap-3 text-muted" style="font-size: 0.8rem;">
-        <span class="d-inline-flex align-items-center gap-1"><i class="bi bi-shield-check text-success"></i> Acceso Seguro</span>
+        <span class="d-inline-flex align-items-center gap-1"><i class="bi bi-shield-check text-success"></i> Acceso
+          Seguro</span>
         <span>•</span>
-        <span class="d-inline-flex align-items-center gap-1"><i class="bi bi-mortarboard text-primary"></i> Exclusivo UTN</span>
+        <span class="d-inline-flex align-items-center gap-1"><i class="bi bi-mortarboard text-primary"></i> Exclusivo
+          UTN</span>
       </div>
     </div>
   </footer>
@@ -276,4 +291,5 @@
     }
   </script>
 </body>
+
 </html>
