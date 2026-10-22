@@ -65,5 +65,17 @@
         toggleTheme();
       }
     });
+
+    // Notificaciones de estado desde la URL (por ej. tras registro exitoso)
+    var urlParams = new URLSearchParams(window.location.search);
+    var feedback = document.getElementById('loginFeedback');
+    if (feedback && urlParams.get('registro') === 'exitoso') {
+      feedback.innerHTML =
+        '<div class="alert alert-success alert-dismissible fade show small py-2 px-3 mb-3 d-flex align-items-center gap-2" role="alert">' +
+        '  <i class="bi bi-check-circle-fill flex-shrink-0"></i>' +
+        '  <div><strong>¡Registro exitoso!</strong> Ya podés iniciar sesión con tus credenciales.</div>' +
+        '  <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Cerrar"></button>' +
+        '</div>';
+    }
   });
 })();

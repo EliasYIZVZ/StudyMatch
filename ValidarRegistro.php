@@ -6,7 +6,7 @@ session_start();
 $host = 'localhost';
 $dbname = 'studymatch_db'; 
 $username = 'root';
-$password = 'root';
+$password = '';
 
 // Establecer conexión con PDO
 try {

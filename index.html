@@ -218,13 +218,14 @@
               </div>
 
               <!-- Formulario de Login Directo -->
-              <form onsubmit="event.preventDefault(); alert('Bienvenido a Study Match');">
+              <div id="loginFeedback"></div>
+              <form action="login.php" method="POST">
                 <!-- Campo: Correo o Legajo -->
                 <div class="mb-2 text-start">
                   <label for="loginEmail" class="form-label small fw-semibold text-secondary mb-1">Correo institucional</label>
                   <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
-                    <input type="text" class="form-control border-start-0 ps-0" id="loginEmail" placeholder="usuario@frh.utn.edu.ar" required>
+                    <input type="email" class="form-control border-start-0 ps-0" id="loginEmail" name="email" placeholder="usuario@frh.utn.edu.ar" required autocomplete="email">
                   </div>
                 </div>
 
@@ -236,13 +237,13 @@
                   </div>
                   <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-lock"></i></span>
-                    <input type="password" class="form-control border-start-0 ps-0" id="loginPassword" placeholder="••••••••" required>
+                    <input type="password" class="form-control border-start-0 ps-0" id="loginPassword" name="password" placeholder="••••••••" required autocomplete="current-password">
                   </div>
                 </div>
 
                 <!-- Checkbox Recordarme -->
                 <div class="form-check text-start mb-3">
-                  <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+                  <input class="form-check-input" type="checkbox" id="rememberMe" name="remember" checked>
                   <label class="form-check-label text-secondary text-xs" for="rememberMe">
                     Recordar mi sesión en este equipo
                   </label>
