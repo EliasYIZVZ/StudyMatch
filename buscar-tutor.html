@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Match - Buscar Tutor</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Estilos del Dashboard y Perfil -->
+  <link rel="stylesheet" href="css/dashboard.css?v=20261026_4">
+</head>
+<body class="dashboard-body" data-role="alumno">
+
+  <!-- ==========================================================================
+       SIDEBAR LATERAL IZQUIERDA (MODO ALUMNO - 100% FIJO)
+       ========================================================================== -->
+  <aside id="mainSidebar" class="sidebar d-flex flex-column justify-content-between p-3">
+    <div>
+      <!-- Header con Logo Study Match y Botón de Colapso -->
+      <div class="d-flex align-items-center justify-content-between mb-4 px-2 logo-container">
+        <a href="dashboard.html" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
+          <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
+            <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
+            <polygon points="50,20 90,42 50,62" fill="#7c3aed"/>
+            <line x1="78" y1="48" x2="78" y2="70" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="78" cy="68" r="3.5" fill="#7c3aed"/>
+            <polygon points="78,68 73,82 83,82" fill="#7c3aed"/>
+            <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="2"/>
+          </svg>
+          <span class="fw-bold fs-5 text-dark logo-text">Study <span style="color: var(--brand-violet);">Match</span></span>
+        </a>
+
+        <!-- Botón para contraer sidebar -->
+        <button id="btnCollapseSidebar" class="btn btn-sm btn-light border-0 text-secondary p-1 rounded-2 sidebar-hide-collapsed" title="Contraer menú lateral">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+      </div>
+
+      <!-- Menú de Navegación: MODO ALUMNO -->
+      <nav class="d-flex flex-column gap-1">
+        <div class="px-3 pb-1 text-uppercase small text-muted fw-bold sidebar-text" style="font-size: 0.68rem; letter-spacing: 0.08em;">
+          Menú Alumno
+        </div>
+        <a href="dashboard.html" class="sidebar-link" title="Inicio / Novedades">
+          <i class="bi bi-house-door"></i>
+          <span class="sidebar-text">Inicio</span>
+        </a>
+        <a href="buscar-tutor.html" class="sidebar-link active" title="Buscar Tutor">
+          <i class="bi bi-search"></i>
+          <span class="sidebar-text">Buscar Tutor</span>
+        </a>
+        <a href="#" class="sidebar-link" title="Mis tutorías">
+          <i class="bi bi-calendar3"></i>
+          <span class="sidebar-text">Mis tutorías</span>
+        </a>
+        <a href="#" class="sidebar-link" title="Mensajes">
+          <i class="bi bi-chat-dots"></i>
+          <span class="sidebar-text">Mensajes</span>
+          <span class="badge rounded-pill ms-auto sidebar-text badge-role-counter" style="font-size: 0.65rem;">2</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Usuario abajo en el Sidebar -->
+    <div class="border-top pt-3 mt-auto">
+      <div class="user-sidebar-card p-2 d-flex align-items-center justify-content-between mb-2" 
+           data-bs-toggle="modal" data-bs-target="#modalEditarPerfil" title="Haz clic para editar tu perfil">
+        <div class="d-flex align-items-center gap-2 overflow-hidden">
+          <div class="avatar-user-display userAvatarSlot">
+            AL
+          </div>
+          <div class="sidebar-text text-truncate lh-sm">
+            <span class="d-block fw-bold text-dark small text-truncate userNameSlot">Alex López</span>
+            <span class="text-secondary userCareerSlot" style="font-size: 0.72rem;">Sistemas • 3° año</span>
+          </div>
+        </div>
+        <i class="bi bi-pencil-square text-secondary sidebar-text fs-6 me-1" title="Editar"></i>
+      </div>
+
+      <a href="index.html" class="sidebar-link text-danger p-2" title="Cerrar sesión">
+        <i class="bi bi-box-arrow-left"></i>
+        <span class="sidebar-text">Cerrar sesión</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ==========================================================================
+       CONTENIDO PRINCIPAL: BÚSQUEDA HÍBRIDA DE TUTORES
+       ========================================================================== -->
+  <div class="dashboard-main-wrapper">
+
+    <!-- TOPBAR -->
+    <header class="topbar-header px-4 py-3 sticky-top">
+      <div class="d-flex align-items-center justify-content-between gap-3">
+        
+        <!-- Toggle de Sidebar -->
+        <div class="d-flex align-items-center gap-2">
+          <button id="btnToggleSidebar" class="btn btn-light border text-secondary p-2 rounded-3" title="Expandir/Contraer menú lateral">
+            <i class="bi bi-layout-sidebar fs-5"></i>
+          </button>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 small fw-semibold">
+            <i class="bi bi-search me-1"></i> Explorador de Tutores
+          </span>
+        </div>
+
+        <!-- Switch Rol Dual + Perfil -->
+        <div class="d-flex align-items-center gap-3">
+          <div class="role-switch-container d-flex align-items-center gap-1 shadow-sm">
+            <span id="label-alumno" class="role-badge-btn" title="Actualmente en Modo Alumno">
+              <span class="role-dot"></span>
+              <span>Alumno</span>
+            </span>
+            <div class="form-check form-switch m-0 p-0 d-flex align-items-center mx-1">
+              <input class="form-check-input ms-0" type="checkbox" id="switchRol" onchange="irAModoTutor()" title="Cambiar a Modo Tutor">
+            </div>
+            <span id="label-tutor" class="role-badge-btn text-secondary" onclick="irAModoTutor()" title="Pasar a Modo Tutor">
+              <span class="role-dot"></span>
+              <span>Tutor</span>
+            </span>
+          </div>
+
+          <div class="avatar-user-display userAvatarSlot" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil" style="cursor: pointer;">
+            AL
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CUERPO DE LA VISTA: BÚSQUEDA HÍBRIDA -->
+    <main class="p-3 p-md-4 flex-grow-1 view-fade">
+      
+      <!-- Encabezado de la página -->
+      <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-2">
+        <div>
+          <span class="mode-indicator-pill mb-2"><i class="bi bi-person-badge-fill"></i> Directorio Académico UTN</span>
+          <h1 class="h3 fw-bold text-dark mb-1">Buscar Tutor</h1>
+          <p class="text-secondary small mb-0">Filtrá por materia, modalidad o disponibilidad para coordinar tu próxima tutoría.</p>
+        </div>
+        <span class="badge bg-white text-secondary border px-3 py-2 rounded-pill shadow-sm small">
+          <span class="spinner-grow spinner-grow-sm text-success me-1" style="width: 0.45rem; height: 0.45rem;"></span>
+          <span id="totalTutoresCount">6</span> tutores encontrados
+        </span>
+      </div>
+
+      <!-- ======================================================================
+           PANEL DE BÚSQUEDA HÍBRIDO (Input Libre + Select + Píldoras Interactivas)
+           ====================================================================== -->
+      <div class="search-hybrid-card p-4 p-md-4 mb-4">
+        
+        <!-- Fila Superior: Barra de Búsqueda Libre + Select Desplegable -->
+        <div class="row g-3 mb-3">
+          <!-- Input Grande y Cómodo de Texto Libre -->
+          <div class="col-lg-8">
+            <label for="inputBusquedaTutor" class="form-label small fw-semibold text-secondary mb-1">
+              ¿Qué materia, tema o tecnología necesitás repasar?
+            </label>
+            <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden border">
+              <span class="input-group-text bg-white border-0 text-primary ps-3 pe-2">
+                <i class="bi bi-search fs-5"></i>
+              </span>
+              <input type="text" id="inputBusquedaTutor" class="form-control border-0 ps-1" 
+                     placeholder="Buscar por materia, tema o nombre (ej. C++, SQL, Álgebra, Parciales, Matías)..."
+                     aria-label="Buscar tutor">
+              <button class="btn btn-light border-0 text-secondary pe-3" type="button" id="btnClearSearch" title="Borrar búsqueda" style="display: none;">
+                <i class="bi bi-x-circle-fill"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Menú Desplegable (<select>) por Categoría o Materia Principal -->
+          <div class="col-lg-4">
+            <label for="selectCategoriaMateria" class="form-label small fw-semibold text-secondary mb-1">
+              Categoría o Área Principal
+            </label>
+            <select id="selectCategoriaMateria" class="form-select form-select-lg shadow-sm rounded-3 border">
+              <option value="todas" selected>Todas las Categorías</option>
+              <option value="programacion">💻 Programación y Algoritmos</option>
+              <option value="bbdd">🗄️ Bases de Datos y SQL</option>
+              <option value="matematica">📐 Matemática y Ciencias Exactas</option>
+              <option value="sistemas">🌐 Sistemas Operativos y Redes</option>
+              <option value="ingles">🇬🇧 Inglés Técnico</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fila Inferior: Filtros Secundarios en forma de Píldoras / Badges Interactivos -->
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2 border-top">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="small fw-semibold text-secondary me-1">Modalidad:</span>
+            
+            <button class="badge-filter-pill active" data-filter="todos">
+              <i class="bi bi-grid-fill"></i> Todos
+            </button>
+            <button class="badge-filter-pill" data-filter="particular">
+              <i class="bi bi-person-video3"></i> Clases Particulares
+            </button>
+            <button class="badge-filter-pill" data-filter="gratis">
+              <i class="bi bi-gift-fill"></i> Salas Públicas / Gratis
+            </button>
+            <button class="badge-filter-pill" data-filter="online">
+              <i class="bi bi-circle-fill text-success" style="font-size: 0.5rem;"></i> Disponibles Ahora
+            </button>
+          </div>
+
+          <!-- Selector de Ordenamiento Rápido -->
+          <div class="d-flex align-items-center gap-2">
+            <span class="small text-secondary">Ordenar por:</span>
+            <select class="form-select form-select-sm border-0 bg-light rounded-pill px-3 shadow-none fw-semibold" style="width: auto;">
+              <option selected>Mejor Calificados</option>
+              <option>Más Tutorías Dadas</option>
+              <option>Disponibilidad Inmediata</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ======================================================================
+           GRILLA DE RESULTADOS DE TUTORES (Diseño de Tarjetas Enriquecidas)
+           ====================================================================== -->
+      <div class="row g-4" id="gridResultadosTutores">
+        
+        <!-- Tutor 1: Matías Fuentes -->
+        <div class="col-md-6 col-xl-4 tutor-card-item" data-cat="programacion" data-modalidad="particular" data-status="online">
+          <div class="tutor-result-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+              <!-- Header de Tarjeta: Avatar con Indicador + Nombre + Guardar -->
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="avatar-with-status">
+                    <div class="avatar-circle">MF</div>
+                    <span class="status-online-dot" title="En línea ahora"></span>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark">Matías Fuentes</h6>
+                    <small class="text-secondary d-block">TUP • UTN Haedo (2° Año)</small>
+                  </div>
+                </div>
+                <button class="btn btn-link text-secondary p-0 shadow-none" title="Guardar tutor"><i class="bi bi-bookmark"></i></button>
+              </div>
+
+              <!-- Estado de Disponibilidad Actual -->
+              <div class="mb-2.5">
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold">
+                  <i class="bi bi-circle-fill me-1" style="font-size: 0.45rem;"></i> Disponible Ahora (Online)
+                </span>
+              </div>
+
+              <!-- Especialidad y Materias -->
+              <h6 class="fw-bold text-dark mb-1">C++ y POO: Punteros, Listas y Árboles</h6>
+              <p class="text-secondary small mb-3">
+                Preparación para parciales de Programación II, resolución de TPs de laboratorio y dudas conceptuales.
+              </p>
+
+              <!-- Tags de materias / tecnologías -->
+              <div class="d-flex flex-wrap gap-1 mb-3">
+                <span class="badge bg-light text-secondary border">C++</span>
+                <span class="badge bg-light text-secondary border">POO</span>
+                <span class="badge bg-light text-secondary border">Punteros</span>
+                <span class="badge bg-light text-secondary border">Programación II</span>
+              </div>
+            </div>
+
+            <!-- Footer con Calificación, Modalidad y Botón de Reserva -->
+            <div class="pt-3 border-top">
+              <div class="d-flex justify-content-between align-items-center mb-3 text-secondary small">
+                <span><i class="bi bi-star-fill text-warning me-1"></i><strong>5.0</strong> (48 tutorías)</span>
+                <span class="badge bg-primary-subtle text-primary">Clase 1 a 1</span>
+              </div>
+              <button class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2"
+                      onclick="reservarTutor('Matías Fuentes', 'Programación II')">
+                <i class="bi bi-calendar-check-fill"></i> Ver Perfil y Reservar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tutor 2: Valentina Rojas -->
+        <div class="col-md-6 col-xl-4 tutor-card-item" data-cat="bbdd" data-modalidad="particular" data-status="away">
+          <div class="tutor-result-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="avatar-with-status">
+                    <div class="avatar-circle" style="background: linear-gradient(135deg, #0284c7, #38bdf8);">VR</div>
+                    <span class="status-away-dot" title="Disponible más tarde"></span>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark">Valentina Rojas</h6>
+                    <small class="text-secondary d-block">Ing. en Sistemas • 4° Año</small>
+                  </div>
+                </div>
+                <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
+              </div>
+
+              <div class="mb-2.5">
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1 small fw-semibold">
+                  <i class="bi bi-clock-fill me-1" style="font-size: 0.55rem;"></i> Disponible hoy desde 18:30 hs
+                </span>
+              </div>
+
+              <h6 class="fw-bold text-dark mb-1">SQL Server, MySQL y Normalización DER</h6>
+              <p class="text-secondary small mb-3">
+                Consultas complejas, subconsultas, triggers, procedimientos almacenados y diseño relacional sin fallas.
+              </p>
+
+              <div class="d-flex flex-wrap gap-1 mb-3">
+                <span class="badge bg-light text-secondary border">SQL Server</span>
+                <span class="badge bg-light text-secondary border">MySQL</span>
+                <span class="badge bg-light text-secondary border">DER</span>
+                <span class="badge bg-light text-secondary border">Bases de Datos</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-top">
+              <div class="d-flex justify-content-between align-items-center mb-3 text-secondary small">
+                <span><i class="bi bi-star-fill text-warning me-1"></i><strong>4.9</strong> (35 tutorías)</span>
+                <span class="badge bg-primary-subtle text-primary">Clase 1 a 1</span>
+              </div>
+              <button class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2"
+                      onclick="reservarTutor('Valentina Rojas', 'Bases de Datos')">
+                <i class="bi bi-calendar-check-fill"></i> Ver Perfil y Reservar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tutor 3: Julieta Abbiati -->
+        <div class="col-md-6 col-xl-4 tutor-card-item" data-cat="programacion" data-modalidad="gratis" data-status="online">
+          <div class="tutor-result-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="avatar-with-status">
+                    <img src="img/juli.jpeg" alt="Julieta Abbiati" class="rounded-circle border" style="width: 44px; height: 44px; object-fit: cover;">
+                    <span class="status-online-dot" title="En línea ahora"></span>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark">Julieta Abbiati</h6>
+                    <small class="text-secondary d-block">TUP • Backend Developer</small>
+                  </div>
+                </div>
+                <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
+              </div>
+
+              <div class="mb-2.5">
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold">
+                  <i class="bi bi-circle-fill me-1" style="font-size: 0.45rem;"></i> Disponible Ahora (Discord UTN)
+                </span>
+              </div>
+
+              <h6 class="fw-bold text-dark mb-1">Arquitectura Backend, APIs REST y PHP</h6>
+              <p class="text-secondary small mb-3">
+                Conexión segura a BD, autenticación con sesiones y estructuración de código limpio para proyectos finales.
+              </p>
+
+              <div class="d-flex flex-wrap gap-1 mb-3">
+                <span class="badge bg-light text-secondary border">PHP</span>
+                <span class="badge bg-light text-secondary border">APIs</span>
+                <span class="badge bg-light text-secondary border">Backend</span>
+                <span class="badge bg-light text-secondary border">Salas Gratis</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-top">
+              <div class="d-flex justify-content-between align-items-center mb-3 text-secondary small">
+                <span><i class="bi bi-star-fill text-warning me-1"></i><strong>5.0</strong> (52 tutorías)</span>
+                <span class="badge bg-success-subtle text-success">Sala Pública / Gratis</span>
+              </div>
+              <button class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2"
+                      onclick="reservarTutor('Julieta Abbiati', 'Desarrollo Web Backend')">
+                <i class="bi bi-calendar-check-fill"></i> Ver Perfil y Reservar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tutor 4: Camila Soto -->
+        <div class="col-md-6 col-xl-4 tutor-card-item" data-cat="matematica" data-modalidad="particular" data-status="away">
+          <div class="tutor-result-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="avatar-with-status">
+                    <div class="avatar-circle" style="background: linear-gradient(135deg, #eab308, #ca8a04);">CS</div>
+                    <span class="status-away-dot" title="Próximamente"></span>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark">Camila Soto</h6>
+                    <small class="text-secondary d-block">TUP • Graduada UTN</small>
+                  </div>
+                </div>
+                <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
+              </div>
+
+              <div class="mb-2.5">
+                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 small fw-semibold">
+                  <i class="bi bi-calendar-event me-1"></i> Próxima fecha: Mañana 16:00 hs
+                </span>
+              </div>
+
+              <h6 class="fw-bold text-dark mb-1">Matemática Discreta y Lógica Booleana</h6>
+              <p class="text-secondary small mb-3">
+                Grafos, árboles de decisión, tablas de verdad y relaciones de equivalencia explicados de forma práctica.
+              </p>
+
+              <div class="d-flex flex-wrap gap-1 mb-3">
+                <span class="badge bg-light text-secondary border">Matemática</span>
+                <span class="badge bg-light text-secondary border">Lógica</span>
+                <span class="badge bg-light text-secondary border">Grafos</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-top">
+              <div class="d-flex justify-content-between align-items-center mb-3 text-secondary small">
+                <span><i class="bi bi-star-fill text-warning me-1"></i><strong>4.8</strong> (29 tutorías)</span>
+                <span class="badge bg-primary-subtle text-primary">Clase 1 a 1</span>
+              </div>
+              <button class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2"
+                      onclick="reservarTutor('Camila Soto', 'Matemática Discreta')">
+                <i class="bi bi-calendar-check-fill"></i> Ver Perfil y Reservar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tutor 5: Ing. Marcos Benítez -->
+        <div class="col-md-6 col-xl-4 tutor-card-item" data-cat="matematica" data-modalidad="gratis" data-status="online">
+          <div class="tutor-result-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="avatar-with-status">
+                    <div class="avatar-circle" style="background: linear-gradient(135deg, #10b981, #059669);">MB</div>
+                    <span class="status-online-dot" title="En vivo ahora"></span>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark">Ing. Marcos Benítez</h6>
+                    <small class="text-secondary d-block">Ing. Electrónica • Graduado</small>
+                  </div>
+                </div>
+                <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
+              </div>
+
+              <div class="mb-2.5">
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 small fw-semibold">
+                  <span class="pulse-live-dot me-1"></span> En Sala Pública Activa Ahora
+                </span>
+              </div>
+
+              <h6 class="fw-bold text-dark mb-1">Análisis Matemático I y Física I</h6>
+              <p class="text-secondary small mb-3">
+                Resolución paso a paso de integrales dobles, derivadas aplicadas y leyes de Newton con ejercicios de examen.
+              </p>
+
+              <div class="d-flex flex-wrap gap-1 mb-3">
+                <span class="badge bg-light text-secondary border">Análisis I</span>
+                <span class="badge bg-light text-secondary border">Integrales</span>
+                <span class="badge bg-light text-secondary border">Física I</span>
+                <span class="badge bg-light text-secondary border">Salas Gratis</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-top">
+              <div class="d-flex justify-content-between align-items-center mb-3 text-secondary small">
+                <span><i class="bi bi-star-fill text-warning me-1"></i><strong>4.9</strong> (64 tutorías)</span>
+                <span class="badge bg-success-subtle text-success">Sala Pública / Gratis</span>
+              </div>
+              <button class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2"
+                      onclick="reservarTutor('Ing. Marcos Benítez', 'Análisis Matemático I')">
+                <i class="bi bi-calendar-check-fill"></i> Ver Perfil y Reservar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tutor 6: Sofía Martínez -->
+        <div class="col-md-6 col-xl-4 tutor-card-item" data-cat="sistemas" data-modalidad="particular" data-status="away">
+          <div class="tutor-result-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="avatar-with-status">
+                    <div class="avatar-circle" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">SM</div>
+                    <span class="status-away-dot" title="Disponible hoy"></span>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-0 text-dark">Sofía Martínez</h6>
+                    <small class="text-secondary d-block">Ing. en Sistemas • 4° Año</small>
+                  </div>
+                </div>
+                <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
+              </div>
+
+              <div class="mb-2.5">
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1 small fw-semibold">
+                  <i class="bi bi-clock-fill me-1" style="font-size: 0.55rem;"></i> Disponible hoy desde 20:00 hs
+                </span>
+              </div>
+
+              <h6 class="fw-bold text-dark mb-1">Sistemas Operativos, Linux y Redes</h6>
+              <p class="text-secondary small mb-3">
+                Comandos de Bash, gestión de memoria virtual, planificación de CPU y sockets de red en C.
+              </p>
+
+              <div class="d-flex flex-wrap gap-1 mb-3">
+                <span class="badge bg-light text-secondary border">Linux</span>
+                <span class="badge bg-light text-secondary border">Sistemas Operativos</span>
+                <span class="badge bg-light text-secondary border">Redes</span>
+              </div>
+            </div>
+
+            <div class="pt-3 border-top">
+              <div class="d-flex justify-content-between align-items-center mb-3 text-secondary small">
+                <span><i class="bi bi-star-fill text-warning me-1"></i><strong>4.8</strong> (21 tutorías)</span>
+                <span class="badge bg-primary-subtle text-primary">Clase 1 a 1</span>
+              </div>
+              <button class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2"
+                      onclick="reservarTutor('Sofía Martínez', 'Sistemas Operativos')">
+                <i class="bi bi-calendar-check-fill"></i> Ver Perfil y Reservar
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Estado Vacío (Empty State cuando ningún filtro coincide) -->
+      <div id="noResultsState" class="text-center py-5 d-none">
+        <div class="avatar-circle mx-auto mb-3 bg-light text-secondary fs-3" style="width: 64px; height: 64px;">
+          <i class="bi bi-search"></i>
+        </div>
+        <h5 class="fw-bold text-dark">No se encontraron tutores con esos criterios</h5>
+        <p class="text-secondary small mb-3">Probá cambiando el término de búsqueda o seleccionando "Todas las Categorías".</p>
+        <button class="btn btn-outline-primary rounded-pill px-4 btn-sm" id="btnResetFilters">
+          Restablecer Filtros
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- TOAST DE NOTIFICACIÓN DE RESERVA -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+    <div id="toastReserva" class="toast align-items-center text-bg-primary border-0 rounded-4 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body d-flex align-items-center gap-2">
+          <i class="bi bi-check-circle-fill fs-5"></i>
+          <span id="toastReservaMsg">¡Solicitud enviada correctamente!</span>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Lógica de Búsqueda Híbrida y Filtrado Interactivo -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var searchInput = document.getElementById('inputBusquedaTutor');
+      var selectCat = document.getElementById('selectCategoriaMateria');
+      var filterPills = document.querySelectorAll('.badge-filter-pill');
+      var tutorCards = document.querySelectorAll('.tutor-card-item');
+      var noResults = document.getElementById('noResultsState');
+      var totalCount = document.getElementById('totalTutoresCount');
+      var btnClear = document.getElementById('btnClearSearch');
+      var btnReset = document.getElementById('btnResetFilters');
+
+      var currentFilter = 'todos';
+
+      function applyFilters() {
+        var query = searchInput.value.toLowerCase().trim();
+        var selectedCat = selectCat.value;
+        var visibleCount = 0;
+
+        if (query.length > 0) {
+          btnClear.style.display = 'block';
+        } else {
+          btnClear.style.display = 'none';
+        }
+
+        tutorCards.forEach(function(card) {
+          var cardText = card.textContent.toLowerCase();
+          var cardCat = card.getAttribute('data-cat');
+          var cardModalidad = card.getAttribute('data-modalidad');
+          var cardStatus = card.getAttribute('data-status');
+
+          var matchesQuery = query === '' || cardText.indexOf(query) !== -1;
+          var matchesCat = selectedCat === 'todas' || cardCat === selectedCat;
+          
+          var matchesPill = true;
+          if (currentFilter === 'particular') {
+            matchesPill = (cardModalidad === 'particular');
+          } else if (currentFilter === 'gratis') {
+            matchesPill = (cardModalidad === 'gratis');
+          } else if (currentFilter === 'online') {
+            matchesPill = (cardStatus === 'online');
+          }
+
+          if (matchesQuery && matchesCat && matchesPill) {
+            card.classList.remove('d-none');
+            visibleCount++;
+          } else {
+            card.classList.add('d-none');
+          }
+        });
+
+        if (totalCount) {
+          totalCount.textContent = visibleCount;
+        }
+
+        if (visibleCount === 0) {
+          noResults.classList.remove('d-none');
+        } else {
+          noResults.classList.add('d-none');
+        }
+      }
+
+      // Eventos de entrada
+      searchInput.addEventListener('input', applyFilters);
+      selectCat.addEventListener('change', applyFilters);
+
+      // Píldoras de filtro
+      filterPills.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filterPills.forEach(function(b) { b.classList.remove('active'); });
+          this.classList.add('active');
+          currentFilter = this.getAttribute('data-filter');
+          applyFilters();
+        });
+      });
+
+      // Botón limpiar
+      btnClear.addEventListener('click', function() {
+        searchInput.value = '';
+        applyFilters();
+        searchInput.focus();
+      });
+
+      // Botón reset
+      if (btnReset) {
+        btnReset.addEventListener('click', function() {
+          searchInput.value = '';
+          selectCat.value = 'todas';
+          filterPills.forEach(function(b) { b.classList.remove('active'); });
+          document.querySelector('.badge-filter-pill[data-filter="todos"]').classList.add('active');
+          currentFilter = 'todos';
+          applyFilters();
+        });
+      }
+
+      // Toggle Sidebar
+      var btnToggle = document.getElementById('btnToggleSidebar');
+      var btnCollapse = document.getElementById('btnCollapseSidebar');
+      var sidebar = document.getElementById('mainSidebar');
+
+      function toggleSidebar() {
+        sidebar.classList.toggle('collapsed');
+        var isCollapsed = sidebar.classList.contains('collapsed');
+        document.body.classList.toggle('sidebar-is-collapsed', isCollapsed);
+        localStorage.setItem('study-match-sidebar-collapsed', isCollapsed ? 'true' : 'false');
+      }
+      if (btnToggle) btnToggle.addEventListener('click', toggleSidebar);
+      if (btnCollapse) btnCollapse.addEventListener('click', toggleSidebar);
+
+      if (localStorage.getItem('study-match-sidebar-collapsed') === 'true') {
+        sidebar.classList.add('collapsed');
+        document.body.classList.add('sidebar-is-collapsed');
+      }
+    });
+
+    function reservarTutor(nombre, materia) {
+      var toastElem = document.getElementById('toastReserva');
+      var toastMsg = document.getElementById('toastReservaMsg');
+      if (toastElem && toastMsg) {
+        toastMsg.innerHTML = '¡Abriendo agenda con <strong>' + nombre + '</strong> para <em>' + materia + '</em>!';
+        var toast = new bootstrap.Toast(toastElem);
+        toast.show();
+      }
+    }
+
+    function irAModoTutor() {
+      window.location.href = 'dashboard-tutor.html';
+    }
+  </script>
+</body>
+</html>

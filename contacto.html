@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Match • Contacto y Comunidad Discord | UTN Regional Haedo</title>
+  <meta name="description" content="Ponete en contacto con el equipo de Study Match: dejanos tus sugerencias, reportá errores o unite a nuestra comunidad en Discord para enterarte de nuevas implementaciones.">
+  
+  <!-- Script de sincronización inmediata para evitar parpadeos de tema -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('study_match_theme') || 'dark';
+      document.documentElement.setAttribute('data-bs-theme', t);
+    })();
+  </script>
+
+  <!-- Google Fonts: Plus Jakarta Sans (Headings) & Inter (UI/Body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5.3 CSS (CDN Oficial) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Estilos Personalizados Study Match (Carga directa + Modular) -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/contacto.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-contacto d-flex flex-column min-vh-100 justify-content-between">
+
+  <!-- ==========================================================================
+     BARRA DE NAVEGACIÓN CON ESTILO GLASSMORPHISM
+     ========================================================================== -->
+  <header class="header-nav">
+    <nav class="navbar navbar-expand-lg navbar-glass py-3">
+      <div class="container-xl">
+        <!-- Logo Oficial Study Match -->
+        <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+          <svg class="logo-svg" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Base inferior del birrete (Azul UTN) -->
+            <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
+            <!-- Mitad izquierda del birrete (Azul oscuro) -->
+            <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
+            <!-- Mitad derecha del birrete (Violeta de marca) -->
+            <polygon points="50,20 90,42 50,62" class="logo-birrete-derecha" />
+            <!-- Borla colgante derecha (Violeta de marca) -->
+            <line x1="78" y1="48" x2="78" y2="70" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round" class="logo-borla" />
+            <circle cx="78" cy="68" r="3.5" class="logo-borla" />
+            <polygon points="78,68 73,82 83,82" class="logo-borla" />
+            <!-- Tilde blanca de OK / Match integrada -->
+            <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="2"/>
+          </svg>
+          <span class="brand-title fw-bold fs-4 text-dark lh-1 mb-0">
+            Study <span class="text-primary">Match</span>
+          </span>
+        </a>
+
+        <!-- Botón Hamburguesa para Mobile -->
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Abrir navegación">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Enlaces de Navegación -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-1 gap-lg-2 mt-2 mt-lg-0 fw-medium small">
+            <li class="nav-item">
+              <a class="nav-link text-secondary" href="index.html">Inicio</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary" href="conoce.html">Conocer Más</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-secondary" href="quienessomos.html">Quiénes Somos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active text-primary fw-semibold" aria-current="page" href="contacto.html">Contacto</a>
+            </li>
+            <li class="nav-item ms-lg-1">
+              <button class="btn btn-outline-violet btn-sm p-1.5 px-2.5 rounded-pill theme-toggle-btn d-inline-flex align-items-center gap-1.5" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">
+                <i class="theme-icon bi bi-sun-fill text-warning"></i>
+                <span class="d-lg-none small">Modo Claro/Oscuro</span>
+              </button>
+            </li>
+            <li class="nav-item ms-lg-2">
+              <a class="btn btn-primary btn-sm px-3.5 py-1.5 rounded-3 fw-semibold shadow-sm" href="index.html">
+                Iniciar Sesión
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ==========================================================================
+     CONTENIDO PRINCIPAL: CONTACTO Y COMUNIDAD DISCORD
+     ========================================================================== -->
+  <main class="flex-grow-1 d-flex align-items-center py-4 py-lg-5">
+    <div class="container-xl">
+      
+      <!-- Encabezado de Sección Asimétrico -->
+      <div class="row align-items-end g-4 mb-4 pb-2">
+        <!-- Columna Izquierda: Badge + H1 -->
+        <div class="col-lg-6">
+          <div class="d-inline-flex mb-2">
+            <span class="badge badge-utn px-3 py-1.5 rounded-pill d-inline-flex align-items-center gap-2">
+              <i class="bi bi-chat-heart-fill text-primary"></i>
+              <span>Canal de Comunicación • UTN Regional Haedo</span>
+            </span>
+          </div>
+          <h1 class="display-6 fw-extrabold text-dark mb-0 lh-sm">
+            Contacto y <span class="text-gradient">Comunidad</span>
+          </h1>
+        </div>
+
+        <!-- Columna Derecha: Párrafo Descriptivo -->
+        <div class="col-lg-6">
+          <div class="border-start border-3 border-primary ps-3 ps-md-4 py-1">
+            <p class="text-secondary mb-0 lead fs-6 lh-base" style="max-width: 560px;">
+              Tu opinión impulsa la evolución de <strong class="text-dark fw-semibold">Study Match</strong>. Envianos sugerencias, reportá errores o sumate a nuestro canal de Discord para ser parte activa de las nuevas implementaciones.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cuadrícula Principal: Formulario a la Izquierda y Discord / Email a la Derecha -->
+      <div class="row g-4 align-items-stretch">
+        
+        <!-- ====================================================================
+           COLUMNA 1: FORMULARIO DE CONTACTO
+           ==================================================================== -->
+        <div class="col-lg-7">
+          <div class="card border-0 glass-card contact-form-card p-4 p-md-4 h-100 d-flex flex-column justify-content-between position-relative">
+            
+            <div>
+              <!-- Cabecera de la tarjeta del formulario -->
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="auth-icon-badge text-primary">
+                    <i class="bi bi-envelope-paper-heart-fill"></i>
+                  </span>
+                  <div>
+                    <h2 class="h5 fw-bold text-dark mb-0">Envianos tu Mensaje</h2>
+                    <span class="text-secondary small">Te responderemos a la brevedad por correo electrónico.</span>
+                  </div>
+                </div>
+                <span class="badge badge-soft-primary rounded-pill px-2.5 py-1 small fw-semibold">
+                  <i class="bi bi-shield-check"></i> Formulario Seguro
+                </span>
+              </div>
+
+              <!-- Contenedor para Feedback de Envío Dinámico -->
+              <div id="contactFeedback" class="d-none"></div>
+
+              <!-- Formulario Interactivo -->
+              <form id="contactoForm" novalidate>
+                
+                <!-- 1. Selector Visual de Motivo / Tipo de Mensaje -->
+                <div class="mb-3">
+                  <label class="form-label text-dark d-flex align-items-center justify-content-between">
+                    <span>Motivo de tu consulta:</span>
+                    <span class="text-secondary fw-normal small">Seleccioná una categoría</span>
+                  </label>
+                  
+                  <div class="contact-type-grid">
+                    <!-- Opción: Sugerencia -->
+                    <label class="contact-type-option" data-type="sugerencia">
+                      <input type="radio" name="tipo_mensaje" value="sugerencia" checked>
+                      <div class="contact-type-box">
+                        <span class="type-icon">
+                          <i class="bi bi-lightbulb-fill"></i>
+                        </span>
+                        <div>
+                          <div class="lh-sm">Sugerencia</div>
+                          <small class="text-secondary d-block" style="font-size: 0.72rem;">Mejoras o ideas</small>
+                        </div>
+                      </div>
+                    </label>
+
+                    <!-- Opción: Error / Bug -->
+                    <label class="contact-type-option" data-type="error">
+                      <input type="radio" name="tipo_mensaje" value="error">
+                      <div class="contact-type-box">
+                        <span class="type-icon">
+                          <i class="bi bi-bug-fill"></i>
+                        </span>
+                        <div>
+                          <div class="lh-sm">Reporte de Error</div>
+                          <small class="text-secondary d-block" style="font-size: 0.72rem;">Bugs o fallos técnicos</small>
+                        </div>
+                      </div>
+                    </label>
+
+                    <!-- Opción: Consulta Académica / Tutoría -->
+                    <label class="contact-type-option" data-type="tutoria">
+                      <input type="radio" name="tipo_mensaje" value="tutoria">
+                      <div class="contact-type-box">
+                        <span class="type-icon">
+                          <i class="bi bi-mortarboard-fill"></i>
+                        </span>
+                        <div>
+                          <div class="lh-sm">Tutorías / Materias</div>
+                          <small class="text-secondary d-block" style="font-size: 0.72rem;">Dudas de cursada</small>
+                        </div>
+                      </div>
+                    </label>
+
+                    <!-- Opción: Otro Motivo -->
+                    <label class="contact-type-option" data-type="otro">
+                      <input type="radio" name="tipo_mensaje" value="otro">
+                      <div class="contact-type-box">
+                        <span class="type-icon">
+                          <i class="bi bi-chat-dots-fill"></i>
+                        </span>
+                        <div>
+                          <div class="lh-sm">Consulta General</div>
+                          <small class="text-secondary d-block" style="font-size: 0.72rem;">Otras consultas</small>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- 2. Campos de Nombre y Email en 2 columnas -->
+                <div class="row g-3 mb-3">
+                  <div class="col-sm-6">
+                    <label for="contactNombre" class="form-label text-dark">Nombre y Apellido</label>
+                    <div class="input-group input-group-custom">
+                      <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                      <input type="text" class="form-control" id="contactNombre" placeholder="Ej: Lucas Romero" required>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <label for="contactEmail" class="form-label text-dark">Correo Electrónico</label>
+                    <div class="input-group input-group-custom">
+                      <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                      <input type="email" class="form-control" id="contactEmail" placeholder="usuario@alumno.frh.utn.edu.ar" required>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Asunto del Mensaje -->
+                <div class="mb-3">
+                  <label for="contactAsunto" class="form-label text-dark">Asunto</label>
+                  <div class="input-group input-group-custom">
+                    <span class="input-group-text"><i class="bi bi-bookmark-fill"></i></span>
+                    <input type="text" class="form-control" id="contactAsunto" placeholder="Resumen breve de lo que querés comentarnos" required>
+                  </div>
+                </div>
+
+                <!-- 4. Mensaje / Descripción Detallada -->
+                <div class="mb-3">
+                  <label for="contactMensaje" class="form-label text-dark d-flex align-items-center justify-content-between">
+                    <span>Mensaje detallado</span>
+                    <span class="text-secondary small fw-normal" id="charCounter">0 / 600</span>
+                  </label>
+                  <textarea class="form-control" id="contactMensaje" rows="4" maxlength="600" placeholder="Explicá con claridad tu sugerencia, el error que experimentaste (pasos para reproducirlo) o tu consulta general..." required></textarea>
+                </div>
+
+                <!-- 5. Checkbox de Copia al Email -->
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" value="1" id="contactCopia" checked>
+                  <label class="form-check-label text-secondary small" for="contactCopia">
+                    Deseo recibir una copia de confirmación de este mensaje en mi correo.
+                  </label>
+                </div>
+
+                <!-- 6. Botón de Envío -->
+                <button type="submit" class="btn btn-primary w-100 py-2.5 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-send-fill"></i> Enviar Mensaje
+                </button>
+
+              </form>
+            </div>
+
+            <!-- Pie pequeño informativo dentro de la tarjeta -->
+            <div class="pt-3 mt-3 border-top text-secondary small d-flex align-items-center justify-content-between flex-wrap gap-2" style="font-size: 0.78rem;">
+              <span class="d-inline-flex align-items-center gap-1.5">
+                <i class="bi bi-clock-history text-primary"></i> Respuesta estimada: 24 a 48 hs hábiles.
+              </span>
+              <span class="text-muted">Study Match • FRH</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ====================================================================
+           COLUMNA 2: COMUNIDAD DISCORD Y CONTACTO DIRECTO INSTITUCIONAL
+           ==================================================================== -->
+        <div class="col-lg-5 d-flex flex-column justify-content-between gap-4">
+          
+          <!-- TARJETA DESTACADA DE DISCORD -->
+          <div class="card border-0 glass-card discord-community-card p-4 p-md-4 flex-grow-1 d-flex flex-column justify-content-between">
+            <i class="bi bi-discord discord-watermark"></i>
+            
+            <div class="position-relative z-1">
+              <!-- Encabezado de la tarjeta Discord -->
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <span class="badge badge-discord rounded-pill px-3 py-1.5 fw-semibold small d-inline-flex align-items-center gap-1.5">
+                  <i class="bi bi-discord fs-6"></i> Comunidad Oficial
+                </span>
+                <span class="badge badge-utn rounded-pill px-2.5 py-1 small fw-semibold">
+                  <span class="badge-dot me-1"></span> Canales Activos
+                </span>
+              </div>
+
+              <h2 class="h4 fw-extrabold text-dark mb-2">
+                ¡Unite a nuestro <span style="color: #5865F2;">Discord</span>!
+              </h2>
+
+              <!-- Párrafo solicitado -->
+              <p class="text-secondary small mb-3 lh-base" style="font-size: 0.88rem;">
+                ¡Unite a la comunidad de Discord para enterarte antes que nadie de las nuevas implementaciones, actualizaciones de la plataforma, coordinar grupos de estudio en canales de voz en vivo y participar del desarrollo junto a estudiantes y tutores de la UTN!
+              </p>
+
+              <!-- Lista de ventajas de la comunidad -->
+              <div class="d-flex flex-column gap-2 mb-4">
+                <div class="d-flex align-items-start gap-2 text-secondary small">
+                  <i class="bi bi-rocket-takeoff-fill text-primary flex-shrink-0 mt-0.5"></i>
+                  <span><strong>Primicias exclusivas:</strong> Sé el primero en probar y evaluar las nuevas funciones de Study Match.</span>
+                </div>
+                <div class="d-flex align-items-start gap-2 text-secondary small">
+                  <i class="bi bi-mic-fill text-info flex-shrink-0 mt-0.5"></i>
+                  <span><strong>Salas de estudio 24/7:</strong> Canales de audio organizados por materias para estudiar en equipo.</span>
+                </div>
+                <div class="d-flex align-items-start gap-2 text-secondary small">
+                  <i class="bi bi-chat-square-code-fill text-success flex-shrink-0 mt-0.5"></i>
+                  <span><strong>Feedback directo:</strong> Charlá directamente con el equipo de desarrollo de la Tecnicatura.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botón de Discord -->
+            <div class="position-relative z-1 pt-2">
+              <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="btn btn-discord w-100 py-2.5 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 text-decoration-none">
+                <i class="bi bi-discord fs-5"></i> Unirme a la Comunidad Discord
+              </a>
+            </div>
+          </div>
+
+          <!-- TARJETA DE EMAIL DIRECTO E INSTITUCIONAL -->
+          <div class="card border-0 glass-card direct-contact-card p-4 p-md-4">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="auth-icon-badge text-primary">
+                <i class="bi bi-envelope-at-fill"></i>
+              </span>
+              <h3 class="h6 fw-bold text-dark mb-0">Correo Electrónico Institucional</h3>
+            </div>
+            
+            <p class="text-secondary small mb-3" style="font-size: 0.84rem;">
+              También podés escribirnos directamente a nuestra casilla de correo para consultas institucionales o académicas:
+            </p>
+
+            <!-- Pastilla interactiva de Email con botón de copiar -->
+            <div class="email-copy-pill d-flex align-items-center justify-content-between gap-2 mb-3">
+              <div class="d-flex align-items-center gap-2 overflow-hidden">
+                <i class="bi bi-envelope-fill text-primary flex-shrink-0"></i>
+                <a href="mailto:contacto@studymatch.utn.edu.ar" class="text-decoration-none text-dark fw-semibold small text-truncate" id="directEmailText">
+                  contacto@studymatch.utn.edu.ar
+                </a>
+              </div>
+              <button type="button" class="btn btn-outline-violet btn-sm py-1 px-2.5 rounded-2 d-inline-flex align-items-center gap-1 flex-shrink-0" id="btnCopyEmail" title="Copiar correo al portapapeles">
+                <i class="bi bi-clipboard" id="copyIcon"></i>
+                <span class="small" id="copyLabel">Copiar</span>
+              </button>
+            </div>
+
+            <!-- Ubicación UTN FRH -->
+            <div class="d-flex align-items-center gap-2 text-secondary small" style="font-size: 0.8rem;">
+              <i class="bi bi-geo-alt-fill text-danger flex-shrink-0"></i>
+              <span>Universidad Tecnológica Nacional • FRH (París 532, Haedo)</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+     PIE DE PÁGINA OFICIAL DE LA APLICACIÓN (FOOTER)
+     ========================================================================== -->
+  <footer class="app-footer py-2 border-top">
+    <div class="container-xl d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 text-secondary text-xs">
+      <div class="d-flex align-items-center gap-2">
+        <span class="fw-bold text-dark">Study Match</span>
+        <span class="text-muted">•</span>
+        <span>© 2026 Prototipo Oficial • Universidad Tecnológica Nacional (FRH)</span>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <a href="conoce.html" class="footer-link text-decoration-none text-secondary">Conocer Más</a>
+        <a href="quienessomos.html" class="footer-link text-decoration-none text-secondary">Quiénes Somos</a>
+        <a href="contacto.html" class="footer-link text-decoration-none text-primary fw-medium">Contacto</a>
+        <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="footer-link text-decoration-none text-primary fw-medium d-inline-flex align-items-center gap-1">
+          <i class="bi bi-discord"></i> Discord UTN
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Script Principal y Selector de Tema (Modo Tradicional) -->
+  <script src="js/main.js"></script>
+
+  <!-- Script interactivo específico de Contacto -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 1. Contador de caracteres en el textarea de mensaje
+      var mensajeInput = document.getElementById('contactMensaje');
+      var charCounter = document.getElementById('charCounter');
+      if (mensajeInput && charCounter) {
+        mensajeInput.addEventListener('input', function() {
+          var len = this.value.length;
+          charCounter.textContent = len + ' / 600';
+          if (len >= 580) {
+            charCounter.classList.add('text-warning');
+          } else {
+            charCounter.classList.remove('text-warning');
+          }
+        });
+      }
+
+      // 2. Envío del Formulario con Validación y Feedback Interactivo
+      var form = document.getElementById('contactoForm');
+      var feedback = document.getElementById('contactFeedback');
+
+      if (form && feedback) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          var nombre = document.getElementById('contactNombre').value.trim();
+          var email = document.getElementById('contactEmail').value.trim();
+          var asunto = document.getElementById('contactAsunto').value.trim();
+          var mensaje = document.getElementById('contactMensaje').value.trim();
+          var tipoRadio = document.querySelector('input[name="tipo_mensaje"]:checked');
+          var tipo = tipoRadio ? tipoRadio.value : 'sugerencia';
+
+          if (!nombre || !email || !asunto || !mensaje) {
+            feedback.className = 'alert alert-warning alert-dismissible fade show small py-2 px-3 mb-3 d-flex align-items-center gap-2';
+            feedback.innerHTML = 
+              '<i class="bi bi-exclamation-triangle-fill flex-shrink-0 fs-5"></i>' +
+              '<div><strong>Campos incompletos:</strong> Por favor completá todos los campos requeridos antes de enviar.</div>' +
+              '<button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Cerrar"></button>';
+            feedback.classList.remove('d-none');
+            return;
+          }
+
+          var etiquetasTipo = {
+            'sugerencia': 'tu sugerencia de mejora',
+            'error': 'tu reporte de error o bug',
+            'tutoria': 'tu consulta sobre tutorías',
+            'otro': 'tu consulta general'
+          };
+          var textoMotivo = etiquetasTipo[tipo] || 'tu mensaje';
+
+          // Mostrar mensaje de éxito simulado
+          feedback.className = 'alert alert-success alert-dismissible fade show small py-2.5 px-3 mb-3 d-flex align-items-center gap-2';
+          feedback.innerHTML = 
+            '<i class="bi bi-check-circle-fill text-success flex-shrink-0 fs-5"></i>' +
+            '<div>' +
+            '  <strong>¡Mensaje enviado con éxito!</strong> Recibimos ' + textoMotivo + ' correctamente. ' +
+            '  Te responderemos a la brevedad a <strong>' + email + '</strong>.' +
+            '</div>' +
+            '<button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Cerrar"></button>';
+          feedback.classList.remove('d-none');
+
+          // Resetear formulario
+          form.reset();
+          if (charCounter) charCounter.textContent = '0 / 600';
+          
+          // Scroll suave hacia el feedback si fuera necesario
+          feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+      }
+
+      // 3. Botón para copiar email al portapapeles
+      var btnCopyEmail = document.getElementById('btnCopyEmail');
+      var emailText = document.getElementById('directEmailText');
+      var copyIcon = document.getElementById('copyIcon');
+      var copyLabel = document.getElementById('copyLabel');
+
+      if (btnCopyEmail && emailText) {
+        btnCopyEmail.addEventListener('click', function() {
+          var textToCopy = emailText.textContent.trim();
+          navigator.clipboard.writeText(textToCopy).then(function() {
+            copyIcon.className = 'bi bi-check2 text-success';
+            copyLabel.textContent = '¡Copiado!';
+            btnCopyEmail.classList.add('border-success');
+
+            setTimeout(function() {
+              copyIcon.className = 'bi bi-clipboard';
+              copyLabel.textContent = 'Copiar';
+              btnCopyEmail.classList.remove('border-success');
+            }, 2500);
+          }).catch(function() {
+            prompt('Copiá nuestro email:', textToCopy);
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

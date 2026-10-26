@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Study Match - Panel Principal</title>
+  <title>Study Match - Panel de Alumno</title>
 
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,16 +14,15 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <!-- Estilos base globales -->
-  <link rel="stylesheet" href="css/styles.css">
-
-  <!-- Estilos especificos del Dashboard y Perfil de Usuario -->
-  <link rel="stylesheet" href="css/styleusuario.css">
+  <!-- Estilos del Dashboard y Perfil (100% Independiente de Landing) -->
+  <link rel="stylesheet" href="css/dashboard.css?v=20261026_5">
 </head>
-<body class="d-flex">
+<body class="dashboard-body" data-role="alumno">
 
-  <!-- SIDEBAR LATERAL IZQUIERDA (MÁS ANCHA Y CONTRAÍBLE) -->
-  <aside id="mainSidebar" class="sidebar d-flex flex-column justify-content-between p-3 position-sticky top-0">
+  <!-- ==========================================================================
+       SIDEBAR LATERAL IZQUIERDA (MODO ALUMNO - 100% FIJO)
+       ========================================================================== -->
+  <aside id="mainSidebar" class="sidebar d-flex flex-column justify-content-between p-3">
     <div>
       <!-- Header con Logo Study Match y Botón de Colapso -->
       <div class="d-flex align-items-center justify-content-between mb-4 px-2 logo-container">
@@ -31,30 +30,33 @@
           <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
             <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
-            <polygon points="50,20 90,42 50,62" fill="#2563eb"/>
-            <line x1="78" y1="48" x2="78" y2="70" stroke="#3b82f6" stroke-width="3.5" stroke-linecap="round"/>
-            <circle cx="78" cy="68" r="3.5" fill="#2563eb"/>
-            <polygon points="78,68 73,82 83,82" fill="#2563eb"/>
+            <polygon points="50,20 90,42 50,62" fill="#7c3aed"/>
+            <line x1="78" y1="48" x2="78" y2="70" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="78" cy="68" r="3.5" fill="#7c3aed"/>
+            <polygon points="78,68 73,82 83,82" fill="#7c3aed"/>
             <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="2"/>
           </svg>
-          <span class="fw-bold fs-5 text-dark logo-text">Study <span class="text-primary">Match</span></span>
+          <span class="fw-bold fs-5 text-dark logo-text">Study <span style="color: var(--brand-violet);">Match</span></span>
         </a>
 
-        <!-- Botón para contraer sidebar desde el header del sidebar -->
+        <!-- Botón para contraer sidebar -->
         <button id="btnCollapseSidebar" class="btn btn-sm btn-light border-0 text-secondary p-1 rounded-2 sidebar-hide-collapsed" title="Contraer menú lateral">
           <i class="bi bi-chevron-left"></i>
         </button>
       </div>
 
-      <!-- Menú de Navegación -->
+      <!-- Menú de Navegación: MODO ALUMNO (Acento Azul) -->
       <nav class="d-flex flex-column gap-1">
-        <a href="dashboard.html" class="sidebar-link active" title="Inicio">
+        <div class="px-3 pb-1 text-uppercase small text-muted fw-bold sidebar-text" style="font-size: 0.68rem; letter-spacing: 0.08em;">
+          Menú Alumno
+        </div>
+        <a href="dashboard.html" class="sidebar-link active" title="Inicio / Novedades">
           <i class="bi bi-house-door"></i>
           <span class="sidebar-text">Inicio</span>
         </a>
-        <a href="#" class="sidebar-link" title="Explorar tutores">
+        <a href="buscar-tutor.html" class="sidebar-link" title="Buscar Tutor">
           <i class="bi bi-search"></i>
-          <span class="sidebar-text">Explorar tutores</span>
+          <span class="sidebar-text">Buscar Tutor</span>
         </a>
         <a href="#" class="sidebar-link" title="Mis tutorías">
           <i class="bi bi-calendar3"></i>
@@ -63,11 +65,7 @@
         <a href="#" class="sidebar-link" title="Mensajes">
           <i class="bi bi-chat-dots"></i>
           <span class="sidebar-text">Mensajes</span>
-          <span class="badge bg-primary rounded-pill ms-auto sidebar-text" style="font-size: 0.65rem;">2</span>
-        </a>
-        <a href="#" class="sidebar-link" title="Guardados">
-          <i class="bi bi-bookmark"></i>
-          <span class="sidebar-text">Guardados</span>
+          <span class="badge rounded-pill ms-auto sidebar-text badge-role-counter" style="font-size: 0.65rem;">2</span>
         </a>
       </nav>
     </div>
@@ -95,37 +93,43 @@
     </div>
   </aside>
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <div class="flex-grow-1 d-flex flex-column min-vh-100 overflow-hidden">
+  <!-- ==========================================================================
+       CONTENIDO PRINCIPAL: PANEL ALUMNO
+       ========================================================================== -->
+  <div class="dashboard-main-wrapper">
 
-    <!-- TOPBAR CON BUSCADOR, SWITCH DE ROL Y MENÚ DE PERFIL DESPLEGABLE -->
+    <!-- TOPBAR CON BUSCADOR, SWITCH DE ROL Y MENÚ DE PERFIL -->
     <header class="topbar-header px-4 py-3 sticky-top">
       <div class="d-flex align-items-center justify-content-between gap-3">
         
-        <!-- Botón toggle de Sidebar + Buscador Central -->
+        <!-- Toggle de Sidebar + Buscador Central -->
         <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 600px;">
-          <!-- Botón de colapso rápido de Sidebar -->
           <button id="btnToggleSidebar" class="btn btn-light border text-secondary p-2 rounded-3" title="Expandir/Contraer menú lateral">
             <i class="bi bi-layout-sidebar fs-5"></i>
           </button>
 
-          <!-- Input de búsqueda -->
           <div class="position-relative flex-grow-1">
             <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-            <input type="text" class="form-control rounded-pill ps-5 bg-light border-0 shadow-none py-2" placeholder="Buscar por materia, tutor o carrera (ej. Programación II)...">
+            <input type="text" id="mainSearchInput" class="form-control rounded-pill ps-5 bg-light border-0 shadow-none py-2" placeholder="Buscar por materia, tutor o carrera (ej. Programación II)...">
           </div>
         </div>
 
-        <!-- Switch Rol Dual + Menú Desplegable de Perfil -->
+        <!-- Switch Rol Dual: Alumno (Azul) / Tutor (Verde) + Perfil -->
         <div class="d-flex align-items-center gap-3">
           
-          <!-- Switch Alumno / Tutor -->
-          <div class="d-flex align-items-center gap-2 bg-light px-3 py-1.5 rounded-pill border">
-            <span id="label-alumno" class="small fw-bold text-primary">Alumno</span>
-            <div class="form-check form-switch m-0 p-0 d-flex align-items-center">
-              <input class="form-check-input ms-0" type="checkbox" id="switchRol" onchange="alternarRol()">
+          <!-- Switch Alumno / Tutor (Cambia a dashboard-tutor.html) -->
+          <div class="role-switch-container d-flex align-items-center gap-1 shadow-sm">
+            <span id="label-alumno" class="role-badge-btn" title="Actualmente en Modo Alumno">
+              <span class="role-dot"></span>
+              <span>Alumno</span>
+            </span>
+            <div class="form-check form-switch m-0 p-0 d-flex align-items-center mx-1">
+              <input class="form-check-input ms-0" type="checkbox" id="switchRol" onchange="irAModoTutor()" title="Cambiar a Modo Tutor">
             </div>
-            <span id="label-tutor" class="small fw-semibold text-secondary">Tutor</span>
+            <span id="label-tutor" class="role-badge-btn text-secondary" onclick="irAModoTutor()" title="Pasar a Modo Tutor">
+              <span class="role-dot"></span>
+              <span>Tutor</span>
+            </span>
           </div>
 
           <!-- MENÚ DE PERFIL DESPLEGABLE -->
@@ -143,7 +147,6 @@
 
             <!-- Contenido del Menú Desplegable -->
             <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" style="min-width: 270px;">
-              <!-- Cabecera del usuario -->
               <li class="px-3 py-2 border-bottom mb-1 bg-light rounded-3">
                 <div class="fw-bold text-dark userNameSlot">Alex López</div>
                 <div class="text-secondary small userEmailSlot">alex.lopez@utn.edu.ar</div>
@@ -153,6 +156,12 @@
               </li>
               
               <!-- Opciones del menú -->
+              <li>
+                <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2.5" href="#" onclick="irAModoTutor()">
+                  <i class="bi bi-arrow-left-right text-success fs-6"></i>
+                  <span>Cambiar a Modo Tutor</span>
+                </a>
+              </li>
               <li>
                 <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2.5" href="#" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">
                   <i class="bi bi-pencil-square text-primary fs-6"></i>
@@ -182,160 +191,246 @@
           </div>
 
         </div>
-
       </div>
     </header>
 
-    <!-- CUERPO PRINCIPAL DEL DASHBOARD -->
-    <main class="p-4 p-md-5 flex-grow-1">
+    <main class="p-3 p-md-4 flex-grow-1 view-fade">
 
-      <!-- ================= VISTA MODO ALUMNO ================= -->
-      <section id="vista-alumno">
-        <!-- Encabezado de la sección -->
-        <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-2">
-          <div>
-            <span class="text-uppercase small fw-bold text-secondary tracking-wider" style="font-size: 0.75rem;">Modo Alumno</span>
-            <h1 class="h3 fw-bold text-dark mb-0">Encontrá a tu tutor ideal</h1>
+      <!-- ====================================================================
+           1. MENSAJE DE BIENVENIDA (SIMPLE Y PROLIJO)
+           ==================================================================== -->
+      <div class="welcome-banner-card px-4 py-3 mb-4 mb-md-5 rounded-4 text-white shadow-sm d-flex align-items-center justify-content-between"
+           style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #2e1065 100%) !important; border: 1px solid rgba(139, 92, 246, 0.25) !important;">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-none d-sm-flex align-items-center justify-content-center rounded-circle bg-white bg-opacity-10 border border-white border-opacity-15 text-white" style="width: 46px; height: 46px; flex-shrink: 0;">
+            <i class="bi bi-person-workspace fs-4 text-light"></i>
           </div>
-          <span class="badge bg-white text-secondary border px-3 py-2 rounded-pill shadow-sm small">
-            <span class="spinner-grow spinner-grow-sm text-success me-1" style="width: 0.45rem; height: 0.45rem;"></span>
-            6 tutores disponibles hoy
+          <div>
+            <h1 class="h5 fw-bold mb-0.5 text-white">
+              ¡Hola de nuevo, <span class="userNameSlot">Alex</span>! 👋
+            </h1>
+            <p class="text-white text-opacity-75 small mb-0" style="font-size: 0.86rem;">
+              Bienvenido a tu panel de estudio colaborativo en UTN Haedo.
+            </p>
+          </div>
+        </div>
+        <div class="d-none d-md-block text-end">
+          <span class="badge bg-white bg-opacity-10 text-white text-opacity-75 rounded-pill px-3 py-1.5 fw-normal small border border-white border-opacity-10">
+            <i class="bi bi-mortarboard me-1 text-warning"></i> Espacio Alumno
           </span>
         </div>
+      </div>
 
-        <!-- Filtros por Materia / Categoría -->
-        <div class="d-flex gap-2 flex-wrap mb-4">
-          <button class="btn btn-primary filter-btn">Todos</button>
-          <button class="btn btn-outline-secondary filter-btn bg-white">Programación</button>
-          <button class="btn btn-outline-secondary filter-btn bg-white">Bases de Datos</button>
-          <button class="btn btn-outline-secondary filter-btn bg-white">Matemática</button>
-          <button class="btn btn-outline-secondary filter-btn bg-white">Sistemas Operativos</button>
-          <button class="btn btn-outline-secondary filter-btn bg-white">Inglés Técnico</button>
+      <!-- ====================================================================
+           2. SECCIÓN DESTACADA: SALAS PÚBLICAS / CLASES GRATUITAS
+           ==================================================================== -->
+      <section id="salas-publicas" class="mb-5 pb-2">
+        <div class="d-flex justify-content-between align-items-end section-heading-spacing flex-wrap gap-3">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 small fw-bold d-inline-flex align-items-center gap-1.5">
+                <span class="pulse-live-dot"></span> LIVE EN VIVO
+              </span>
+              <span class="text-secondary small fw-semibold">Acceso libre y sin costo</span>
+            </div>
+            <h2 class="h4 fw-bold text-dark mb-0">Salas Públicas y Clases Gratuitas</h2>
+          </div>
+          <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline-violet btn-sm rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1">
+            <i class="bi bi-discord"></i> Ver Canales de Audio UTN
+          </a>
         </div>
 
-        <!-- Grilla de Tarjetas de Tutores -->
         <div class="row g-4">
+          <!-- Sala 1: Programación II (C++) -->
+          <div class="col-md-6 col-xl-4">
+            <div class="public-room-card p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="mb-3">
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 small fw-semibold">
+                    Programación II
+                  </span>
+                </div>
+
+                <h3 class="h6 fw-bold text-dark mb-2">
+                  Taller Práctico: Punteros Dobles, Memoria Dinámica y Listas
+                </h3>
+                <p class="text-secondary small mb-4 lh-base">
+                  Resolución de ejercicios de exámenes anteriores y preparación intensiva para el segundo parcial de C++.
+                </p>
+              </div>
+
+              <div>
+                <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="btn btn-discord w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-discord fs-5"></i> Unirse a la sala
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sala 2: Análisis Matemático I -->
+          <div class="col-md-6 col-xl-4">
+            <div class="public-room-card p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="mb-3">
+                  <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-1 small fw-semibold">
+                    Análisis Matemático I
+                  </span>
+                </div>
+
+                <h3 class="h6 fw-bold text-dark mb-2">
+                  Modelos de Parcial: Integrales por Sustitución y Partes
+                </h3>
+                <p class="text-secondary small mb-4 lh-base">
+                  Explicación paso a paso de los métodos de integración más evaluados y resolución de dudas en vivo.
+                </p>
+              </div>
+
+              <div>
+                <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="btn btn-discord w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-discord fs-5"></i> Unirse a la sala
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sala 3: Bases de Datos -->
+          <div class="col-md-6 col-xl-4">
+            <div class="public-room-card p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="mb-3">
+                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 small fw-semibold">
+                    Bases de Datos
+                  </span>
+                </div>
+
+                <h3 class="h6 fw-bold text-dark mb-2">
+                  Consultas SQL Complejas: Subconsultas y GROUP BY
+                </h3>
+                <p class="text-secondary small mb-4 lh-base">
+                  Práctica intensiva con casos reales de negocio, normalización y optimización de índices en bases relacionales.
+                </p>
+              </div>
+
+              <div>
+                <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="btn btn-discord w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-discord fs-5"></i> Unirse a la sala
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           3. SECCIÓN: TUTORES RECOMENDADOS O MEJOR CALIFICADOS
+           ==================================================================== -->
+      <section id="tutores-destacados">
+        <div class="d-flex justify-content-between align-items-end section-heading-spacing flex-wrap gap-3">
+          <div>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 small fw-semibold mb-2 d-inline-flex align-items-center gap-1">
+              <i class="bi bi-award-fill"></i> Excelencia Académica
+            </span>
+            <h2 class="h4 fw-bold text-dark mb-0">Tutores Recomendados y Mejor Calificados</h2>
+          </div>
+          <a href="buscar-tutor.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1">
+            <span>Ver todos los tutores</span>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Grilla Responsiva de Tutores Recomendados -->
+        <div class="row g-4" id="tutorCardsGrid">
           
-          <!-- Tarjeta 1: Tutor Programación -->
+          <!-- Tutor 1 -->
           <div class="col-md-6 col-xl-4">
             <div class="tutor-card p-4 h-100 d-flex flex-column justify-content-between">
               <div>
                 <div class="d-flex justify-content-between align-items-start mb-3">
                   <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-circle">MF</div>
+                    <div class="avatar-with-status">
+                      <div class="avatar-circle">MF</div>
+                      <span class="status-online-dot"></span>
+                    </div>
                     <div>
                       <h6 class="fw-bold mb-0 text-dark">Matías Fuentes</h6>
-                      <small class="text-secondary">TUP • 2° Año Aprobado</small>
+                      <small class="text-secondary">TUP • UTN Haedo (2° Año)</small>
                     </div>
                   </div>
-                  <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small">Online</span>
                 </div>
                 <span class="badge bg-primary-subtle text-primary mb-2">Programación II</span>
-                <h6 class="fw-bold text-dark">C++ y POO: de punteros a herencia paso a paso</h6>
+                <h6 class="fw-bold text-dark">C++ y POO: de punteros a herencia</h6>
                 <p class="text-secondary small mb-3">
                   Resolución de guías prácticas de la UTN, preparación para parciales y ayuda con los laboratorios.
                 </p>
               </div>
               <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                <span class="small fw-semibold text-secondary"><i class="bi bi-star-fill text-warning me-1"></i>5.0 • Discord</span>
-                <button class="btn btn-sm btn-primary px-3 rounded-pill fw-semibold shadow-sm">Contactar</button>
+                <span class="small fw-semibold text-secondary"><i class="bi bi-star-fill text-warning me-1"></i>5.0 (48 reseñas)</span>
+                <a href="buscar-tutor.html" class="btn btn-sm btn-role-action px-3 rounded-pill fw-semibold shadow-sm">Ver Perfil</a>
               </div>
             </div>
           </div>
 
-          <!-- Tarjeta 2: Tutor Base de Datos -->
+          <!-- Tutor 2 -->
           <div class="col-md-6 col-xl-4">
             <div class="tutor-card p-4 h-100 d-flex flex-column justify-content-between">
               <div>
                 <div class="d-flex justify-content-between align-items-start mb-3">
                   <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-circle">VR</div>
+                    <div class="avatar-with-status">
+                      <img src="img/juli.jpeg" alt="Julieta Abbiati" class="rounded-circle border" style="width: 44px; height: 44px; object-fit: cover;">
+                      <span class="status-online-dot"></span>
+                    </div>
+                    <div>
+                      <h6 class="fw-bold mb-0 text-dark">Julieta Abbiati</h6>
+                      <small class="text-secondary">TUP • Backend Developer</small>
+                    </div>
+                  </div>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small">Online</span>
+                </div>
+                <span class="badge bg-primary-subtle text-primary mb-2">Desarrollo Backend</span>
+                <h6 class="fw-bold text-dark">APIs REST, Autenticación y PHP</h6>
+                <p class="text-secondary small mb-3">
+                  Desarrollo de servicios, autenticación con sesiones y estructuración de proyectos web para la facultad.
+                </p>
+              </div>
+              <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                <span class="small fw-semibold text-secondary"><i class="bi bi-star-fill text-warning me-1"></i>5.0 (52 reseñas)</span>
+                <a href="buscar-tutor.html" class="btn btn-sm btn-role-action px-3 rounded-pill fw-semibold shadow-sm">Ver Perfil</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tutor 3 -->
+          <div class="col-md-6 col-xl-4">
+            <div class="tutor-card p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="avatar-with-status">
+                      <div class="avatar-circle" style="background: linear-gradient(135deg, #0284c7, #38bdf8);">VR</div>
+                      <span class="status-away-dot"></span>
+                    </div>
                     <div>
                       <h6 class="fw-bold mb-0 text-dark">Valentina Rojas</h6>
                       <small class="text-secondary">Sistemas • 4° Año</small>
                     </div>
                   </div>
-                  <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
+                  <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill small">18:30 hs</span>
                 </div>
                 <span class="badge bg-success-subtle text-success mb-2">Bases de Datos</span>
-                <h6 class="fw-bold text-dark">SQL Server, MySQL y Normalización DER</h6>
+                <h6 class="fw-bold text-dark">SQL Server, MySQL y Normalización</h6>
                 <p class="text-secondary small mb-3">
-                  Consultas complejas, JOINS, triggers y diseño de modelos relacionales sin errores.
+                  Consultas complejas, JOINS, triggers y diseño de modelos relacionales sin errores para parciales.
                 </p>
               </div>
               <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                <span class="small fw-semibold text-secondary"><i class="bi bi-star-fill text-warning me-1"></i>4.9 • Online</span>
-                <button class="btn btn-sm btn-primary px-3 rounded-pill fw-semibold shadow-sm">Contactar</button>
+                <span class="small fw-semibold text-secondary"><i class="bi bi-star-fill text-warning me-1"></i>4.9 (35 reseñas)</span>
+                <a href="buscar-tutor.html" class="btn btn-sm btn-role-action px-3 rounded-pill fw-semibold shadow-sm">Ver Perfil</a>
               </div>
             </div>
           </div>
 
-          <!-- Tarjeta 3: Tutor Matemática Discreta -->
-          <div class="col-md-6 col-xl-4">
-            <div class="tutor-card p-4 h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                  <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-circle">CS</div>
-                    <div>
-                      <h6 class="fw-bold mb-0 text-dark">Camila Soto</h6>
-                      <small class="text-secondary">TUP • Graduada</small>
-                    </div>
-                  </div>
-                  <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
-                </div>
-                <span class="badge bg-warning-subtle text-dark mb-2">Matemática</span>
-                <h6 class="fw-bold text-dark">Matemática Discreta y Álgebra Booleana</h6>
-                <p class="text-secondary small mb-3">
-                  Grafos, árboles, tablas de verdad y lógica proposicional explicados de forma directa y práctica.
-                </p>
-              </div>
-              <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                <span class="small fw-semibold text-secondary"><i class="bi bi-star-fill text-warning me-1"></i>4.8 • Discord</span>
-                <button class="btn btn-sm btn-primary px-3 rounded-pill fw-semibold shadow-sm">Contactar</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ================= VISTA MODO TUTOR (Oculto por defecto) ================= -->
-      <section id="vista-tutor" class="d-none">
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-          <div>
-            <span class="text-uppercase small fw-bold text-success tracking-wider" style="font-size: 0.75rem;">Modo Tutor</span>
-            <h1 class="h3 fw-bold text-dark mb-0">Tus publicaciones de tutoría</h1>
-          </div>
-          <button class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
-            <i class="bi bi-plus-lg me-1"></i> Publicar nueva tutoría
-          </button>
-        </div>
-
-        <!-- Tarjeta Informativa de Tutor Activo -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <div class="d-flex align-items-center gap-3">
-              <div class="bg-success-subtle text-success p-3 rounded-circle fs-4">
-                <i class="bi bi-mortarboard"></i>
-              </div>
-              <div>
-                <h5 class="fw-bold mb-1">Tutoría activa: Laboratorio de Computación I</h5>
-                <p class="text-secondary small mb-0">Canal de Discord vinculado: <code>discord.gg/utn-tup-lab1</code></p>
-              </div>
-            </div>
-            <div class="d-flex gap-2">
-              <button class="btn btn-outline-secondary btn-sm rounded-pill px-3">Pausar</button>
-              <button class="btn btn-outline-primary btn-sm rounded-pill px-3">Editar</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="text-center py-5 bg-white rounded-4 border border-dashed">
-          <i class="bi bi-chat-heart text-secondary fs-1 d-block mb-2"></i>
-          <h5 class="fw-bold">¿Querés enseñar otra materia?</h5>
-          <p class="text-secondary small mb-3">Postulate en las materias que ya tenés aprobadas para ayudar a ingresantes.</p>
-          <button class="btn btn-outline-primary rounded-pill px-4">Agregar otra materia</button>
         </div>
       </section>
 
@@ -364,7 +459,6 @@
         <form id="formPerfil">
           <div class="modal-body p-4">
             <div class="row g-3">
-              <!-- Nombre y Apellido -->
               <div class="col-md-6">
                 <label for="editNombre" class="form-label small fw-semibold text-dark">Nombre y Apellido</label>
                 <div class="input-group">
@@ -373,7 +467,6 @@
                 </div>
               </div>
 
-              <!-- Correo Electrónico Institucional -->
               <div class="col-md-6">
                 <label for="editEmail" class="form-label small fw-semibold text-dark">Correo Institucional UTN</label>
                 <div class="input-group">
@@ -382,11 +475,11 @@
                 </div>
               </div>
 
-              <!-- Facultad Regional UTN -->
               <div class="col-md-6">
                 <label for="editRegional" class="form-label small fw-semibold text-dark">Facultad Regional</label>
                 <select class="form-select" id="editRegional">
                   <option value="FRBA (Buenos Aires)" selected>FRBA (Buenos Aires)</option>
+                  <option value="FRH (Haedo)">FRH (Haedo)</option>
                   <option value="FRC (Córdoba)">FRC (Córdoba)</option>
                   <option value="FRP (Paraná)">FRP (Paraná)</option>
                   <option value="FRGP (General Pacheco)">FRGP (General Pacheco)</option>
@@ -396,7 +489,6 @@
                 </select>
               </div>
 
-              <!-- Carrera -->
               <div class="col-md-6">
                 <label for="editCarrera" class="form-label small fw-semibold text-dark">Carrera</label>
                 <select class="form-select" id="editCarrera">
@@ -409,7 +501,6 @@
                 </select>
               </div>
 
-              <!-- Nivel / Año cursando -->
               <div class="col-md-6">
                 <label for="editNivel" class="form-label small fw-semibold text-dark">Año de Cursada</label>
                 <select class="form-select" id="editNivel">
@@ -422,19 +513,17 @@
                 </select>
               </div>
 
-              <!-- Usuario de Discord -->
               <div class="col-md-6">
-                <label for="editDiscord" class="form-label small fw-semibold text-dark">Usuario de Discord (Coordinar clases)</label>
+                <label for="editDiscord" class="form-label small fw-semibold text-dark">Usuario de Discord</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0" style="color: #5865F2;"><i class="bi bi-discord"></i></span>
                   <input type="text" class="form-control border-start-0 ps-0" id="editDiscord" value="alex_utn#2026" placeholder="usuario#0000">
                 </div>
               </div>
 
-              <!-- Breve Bio / Materias de Interés -->
               <div class="col-12">
                 <label for="editBio" class="form-label small fw-semibold text-dark">Materias de interés / Breve descripción</label>
-                <textarea class="form-control" id="editBio" rows="3" placeholder="Contá en qué materias buscás ayuda o en cuáles te destacás para tutorías...">Estudiante de 3° año en Sistemas. Busco refuerzo para Sistemas Operativos y puedo dar apoyo en Algoritmos y Programación I.</textarea>
+                <textarea class="form-control" id="editBio" rows="3">Estudiante de 3° año en Sistemas. Busco refuerzo para Sistemas Operativos y puedo dar apoyo en Algoritmos y Programación I.</textarea>
               </div>
             </div>
           </div>
@@ -459,49 +548,39 @@
         <div class="modal-header border-bottom px-4 pt-4 pb-3">
           <div class="d-flex align-items-center gap-2">
             <div class="bg-primary-subtle text-primary p-2 rounded-3">
-              <i class="bi bi-camera fs-5"></i>
+              <i class="bi bi-camera-fill fs-5"></i>
             </div>
             <div>
-              <h5 class="modal-title fw-bold text-dark" id="modalSubirFotoLabel">Foto de Perfil</h5>
-              <p class="text-secondary small mb-0">Elegí cómo querés que te reconozcan tus tutores y pares</p>
+              <h5 class="modal-title fw-bold text-dark" id="modalSubirFotoLabel">Actualizar Foto de Perfil</h5>
+              <p class="text-secondary small mb-0">Seleccioná un avatar o subí tu propia foto</p>
             </div>
           </div>
           <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
 
         <div class="modal-body p-4 text-center">
-          <!-- Vista previa actual -->
-          <div class="mb-4">
-            <div id="previewAvatarBox" class="preview-avatar-box">
-              <span id="previewInitials">AL</span>
-            </div>
-            <p class="text-secondary small mt-2 mb-0">Vista previa de tu avatar</p>
+          <div class="preview-avatar-box mb-3" id="previewAvatarBox">
+            <span id="previewInitials">AL</span>
           </div>
 
-          <!-- Opción 1: Subir imagen desde la computadora -->
           <div class="mb-4">
-            <label for="inputUploadFile" class="btn btn-outline-primary rounded-pill px-4 py-2 w-100 fw-semibold mb-2">
-              <i class="bi bi-cloud-arrow-up me-2"></i> Subir imagen desde tu equipo
+            <label for="inputUploadFile" class="btn btn-outline-primary rounded-pill px-4 fw-semibold shadow-sm">
+              <i class="bi bi-upload me-1"></i> Subir imagen desde la PC
             </label>
             <input type="file" id="inputUploadFile" class="d-none" accept="image/*">
-            <div class="text-muted small" style="font-size: 0.75rem;">Soporta JPG, PNG, WEBP (Recomendado 300x300 px)</div>
+            <div class="text-muted small mt-1" style="font-size: 0.72rem;">Formatos JPG, PNG. Tamaño máximo 2MB</div>
           </div>
 
-          <div class="position-relative my-3">
-            <hr class="text-secondary opacity-25">
-            <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-secondary small fw-medium">o elegí un avatar UTN</span>
-          </div>
-
-          <!-- Opción 2: Avatares Predeterminados de Estudiantes -->
-          <div class="d-flex justify-content-center gap-3 pt-2">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&h=120&q=80" 
-                 class="preset-avatar" alt="Avatar 1" onclick="seleccionarPresetAvatar(this.src)">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=80" 
-                 class="preset-avatar" alt="Avatar 2" onclick="seleccionarPresetAvatar(this.src)">
-            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=80" 
-                 class="preset-avatar" alt="Avatar 3" onclick="seleccionarPresetAvatar(this.src)">
-            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&h=120&q=80" 
-                 class="preset-avatar" alt="Avatar 4" onclick="seleccionarPresetAvatar(this.src)">
+          <div class="border-top pt-3">
+            <span class="small fw-semibold text-secondary d-block mb-3">O seleccioná un avatar ilustrado:</span>
+            <div class="d-flex justify-content-center gap-3">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" 
+                   class="preset-avatar" alt="Avatar 1" onclick="seleccionarPresetAvatar(this.src)">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" 
+                   class="preset-avatar" alt="Avatar 2" onclick="seleccionarPresetAvatar(this.src)">
+              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80" 
+                   class="preset-avatar" alt="Avatar 3" onclick="seleccionarPresetAvatar(this.src)">
+            </div>
           </div>
         </div>
 
@@ -557,6 +636,20 @@
     </div>
   </div>
 
+  <!-- OVERLAY DE TRANSICIÓN SUAVE ENTRE ROLES -->
+  <div id="roleTransitionOverlay" class="role-transition-overlay">
+    <div class="role-transition-card text-center p-4">
+      <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-success-subtle text-success mb-3" style="width: 72px; height: 72px;">
+        <i class="bi bi-mortarboard fs-1"></i>
+      </div>
+      <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+        <span class="spinner-grow spinner-grow-sm text-success" role="status" aria-hidden="true"></span>
+        <h5 class="fw-bold text-dark mb-0">Cambiando a Panel de Tutor...</h5>
+      </div>
+      <p class="text-secondary small mb-0">Cargando tus solicitudes, métricas y materias publicadas</p>
+    </div>
+  </div>
+
   <!-- TOAST FLOTANTE DE NOTIFICACIÓN -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
     <div id="toastSuccess" class="toast align-items-center text-bg-dark border-0 rounded-4 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
@@ -570,7 +663,7 @@
     </div>
   </div>
 
-  <!-- JavaScript para Interacciones: Colapso de Sidebar, Rol y Edición de Perfil -->
+  <!-- JavaScript: Funciones de Panel Alumno -->
   <script>
     // ==========================================
     // 1. Colapso / Expansión del Sidebar
@@ -582,150 +675,196 @@
     function toggleSidebar() {
       sidebar.classList.toggle('collapsed');
       const isCollapsed = sidebar.classList.contains('collapsed');
+      document.body.classList.toggle('sidebar-is-collapsed', isCollapsed);
       localStorage.setItem('study-match-sidebar-collapsed', isCollapsed ? 'true' : 'false');
     }
 
     if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', toggleSidebar);
     if (btnCollapseSidebar) btnCollapseSidebar.addEventListener('click', toggleSidebar);
 
-    // Restaurar estado guardado
     if (localStorage.getItem('study-match-sidebar-collapsed') === 'true') {
       sidebar.classList.add('collapsed');
+      document.body.classList.add('sidebar-is-collapsed');
     }
 
     // ==========================================
-    // 2. Alternar Rol Alumno / Tutor
+    // 2. Transición Visual Suave a Modo Tutor
     // ==========================================
-    function alternarRol() {
-      const check = document.getElementById('switchRol');
-      const vistaAlumno = document.getElementById('vista-alumno');
-      const vistaTutor = document.getElementById('vista-tutor');
-      const labelAlumno = document.getElementById('label-alumno');
-      const labelTutor = document.getElementById('label-tutor');
-      const userRoleSlot = document.querySelector('.userRoleSlot');
+    function irAModoTutor() {
+      const overlay = document.getElementById('roleTransitionOverlay');
+      if (overlay) overlay.classList.add('active');
+      document.body.classList.add('page-fading-out');
 
-      if (check.checked) {
-        // Pasa a Modo Tutor
-        vistaAlumno.classList.add('d-none');
-        vistaTutor.classList.remove('d-none');
-        labelAlumno.className = "small fw-semibold text-secondary";
-        labelTutor.className = "small fw-bold text-success";
-        if (userRoleSlot) userRoleSlot.textContent = "UTN • Tutor";
-        mostrarToast("Cambiaste a Modo Tutor");
-      } else {
-        // Vuelve a Modo Alumno
-        vistaAlumno.classList.remove('d-none');
-        vistaTutor.classList.add('d-none');
-        labelAlumno.className = "small fw-bold text-primary";
-        labelTutor.className = "small fw-semibold text-secondary";
-        if (userRoleSlot) userRoleSlot.textContent = "UTN • Alumno";
-        mostrarToast("Cambiaste a Modo Alumno");
-      }
+      setTimeout(() => {
+        window.location.href = 'dashboard-tutor.html';
+      }, 340);
     }
 
     // ==========================================
-    // 3. Edición de Información de Perfil
+    // 3. Edición de Perfil y Sincronización LocalStorage
     // ==========================================
     const formPerfil = document.getElementById('formPerfil');
     formPerfil.addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const nombre = document.getElementById('editNombre').value.trim();
-      const email = document.getElementById('editEmail').value.trim();
-      const regional = document.getElementById('editRegional').value;
-      const carrera = document.getElementById('editCarrera').value;
-      const nivel = document.getElementById('editNivel').value;
-      const discord = document.getElementById('editDiscord').value.trim();
+      const perfilData = {
+        nombre: document.getElementById('editNombre').value.trim(),
+        email: document.getElementById('editEmail').value.trim(),
+        regional: document.getElementById('editRegional').value,
+        carrera: document.getElementById('editCarrera').value,
+        nivel: document.getElementById('editNivel').value,
+        discord: document.getElementById('editDiscord').value.trim()
+      };
 
-      // Actualizar datos en la interfaz
-      document.querySelectorAll('.userNameSlot').forEach(el => el.textContent = nombre);
-      document.querySelectorAll('.userEmailSlot').forEach(el => el.textContent = email);
+      localStorage.setItem('study-match-user-profile', JSON.stringify(perfilData));
+      aplicarDatosPerfil(perfilData);
+
+      const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfil'));
+      if (modalInstance) modalInstance.hide();
+      mostrarToast("¡Perfil actualizado con éxito!");
+    });
+
+    function aplicarDatosPerfil(data) {
+      if (!data) return;
+      document.querySelectorAll('.userNameSlot').forEach(el => el.textContent = data.nombre);
+      document.querySelectorAll('.userEmailSlot').forEach(el => el.textContent = data.email);
       
-      const carreraCorta = carrera.includes('Programación') ? 'TUP' : 'Sistemas';
-      document.querySelectorAll('.userCareerSlot').forEach(el => el.textContent = `${carreraCorta} • ${nivel}`);
+      const carreraCorta = data.carrera.includes('Programación') ? 'TUP' : 'Sistemas';
+      document.querySelectorAll('.userCareerSlot').forEach(el => el.textContent = `${carreraCorta} • ${data.nivel}`);
       
-      const regionalCorta = regional.split(' ')[0];
+      const regionalCorta = data.regional ? data.regional.split(' ')[0] : 'FRH';
       const legajoSlot = document.getElementById('userLegajoSlot');
       if (legajoSlot) legajoSlot.textContent = `Legajo: 51294 • ${regionalCorta}`;
 
-      // Si no tiene foto personalizada, calcular iniciales
       if (!selectedPhotoUrl) {
-        const partes = nombre.split(' ');
+        const partes = data.nombre.split(' ');
         const iniciales = partes.length >= 2 
           ? (partes[0][0] + partes[1][0]).toUpperCase() 
-          : nombre.substring(0, 2).toUpperCase();
+          : data.nombre.substring(0, 2).toUpperCase();
 
         document.querySelectorAll('.userAvatarSlot').forEach(el => {
           el.style.backgroundImage = 'none';
           el.textContent = iniciales;
         });
-        document.getElementById('previewInitials').textContent = iniciales;
+        const prevInit = document.getElementById('previewInitials');
+        if (prevInit) prevInit.textContent = iniciales;
       }
-
-      // Cerrar modal
-      const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfil'));
-      if (modalInstance) modalInstance.hide();
-
-      mostrarToast("¡Perfil actualizado con éxito!");
-    });
+    }
 
     // ==========================================
     // 4. Subir y Cambiar Foto de Perfil
     // ==========================================
-    let selectedPhotoUrl = null;
+    let selectedPhotoUrl = localStorage.getItem('study-match-user-photo') || null;
     const inputUploadFile = document.getElementById('inputUploadFile');
     const previewAvatarBox = document.getElementById('previewAvatarBox');
     const previewInitials = document.getElementById('previewInitials');
     const btnGuardarFoto = document.getElementById('btnGuardarFoto');
 
-    // Carga de archivo desde el equipo
-    inputUploadFile.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          selectedPhotoUrl = event.target.result;
-          previewAvatarBox.style.backgroundImage = `url('${selectedPhotoUrl}')`;
-          previewInitials.textContent = '';
-          // Deseleccionar presets
-          document.querySelectorAll('.preset-avatar').forEach(p => p.classList.remove('selected'));
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+    if (selectedPhotoUrl) {
+      document.querySelectorAll('.userAvatarSlot').forEach(slot => {
+        slot.style.backgroundImage = `url('${selectedPhotoUrl}')`;
+        slot.textContent = '';
+      });
+      if (previewAvatarBox) previewAvatarBox.style.backgroundImage = `url('${selectedPhotoUrl}')`;
+      if (previewInitials) previewInitials.textContent = '';
+    }
 
-    // Selección de avatar preset
+    if (inputUploadFile) {
+      inputUploadFile.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            selectedPhotoUrl = event.target.result;
+            previewAvatarBox.style.backgroundImage = `url('${selectedPhotoUrl}')`;
+            previewInitials.textContent = '';
+            document.querySelectorAll('.preset-avatar').forEach(p => p.classList.remove('selected'));
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
     function seleccionarPresetAvatar(url) {
       selectedPhotoUrl = url;
       previewAvatarBox.style.backgroundImage = `url('${url}')`;
       previewInitials.textContent = '';
-      
       document.querySelectorAll('.preset-avatar').forEach(p => {
         p.classList.toggle('selected', p.src === url);
       });
     }
 
-    // Guardar Foto
-    btnGuardarFoto.addEventListener('click', function() {
-      if (selectedPhotoUrl) {
-        document.querySelectorAll('.userAvatarSlot').forEach(slot => {
-          slot.style.backgroundImage = `url('${selectedPhotoUrl}')`;
-          slot.textContent = '';
-        });
-        mostrarToast("¡Foto de perfil actualizada!");
-      }
-      const modalFotoInstance = bootstrap.Modal.getInstance(document.getElementById('modalSubirFoto'));
-      if (modalFotoInstance) modalFotoInstance.hide();
-    });
+    if (btnGuardarFoto) {
+      btnGuardarFoto.addEventListener('click', function() {
+        if (selectedPhotoUrl) {
+          localStorage.setItem('study-match-user-photo', selectedPhotoUrl);
+          document.querySelectorAll('.userAvatarSlot').forEach(slot => {
+            slot.style.backgroundImage = `url('${selectedPhotoUrl}')`;
+            slot.textContent = '';
+          });
+          mostrarToast("¡Foto de perfil actualizada!");
+        }
+        const modalFotoInstance = bootstrap.Modal.getInstance(document.getElementById('modalSubirFoto'));
+        if (modalFotoInstance) modalFotoInstance.hide();
+      });
+    }
 
     // ==========================================
-    // 5. Toast Notificación Helper
+    // 5. Toast Helper
     // ==========================================
     function mostrarToast(mensaje) {
       const toastEl = document.getElementById('toastSuccess');
       document.getElementById('toastMessage').textContent = mensaje;
       const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
       toast.show();
+    }
+
+    // ==========================================
+    // 6. Buscador y Filtros de Tutores en Tiempo Real
+    // ==========================================
+    const searchInput = document.getElementById('mainSearchInput');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const tutorCards = document.querySelectorAll('.tutor-card');
+    let currentFilter = 'todos';
+
+    function filtrarTutores() {
+      const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+      tutorCards.forEach(card => {
+        const parentCol = card.closest('.col-md-6') || card;
+        const text = card.textContent.toLowerCase();
+        const matchesQuery = !query || text.includes(query);
+        const matchesFilter = currentFilter === 'todos' || text.includes(currentFilter);
+
+        if (matchesQuery && matchesFilter) {
+          parentCol.classList.remove('d-none');
+        } else {
+          parentCol.classList.add('d-none');
+        }
+      });
+    }
+
+    if (searchInput) searchInput.addEventListener('input', filtrarTutores);
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        filterButtons.forEach(b => {
+          b.classList.remove('btn-primary', 'active');
+          b.classList.add('btn-outline-secondary', 'bg-white');
+        });
+        this.classList.remove('btn-outline-secondary', 'bg-white');
+        this.classList.add('btn-primary', 'active');
+        currentFilter = this.textContent.toLowerCase().trim();
+        filtrarTutores();
+      });
+    });
+
+    // Cargar perfil guardado si existe
+    const perfilGuardado = localStorage.getItem('study-match-user-profile');
+    if (perfilGuardado) {
+      try {
+        aplicarDatosPerfil(JSON.parse(perfilGuardado));
+      } catch(e) {}
     }
   </script>
 

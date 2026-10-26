@@ -1,0 +1,233 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   STUDY MATCH • Estilos de Página de Inicio / Hero (home.css)
+   ========================================================================== */
+
+/* 1. Hero Section Layout */
+.hero-wrapper {
+  flex: 1 1 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.hero-title {
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  color: #0f172a;
+  font-size: clamp(1.85rem, 3.2vw, 2.75rem);
+}
+
+.hero-title .hero-sep {
+  font-weight: 300;
+  opacity: 0.4;
+  margin: 0 0.15rem;
+}
+
+.hero-subtitle {
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+}
+
+.hero-description {
+  font-size: clamp(0.86rem, 1vw, 0.95rem);
+  line-height: 1.55;
+  color: #1f262f;
+  max-width: 550px;
+}
+
+/* 2. Prueba Social (Social Proof) */
+.social-proof-block {
+  padding: 0.25rem 0.6rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 50rem;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.avatar-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.avatar-group .avatar-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  margin-left: -8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.12);
+}
+
+.avatar-group .avatar-circle:first-child {
+  margin-left: 0;
+}
+
+.avatar-group .avatar-1 { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+.avatar-group .avatar-2 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.avatar-group .avatar-3 { background: linear-gradient(135deg, #10b981, #059669); }
+.avatar-group .avatar-count {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  font-size: 0.62rem;
+}
+
+/* 3. Tarjeta de Métricas */
+.stats-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(243, 232, 255, 0.82) 50%, rgba(238, 242, 255, 0.88) 100%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(124, 58, 237, 0.22);
+  box-shadow: 0 10px 25px -6px rgba(124, 58, 237, 0.14), 0 2px 8px rgba(15, 23, 42, 0.04);
+  max-width: 530px;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-item {
+  padding: 0.5rem 1rem;
+  text-align: center;
+}
+
+.stat-number {
+  font-weight: 800;
+  font-size: clamp(1.25rem, 1.8vw, 1.55rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-align: center;
+  background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stat-discord {
+  background: linear-gradient(135deg, #5865F2 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stat-label {
+  font-size: 0.74rem;
+  color: #475569;
+  font-weight: 600;
+  margin-top: 0.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .stat-label {
+    font-size: 0.8rem;
+  }
+  .border-start-item {
+    border-left: 1px solid rgba(124, 58, 237, 0.16);
+  }
+}
+
+/* 4. Glow & Badges Flotantes Decorativos */
+.hero-glow-blob {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.2) 0%, rgba(168, 85, 247, 0.1) 45%, transparent 70%);
+  filter: blur(35px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.floating-badge {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 0.32rem 0.8rem;
+  border-radius: 50rem;
+  font-size: 0.74rem;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  box-shadow: 0 8px 20px -4px rgba(124, 58, 237, 0.16), 0 2px 6px rgba(15, 23, 42, 0.05);
+  z-index: 10;
+  pointer-events: none;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.floating-badge-top {
+  top: -12px;
+  left: 12px;
+  animation: float-badge-top 4.5s ease-in-out infinite;
+}
+
+.floating-badge-bottom {
+  bottom: -12px;
+  right: 14px;
+  animation: float-badge-bottom 4.5s ease-in-out infinite 2s;
+}
+
+@keyframes float-badge-top {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes float-badge-bottom {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+.live-dot-pulse {
+  width: 7px;
+  height: 7px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+/* 5. Modo Oscuro Home */
+[data-bs-theme="dark"] .hero-subtitle {
+  color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .hero-description {
+  color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .social-proof-block {
+  background: rgba(15, 23, 42, 0.75) !important;
+  border-color: rgba(124, 58, 237, 0.28) !important;
+}
+
+[data-bs-theme="dark"] .stats-card {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.90) 0%, rgba(30, 27, 75, 0.85) 50%, rgba(15, 23, 42, 0.92) 100%) !important;
+  border: 1px solid rgba(124, 58, 237, 0.35) !important;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.55), 0 0 25px rgba(124, 58, 237, 0.15) !important;
+}
+
+[data-bs-theme="dark"] .stats-card .stat-label {
+  color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .stats-card .border-start-item {
+  border-left-color: rgba(124, 58, 237, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .floating-badge {
+  background: rgba(15, 23, 42, 0.94) !important;
+  border: 1px solid rgba(124, 58, 237, 0.35) !important;
+  color: #f8fafc !important;
+  box-shadow: 0 8px 22px -4px rgba(0, 0, 0, 0.6) !important;
+}

@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Match - Panel del Tutor</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Estilos del Dashboard y Perfil (100% Independiente de Landing) -->
+  <link rel="stylesheet" href="css/dashboard.css?v=20261026_4">
+</head>
+<body class="dashboard-body" data-role="tutor">
+
+  <!-- ==========================================================================
+       SIDEBAR LATERAL IZQUIERDA (MODO TUTOR - 100% FIJO)
+       ========================================================================== -->
+  <aside id="mainSidebar" class="sidebar d-flex flex-column justify-content-between p-3">
+    <div>
+      <!-- Header con Logo Study Match y Botón de Colapso -->
+      <div class="d-flex align-items-center justify-content-between mb-4 px-2 logo-container">
+        <a href="dashboard-tutor.html" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
+          <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
+            <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
+            <polygon points="50,20 90,42 50,62" fill="#7c3aed"/>
+            <line x1="78" y1="48" x2="78" y2="70" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="78" cy="68" r="3.5" fill="#7c3aed"/>
+            <polygon points="78,68 73,82 83,82" fill="#7c3aed"/>
+            <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="2"/>
+          </svg>
+          <span class="fw-bold fs-5 text-dark logo-text">Study <span style="color: var(--brand-violet);">Match</span></span>
+        </a>
+
+        <!-- Botón para contraer sidebar -->
+        <button id="btnCollapseSidebar" class="btn btn-sm btn-light border-0 text-secondary p-1 rounded-2 sidebar-hide-collapsed" title="Contraer menú lateral">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+      </div>
+
+      <!-- Menú de Navegación: MODO TUTOR (Acento Verde) -->
+      <nav class="d-flex flex-column gap-1">
+        <div class="px-3 pb-1 text-uppercase small text-muted fw-bold sidebar-text" style="font-size: 0.68rem; letter-spacing: 0.08em;">
+          Menú Tutor
+        </div>
+        <a href="dashboard-tutor.html" class="sidebar-link active" title="Panel Tutor">
+          <i class="bi bi-speedometer2"></i>
+          <span class="sidebar-text">Panel Tutor</span>
+        </a>
+        <a href="#mis-publicaciones" class="sidebar-link" title="Mis publicaciones">
+          <i class="bi bi-journal-bookmark"></i>
+          <span class="sidebar-text">Mis publicaciones</span>
+        </a>
+        <a href="#solicitudes" class="sidebar-link" title="Solicitudes">
+          <i class="bi bi-person-check"></i>
+          <span class="sidebar-text">Solicitudes</span>
+          <span id="badgeSolicitudesTutor" class="badge rounded-pill ms-auto sidebar-text badge-role-counter" style="font-size: 0.65rem;">3 nuevas</span>
+        </a>
+        <a href="#" class="sidebar-link" title="Mensajes">
+          <i class="bi bi-chat-dots"></i>
+          <span class="sidebar-text">Mensajes</span>
+          <span class="badge rounded-pill ms-auto sidebar-text badge-role-counter" style="font-size: 0.65rem;">2</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Usuario abajo en el Sidebar: Tarjeta de Perfil Interactivo -->
+    <div class="border-top pt-3 mt-auto">
+      <div class="user-sidebar-card p-2 d-flex align-items-center justify-content-between mb-2" 
+           data-bs-toggle="modal" data-bs-target="#modalEditarPerfil" title="Haz clic para editar tu perfil">
+        <div class="d-flex align-items-center gap-2 overflow-hidden">
+          <div class="avatar-user-display userAvatarSlot">
+            AL
+          </div>
+          <div class="sidebar-text text-truncate lh-sm">
+            <span class="d-block fw-bold text-dark small text-truncate userNameSlot">Alex López</span>
+            <span class="text-secondary userCareerSlot" style="font-size: 0.72rem;">Sistemas • 3° año</span>
+          </div>
+        </div>
+        <i class="bi bi-pencil-square text-secondary sidebar-text fs-6 me-1" title="Editar"></i>
+      </div>
+
+      <a href="index.html" class="sidebar-link text-danger p-2" title="Cerrar sesión">
+        <i class="bi bi-box-arrow-left"></i>
+        <span class="sidebar-text">Cerrar sesión</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ==========================================================================
+       CONTENIDO PRINCIPAL: PANEL TUTOR
+       ========================================================================== -->
+  <div class="dashboard-main-wrapper">
+
+    <!-- TOPBAR CON BUSCADOR, SWITCH DE ROL Y MENÚ DE PERFIL -->
+    <header class="topbar-header px-4 py-3 sticky-top">
+      <div class="d-flex align-items-center justify-content-between gap-3">
+        
+        <!-- Toggle de Sidebar + Buscador Central -->
+        <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 600px;">
+          <button id="btnToggleSidebar" class="btn btn-light border text-secondary p-2 rounded-3" title="Expandir/Contraer menú lateral">
+            <i class="bi bi-layout-sidebar fs-5"></i>
+          </button>
+
+          <div class="position-relative flex-grow-1">
+            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+            <input type="text" id="mainSearchInput" class="form-control rounded-pill ps-5 bg-light border-0 shadow-none py-2" placeholder="Buscar alumnos, solicitudes o materias...">
+          </div>
+        </div>
+
+        <!-- Switch Rol Dual: Alumno (Azul) / Tutor (Verde) + Perfil -->
+        <div class="d-flex align-items-center gap-3">
+          
+          <!-- Switch Alumno / Tutor (Cambia a dashboard.html) -->
+          <div class="role-switch-container d-flex align-items-center gap-1 shadow-sm">
+            <span id="label-alumno" class="role-badge-btn text-secondary" onclick="irAModoAlumno()" title="Pasar a Modo Alumno">
+              <span class="role-dot"></span>
+              <span>Alumno</span>
+            </span>
+            <div class="form-check form-switch m-0 p-0 d-flex align-items-center mx-1">
+              <input class="form-check-input ms-0" type="checkbox" id="switchRol" checked onchange="irAModoAlumno()" title="Cambiar a Modo Alumno">
+            </div>
+            <span id="label-tutor" class="role-badge-btn" title="Actualmente en Modo Tutor">
+              <span class="role-dot"></span>
+              <span>Tutor</span>
+            </span>
+          </div>
+
+          <!-- MENÚ DE PERFIL DESPLEGABLE -->
+          <div class="dropdown">
+            <button class="btn p-1 border-0 d-flex align-items-center gap-2 rounded-pill hover-bg-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="avatar-user-display userAvatarSlot">
+                AL
+              </div>
+              <div class="d-none d-md-block text-start lh-1 pe-1">
+                <span class="d-block fw-bold text-dark small userNameSlot">Alex López</span>
+                <span class="text-secondary userRoleSlot" style="font-size: 0.72rem;">UTN • Tutor</span>
+              </div>
+              <i class="bi bi-chevron-down text-secondary small d-none d-md-inline"></i>
+            </button>
+
+            <!-- Contenido del Menú Desplegable -->
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" style="min-width: 270px;">
+              <li class="px-3 py-2 border-bottom mb-1 bg-light rounded-3">
+                <div class="fw-bold text-dark userNameSlot">Alex López</div>
+                <div class="text-secondary small userEmailSlot">alex.lopez@utn.edu.ar</div>
+                <div class="d-flex align-items-center gap-1 mt-1">
+                  <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem;" id="userLegajoSlot">Tutor Autorizado • FRBA</span>
+                </div>
+              </li>
+              
+              <!-- Opciones del menú -->
+              <li>
+                <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2.5" href="#" onclick="irAModoAlumno()">
+                  <i class="bi bi-arrow-left-right text-primary fs-6"></i>
+                  <span>Cambiar a Modo Alumno</span>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2.5" href="#" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">
+                  <i class="bi bi-pencil-square text-primary fs-6"></i>
+                  <span>Editar mi información</span>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2.5" href="#" data-bs-toggle="modal" data-bs-target="#modalSubirFoto">
+                  <i class="bi bi-camera text-primary fs-6"></i>
+                  <span>Cambiar foto de perfil</span>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2.5" href="#" data-bs-toggle="modal" data-bs-target="#modalDiscordConfig">
+                  <i class="bi bi-discord fs-6" style="color: #5865F2;"></i>
+                  <span>Vincular Discord UTN</span>
+                </a>
+              </li>
+              <li><hr class="dropdown-divider my-1"></li>
+              <li>
+                <a class="dropdown-item text-danger rounded-3 py-2 d-flex align-items-center gap-2.5" href="index.html">
+                  <i class="bi bi-box-arrow-left fs-6"></i>
+                  <span>Cerrar sesión</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- CUERPO PRINCIPAL DEL DASHBOARD TUTOR -->
+    <main class="p-4 p-md-5 flex-grow-1 view-fade">
+
+      <!-- Encabezado Modo Tutor -->
+      <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
+        <div>
+          <span class="mode-indicator-pill mb-2"><i class="bi bi-patch-check-fill"></i> Modo Tutor</span>
+          <h1 class="h3 fw-bold text-dark mb-1">Panel del Tutor: Tus Tutorías y Alumnos</h1>
+          <p class="text-secondary small mb-0">Gestioná tus solicitudes entrantes, coordiná clases y publicá nuevas materias.</p>
+        </div>
+        <button class="btn btn-role-action rounded-pill px-4 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevaTutoria">
+          <i class="bi bi-plus-lg me-1"></i> Publicar nueva tutoría
+        </button>
+      </div>
+
+      <!-- Fila de Métricas del Tutor -->
+      <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-3">
+          <div class="metric-card p-3 p-xl-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-secondary small fw-semibold">Horas Impartidas</span>
+              <div class="bg-success-subtle text-success p-2 rounded-3">
+                <i class="bi bi-clock-history fs-5"></i>
+              </div>
+            </div>
+            <h3 class="fw-bold text-dark mb-1">18 hrs</h3>
+            <span class="badge bg-success-subtle text-success small" style="font-size: 0.72rem;">+4 hrs esta semana</span>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+          <div class="metric-card p-3 p-xl-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-secondary small fw-semibold">Alumnos Asistidos</span>
+              <div class="bg-primary-subtle text-primary p-2 rounded-3">
+                <i class="bi bi-people-fill fs-5"></i>
+              </div>
+            </div>
+            <h3 class="fw-bold text-dark mb-1">12 alumnos</h3>
+            <span class="text-secondary small" style="font-size: 0.72rem;">UTN FRH • FRBA</span>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+          <div class="metric-card p-3 p-xl-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-secondary small fw-semibold">Calificación Promedio</span>
+              <div class="bg-warning-subtle text-warning p-2 rounded-3">
+                <i class="bi bi-star-fill fs-5"></i>
+              </div>
+            </div>
+            <h3 class="fw-bold text-dark mb-1">4.9 <small class="text-secondary fs-6 fw-normal">/ 5.0</small></h3>
+            <span class="text-secondary small" style="font-size: 0.72rem;">15 valoraciones</span>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+          <div class="metric-card p-3 p-xl-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-secondary small fw-semibold">Solicitudes Pendientes</span>
+              <div class="bg-danger-subtle text-danger p-2 rounded-3">
+                <i class="bi bi-bell-fill fs-5"></i>
+              </div>
+            </div>
+            <h3 class="fw-bold text-dark mb-1" id="metricCounterSolicitudes">3 nuevas</h3>
+            <span class="text-danger small fw-semibold" style="font-size: 0.72rem;">Requieren tu respuesta</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: Solicitudes de Alumnos Pendientes -->
+      <div id="solicitudes" class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+          <div>
+            <h5 class="fw-bold text-dark mb-1">
+              <i class="bi bi-inbox-fill text-success me-2"></i>Solicitudes de Tutoría Recibidas
+            </h5>
+            <p class="text-secondary small mb-0">Alumnos que solicitaron tu ayuda en tus materias publicadas</p>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill" id="solicitudesHeaderBadge">
+            3 pendientes
+          </span>
+        </div>
+
+        <div class="d-flex flex-column gap-3" id="listaSolicitudesTutor">
+          <!-- Solicitud 1 -->
+          <div class="p-3 rounded-3 border bg-light-subtle d-flex align-items-start justify-content-between flex-wrap gap-3 item-solicitud">
+            <div class="d-flex align-items-start gap-3">
+              <div class="avatar-circle flex-shrink-0 bg-primary-subtle text-primary">LB</div>
+              <div>
+                <div class="d-flex align-items-center gap-2">
+                  <h6 class="fw-bold text-dark mb-0">Lucas Benítez</h6>
+                  <span class="badge bg-primary-subtle text-primary" style="font-size: 0.7rem;">Programación II</span>
+                </div>
+                <p class="text-secondary small mb-1 mt-1">
+                  "Hola Alex, tengo dudas con punteros dobles y asignación dinámica de memoria antes del primer parcial de C++."
+                </p>
+                <span class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-clock me-1"></i>Hace 25 minutos • UTN FRH</span>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 ms-auto">
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="rechazarSolicitud(this)">Rechazar</button>
+              <button class="btn btn-sm btn-success rounded-pill px-3 fw-semibold shadow-sm" onclick="aceptarSolicitud(this, 'Lucas Benítez', 'Programación II')">
+                <i class="bi bi-check-lg me-1"></i> Aceptar tutoría
+              </button>
+            </div>
+          </div>
+
+          <!-- Solicitud 2 -->
+          <div class="p-3 rounded-3 border bg-light-subtle d-flex align-items-start justify-content-between flex-wrap gap-3 item-solicitud">
+            <div class="d-flex align-items-start gap-3">
+              <div class="avatar-circle flex-shrink-0 bg-success-subtle text-success">SG</div>
+              <div>
+                <div class="d-flex align-items-center gap-2">
+                  <h6 class="fw-bold text-dark mb-0">Sofía Gómez</h6>
+                  <span class="badge bg-success-subtle text-success" style="font-size: 0.7rem;">Bases de Datos</span>
+                </div>
+                <p class="text-secondary small mb-1 mt-1">
+                  "Hola! ¿Podríamos revisar la normalización a 3FN de mi trabajo práctico de MySQL? Es para este viernes."
+                </p>
+                <span class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-clock me-1"></i>Hace 2 horas • UTN FRBA</span>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 ms-auto">
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="rechazarSolicitud(this)">Rechazar</button>
+              <button class="btn btn-sm btn-success rounded-pill px-3 fw-semibold shadow-sm" onclick="aceptarSolicitud(this, 'Sofía Gómez', 'Bases de Datos')">
+                <i class="bi bi-check-lg me-1"></i> Aceptar tutoría
+              </button>
+            </div>
+          </div>
+
+          <!-- Solicitud 3 -->
+          <div class="p-3 rounded-3 border bg-light-subtle d-flex align-items-start justify-content-between flex-wrap gap-3 item-solicitud">
+            <div class="d-flex align-items-start gap-3">
+              <div class="avatar-circle flex-shrink-0 bg-warning-subtle text-warning">IP</div>
+              <div>
+                <div class="d-flex align-items-center gap-2">
+                  <h6 class="fw-bold text-dark mb-0">Ignacio Peralta</h6>
+                  <span class="badge bg-info-subtle text-info-emphasis" style="font-size: 0.7rem;">Laboratorio I</span>
+                </div>
+                <p class="text-secondary small mb-1 mt-1">
+                  "Buenas tardes, necesitaría ayuda para resolver la guía de matrices y structs en Lenguaje C."
+                </p>
+                <span class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-clock me-1"></i>Ayer • UTN FRP</span>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 ms-auto">
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="rechazarSolicitud(this)">Rechazar</button>
+              <button class="btn btn-sm btn-success rounded-pill px-3 fw-semibold shadow-sm" onclick="aceptarSolicitud(this, 'Ignacio Peralta', 'Laboratorio I')">
+                <i class="bi bi-check-lg me-1"></i> Aceptar tutoría
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: Tus Publicaciones de Tutoría -->
+      <div id="mis-publicaciones" class="mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h5 class="fw-bold text-dark mb-0">
+            <i class="bi bi-journal-bookmark-fill text-success me-2"></i>Tus Materias Publicadas
+          </h5>
+        </div>
+
+        <div class="row g-4" id="contenedorTutoriasPublicadas">
+          <!-- Publicación 1 -->
+          <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-semibold">
+                    <span class="spinner-grow spinner-grow-sm text-success me-1" style="width: 0.4rem; height: 0.4rem;"></span>
+                    Activa y Visible
+                  </span>
+                  <div class="dropdown">
+                    <button class="btn btn-link text-secondary p-0 shadow-none" data-bs-toggle="dropdown">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                      <li><a class="dropdown-item small" href="#" onclick="mostrarToast('Publicación pausada')">Pausar publicación</a></li>
+                      <li><a class="dropdown-item small" href="#" data-bs-toggle="modal" data-bs-target="#modalNuevaTutoria">Editar detalles</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item small text-danger" href="#" onclick="mostrarToast('Publicación eliminada')">Eliminar materia</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <h5 class="fw-bold text-dark mb-1">Laboratorio de Computación I</h5>
+                <p class="text-secondary small mb-3">
+                  Clases de apoyo en C, manejo de matrices, funciones y estructuras de datos para ingresantes.
+                </p>
+                <div class="d-flex align-items-center gap-3 small text-secondary mb-3">
+                  <span><i class="bi bi-discord text-primary me-1"></i>discord.gg/utn-lab1</span>
+                  <span><i class="bi bi-people me-1"></i>5 alumnos activos</span>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                <span class="small fw-semibold text-success"><i class="bi bi-calendar-check me-1"></i>Mar y Jue 18:30hs</span>
+                <button class="btn btn-sm btn-outline-success rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalDiscordConfig">Administrar Sala</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Publicación 2 -->
+          <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-semibold">
+                    <span class="spinner-grow spinner-grow-sm text-success me-1" style="width: 0.4rem; height: 0.4rem;"></span>
+                    Activa y Visible
+                  </span>
+                  <div class="dropdown">
+                    <button class="btn btn-link text-secondary p-0 shadow-none" data-bs-toggle="dropdown">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                      <li><a class="dropdown-item small" href="#" onclick="mostrarToast('Publicación pausada')">Pausar publicación</a></li>
+                      <li><a class="dropdown-item small" href="#" data-bs-toggle="modal" data-bs-target="#modalNuevaTutoria">Editar detalles</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item small text-danger" href="#" onclick="mostrarToast('Publicación eliminada')">Eliminar materia</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <h5 class="fw-bold text-dark mb-1">Arquitectura de Computadoras</h5>
+                <p class="text-secondary small mb-3">
+                  Repaso de representación numérica (binario, hexa, punto flotante IEEE 754), mapas de Karnaugh y microprocesadores.
+                </p>
+                <div class="d-flex align-items-center gap-3 small text-secondary mb-3">
+                  <span><i class="bi bi-discord text-primary me-1"></i>discord.gg/utn-arqui</span>
+                  <span><i class="bi bi-people me-1"></i>3 alumnos activos</span>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                <span class="small fw-semibold text-success"><i class="bi bi-calendar-check me-1"></i>Sábados 10:00hs</span>
+                <button class="btn btn-sm btn-outline-success rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalDiscordConfig">Administrar Sala</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner Publicar Otra Materia -->
+      <div class="text-center py-5 bg-white rounded-4 border border-dashed">
+        <i class="bi bi-mortarboard text-success fs-1 d-block mb-2"></i>
+        <h5 class="fw-bold">¿Querés enseñar otra materia aprobada?</h5>
+        <p class="text-secondary small mb-3">Compartí tus conocimientos con compañeros ingresantes y sumá experiencia como tutor universitario.</p>
+        <button class="btn btn-role-action rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevaTutoria">
+          <i class="bi bi-plus-circle me-1"></i> Publicar otra materia
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 1: EDITAR INFORMACIÓN DE PERFIL
+       ========================================================================== -->
+  <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-labelledby="modalEditarPerfilLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-bottom px-4 pt-4 pb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="bg-success-subtle text-success p-2 rounded-3">
+              <i class="bi bi-person-lines-fill fs-5"></i>
+            </div>
+            <div>
+              <h5 class="modal-title fw-bold text-dark" id="modalEditarPerfilLabel">Editar Perfil del Tutor</h5>
+              <p class="text-secondary small mb-0">Actualizá tus datos académicos y canales de contacto</p>
+            </div>
+          </div>
+          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <form id="formPerfil">
+          <div class="modal-body p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="editNombre" class="form-label small fw-semibold text-dark">Nombre y Apellido</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0 text-secondary"><i class="bi bi-person"></i></span>
+                  <input type="text" class="form-control border-start-0 ps-0" id="editNombre" value="Alex López" required>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="editEmail" class="form-label small fw-semibold text-dark">Correo Institucional UTN</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0 text-secondary"><i class="bi bi-envelope"></i></span>
+                  <input type="email" class="form-control border-start-0 ps-0" id="editEmail" value="alex.lopez@utn.edu.ar" required>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="editRegional" class="form-label small fw-semibold text-dark">Facultad Regional</label>
+                <select class="form-select" id="editRegional">
+                  <option value="FRBA (Buenos Aires)" selected>FRBA (Buenos Aires)</option>
+                  <option value="FRH (Haedo)">FRH (Haedo)</option>
+                  <option value="FRC (Córdoba)">FRC (Córdoba)</option>
+                  <option value="FRP (Paraná)">FRP (Paraná)</option>
+                  <option value="FRGP (General Pacheco)">FRGP (General Pacheco)</option>
+                  <option value="FRSF (Santa Fe)">FRSF (Santa Fe)</option>
+                  <option value="FRRO (Rosario)">FRRO (Rosario)</option>
+                  <option value="FRM (Mendoza)">FRM (Mendoza)</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="editCarrera" class="form-label small fw-semibold text-dark">Carrera</label>
+                <select class="form-select" id="editCarrera">
+                  <option value="Ingeniería en Sistemas de Información" selected>Ingeniería en Sistemas de Información</option>
+                  <option value="Tecnicatura Universitaria en Programación (TUP)">Tecnicatura Universitaria en Programación (TUP)</option>
+                  <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
+                  <option value="Ingeniería Mecánica">Ingeniería Mecánica</option>
+                  <option value="Ingeniería Química">Ingeniería Química</option>
+                  <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="editNivel" class="form-label small fw-semibold text-dark">Año de Cursada</label>
+                <select class="form-select" id="editNivel">
+                  <option value="1° Año">1° Año (Ingresante)</option>
+                  <option value="2° Año">2° Año</option>
+                  <option value="3° Año" selected>3° Año</option>
+                  <option value="4° Año">4° Año</option>
+                  <option value="5° Año">5° Año (Avanzado)</option>
+                  <option value="Graduado">Graduado</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="editDiscord" class="form-label small fw-semibold text-dark">Usuario de Discord</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0" style="color: #5865F2;"><i class="bi bi-discord"></i></span>
+                  <input type="text" class="form-control border-start-0 ps-0" id="editDiscord" value="alex_utn#2026" placeholder="usuario#0000">
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label for="editBio" class="form-label small fw-semibold text-dark">Materias que enseñás / Experiencia</label>
+                <textarea class="form-control" id="editBio" rows="3">Tutor en Laboratorio de Computación I y Arquitectura de Computadoras. Ayudo a preparar parciales y guías de ejercicios.</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
+            <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success px-4 rounded-pill fw-semibold shadow-sm">
+              <i class="bi bi-check2 me-1"></i> Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: SUBIR / CAMBIAR FOTO DE PERFIL
+       ========================================================================== -->
+  <div class="modal fade" id="modalSubirFoto" tabindex="-1" aria-labelledby="modalSubirFotoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-bottom px-4 pt-4 pb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="bg-success-subtle text-success p-2 rounded-3">
+              <i class="bi bi-camera-fill fs-5"></i>
+            </div>
+            <div>
+              <h5 class="modal-title fw-bold text-dark" id="modalSubirFotoLabel">Actualizar Foto de Perfil</h5>
+              <p class="text-secondary small mb-0">Seleccioná un avatar o subí tu propia foto</p>
+            </div>
+          </div>
+          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body p-4 text-center">
+          <div class="preview-avatar-box mb-3" id="previewAvatarBox">
+            <span id="previewInitials">AL</span>
+          </div>
+
+          <div class="mb-4">
+            <label for="inputUploadFile" class="btn btn-outline-success rounded-pill px-4 fw-semibold shadow-sm">
+              <i class="bi bi-upload me-1"></i> Subir imagen desde la PC
+            </label>
+            <input type="file" id="inputUploadFile" class="d-none" accept="image/*">
+            <div class="text-muted small mt-1" style="font-size: 0.72rem;">Formatos JPG, PNG. Tamaño máximo 2MB</div>
+          </div>
+
+          <div class="border-top pt-3">
+            <span class="small fw-semibold text-secondary d-block mb-3">O seleccioná un avatar ilustrado:</span>
+            <div class="d-flex justify-content-center gap-3">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" 
+                   class="preset-avatar" alt="Avatar 1" onclick="seleccionarPresetAvatar(this.src)">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" 
+                   class="preset-avatar" alt="Avatar 2" onclick="seleccionarPresetAvatar(this.src)">
+              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80" 
+                   class="preset-avatar" alt="Avatar 3" onclick="seleccionarPresetAvatar(this.src)">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
+          <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="btnGuardarFoto" class="btn btn-success px-4 rounded-pill fw-semibold shadow-sm">
+            Guardar Foto
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 3: DISCORD Y SALAS DE ESTUDIO
+       ========================================================================== -->
+  <div class="modal fade" id="modalDiscordConfig" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-bottom px-4 pt-4 pb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="p-2 rounded-3 text-white" style="background-color: #5865F2;">
+              <i class="bi bi-discord fs-5"></i>
+            </div>
+            <div>
+              <h5 class="modal-title fw-bold text-dark">Comunidad de Discord UTN</h5>
+              <p class="text-secondary small mb-0">Canales de voz y salas de estudio compartidas</p>
+            </div>
+          </div>
+          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="p-3 rounded-3 mb-3 border d-flex align-items-center justify-content-between" style="background-color: #f5f6fe;">
+            <div class="d-flex align-items-center gap-3">
+              <i class="bi bi-broadcast fs-3" style="color: #5865F2;"></i>
+              <div>
+                <span class="d-block fw-bold text-dark small">Servidor Oficial Study Match</span>
+                <span class="text-muted" style="font-size: 0.75rem;">+250 estudiantes en línea ahora</span>
+              </div>
+            </div>
+            <span class="badge bg-success rounded-pill px-2.5 py-1 small">Conectado</span>
+          </div>
+          <p class="text-secondary small">
+            Como tutor, tenés permisos para abrir salas privadas de consulta en el servidor oficial de la UTN con pizarra virtual y audio HD.
+          </p>
+        </div>
+        <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
+          <button type="button" class="btn btn-success w-100 rounded-pill fw-semibold shadow-sm" data-bs-dismiss="modal">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 4: PUBLICAR NUEVA TUTORÍA (MODO TUTOR)
+       ========================================================================== -->
+  <div class="modal fade" id="modalNuevaTutoria" tabindex="-1" aria-labelledby="modalNuevaTutoriaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-4 border-0 shadow-lg">
+        <div class="modal-header border-bottom px-4 pt-4 pb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="p-2 rounded-3 bg-success-subtle text-success">
+              <i class="bi bi-journal-plus fs-5"></i>
+            </div>
+            <div>
+              <h5 class="modal-title fw-bold text-dark" id="modalNuevaTutoriaLabel">Publicar Nueva Materia de Tutoría</h5>
+              <p class="text-secondary small mb-0">Ofrecé apoyo académico en materias que tengas regularizadas o aprobadas</p>
+            </div>
+          </div>
+          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <form id="formNuevaTutoria">
+          <div class="modal-body p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="nuevaMateriaNombre" class="form-label small fw-semibold text-dark">Nombre de la Materia</label>
+                <input type="text" class="form-control" id="nuevaMateriaNombre" placeholder="Ej. Sistemas Operativos" required>
+              </div>
+              <div class="col-md-6">
+                <label for="nuevaMateriaCarrera" class="form-label small fw-semibold text-dark">Carrera</label>
+                <select class="form-select" id="nuevaMateriaCarrera">
+                  <option value="Ingeniería en Sistemas de Información" selected>Ingeniería en Sistemas</option>
+                  <option value="Tecnicatura Universitaria en Programación (TUP)">TUP</option>
+                  <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
+                  <option value="Ingeniería Química">Ingeniería Química</option>
+                  <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="nuevaMateriaHorarios" class="form-label small fw-semibold text-dark">Días y Horarios Disponibles</label>
+                <input type="text" class="form-control" id="nuevaMateriaHorarios" placeholder="Ej. Miércoles y Viernes de 18 a 20hs" required>
+              </div>
+              <div class="col-md-6">
+                <label for="nuevaMateriaModalidad" class="form-label small fw-semibold text-dark">Modalidad de Clase</label>
+                <select class="form-select" id="nuevaMateriaModalidad">
+                  <option value="Discord UTN Oficial" selected>Discord UTN Oficial</option>
+                  <option value="Google Meet">Google Meet</option>
+                  <option value="Presencial en Facultad">Presencial en Facultad</option>
+                  <option value="Híbrido">Híbrido (Online / Presencial)</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label for="nuevaMateriaDescripcion" class="form-label small fw-semibold text-dark">Descripción y Enfoque de la Tutoría</label>
+                <textarea class="form-control" id="nuevaMateriaDescripcion" rows="3" placeholder="Explicá en qué temas podés ayudar (ej. preparación de parciales, trabajos prácticos, resolución de ejercicios)..." required></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
+            <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success px-4 rounded-pill fw-semibold shadow-sm">
+              <i class="bi bi-check-lg me-1"></i> Publicar Materia
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY DE TRANSICIÓN SUAVE ENTRE ROLES -->
+  <div id="roleTransitionOverlay" class="role-transition-overlay">
+    <div class="role-transition-card text-center p-4">
+      <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-primary-subtle text-primary mb-3" style="width: 72px; height: 72px;">
+        <i class="bi bi-book fs-1"></i>
+      </div>
+      <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+        <span class="spinner-grow spinner-grow-sm text-primary" role="status" aria-hidden="true"></span>
+        <h5 class="fw-bold text-dark mb-0">Cambiando a Panel de Alumno...</h5>
+      </div>
+      <p class="text-secondary small mb-0">Cargando tutores disponibles y salas de estudio</p>
+    </div>
+  </div>
+
+  <!-- TOAST FLOTANTE DE NOTIFICACIÓN -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+    <div id="toastSuccess" class="toast align-items-center text-bg-dark border-0 rounded-4 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body d-flex align-items-center gap-2">
+          <i class="bi bi-check-circle-fill text-success fs-5"></i>
+          <span id="toastMessage">¡Perfil actualizado correctamente!</span>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript: Funciones de Panel Tutor -->
+  <script>
+    // ==========================================
+    // 1. Colapso / Expansión del Sidebar
+    // ==========================================
+    const sidebar = document.getElementById('mainSidebar');
+    const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+    const btnCollapseSidebar = document.getElementById('btnCollapseSidebar');
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('collapsed');
+      const isCollapsed = sidebar.classList.contains('collapsed');
+      localStorage.setItem('study-match-sidebar-collapsed', isCollapsed ? 'true' : 'false');
+    }
+
+    if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', toggleSidebar);
+    if (btnCollapseSidebar) btnCollapseSidebar.addEventListener('click', toggleSidebar);
+
+    if (localStorage.getItem('study-match-sidebar-collapsed') === 'true') {
+      sidebar.classList.add('collapsed');
+    }
+
+    // ==========================================
+    // 2. Transición Visual Suave a Modo Alumno
+    // ==========================================
+    function irAModoAlumno() {
+      const overlay = document.getElementById('roleTransitionOverlay');
+      if (overlay) overlay.classList.add('active');
+      document.body.classList.add('page-fading-out');
+
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 340);
+    }
+
+    // ==========================================
+    // 3. Edición de Perfil y Sincronización LocalStorage
+    // ==========================================
+    const formPerfil = document.getElementById('formPerfil');
+    formPerfil.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const perfilData = {
+        nombre: document.getElementById('editNombre').value.trim(),
+        email: document.getElementById('editEmail').value.trim(),
+        regional: document.getElementById('editRegional').value,
+        carrera: document.getElementById('editCarrera').value,
+        nivel: document.getElementById('editNivel').value,
+        discord: document.getElementById('editDiscord').value.trim()
+      };
+
+      localStorage.setItem('study-match-user-profile', JSON.stringify(perfilData));
+      aplicarDatosPerfil(perfilData);
+
+      const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfil'));
+      if (modalInstance) modalInstance.hide();
+      mostrarToast("¡Perfil de tutor actualizado con éxito!");
+    });
+
+    function aplicarDatosPerfil(data) {
+      if (!data) return;
+      document.querySelectorAll('.userNameSlot').forEach(el => el.textContent = data.nombre);
+      document.querySelectorAll('.userEmailSlot').forEach(el => el.textContent = data.email);
+      
+      const carreraCorta = data.carrera.includes('Programación') ? 'TUP' : 'Sistemas';
+      document.querySelectorAll('.userCareerSlot').forEach(el => el.textContent = `${carreraCorta} • ${data.nivel}`);
+      
+      const regionalCorta = data.regional ? data.regional.split(' ')[0] : 'FRH';
+      const legajoSlot = document.getElementById('userLegajoSlot');
+      if (legajoSlot) legajoSlot.textContent = `Tutor Autorizado • ${regionalCorta}`;
+
+      if (!selectedPhotoUrl) {
+        const partes = data.nombre.split(' ');
+        const iniciales = partes.length >= 2 
+          ? (partes[0][0] + partes[1][0]).toUpperCase() 
+          : data.nombre.substring(0, 2).toUpperCase();
+
+        document.querySelectorAll('.userAvatarSlot').forEach(el => {
+          el.style.backgroundImage = 'none';
+          el.textContent = iniciales;
+        });
+        const prevInit = document.getElementById('previewInitials');
+        if (prevInit) prevInit.textContent = iniciales;
+      }
+    }
+
+    // ==========================================
+    // 4. Subir y Cambiar Foto de Perfil
+    // ==========================================
+    let selectedPhotoUrl = localStorage.getItem('study-match-user-photo') || null;
+    const inputUploadFile = document.getElementById('inputUploadFile');
+    const previewAvatarBox = document.getElementById('previewAvatarBox');
+    const previewInitials = document.getElementById('previewInitials');
+    const btnGuardarFoto = document.getElementById('btnGuardarFoto');
+
+    if (selectedPhotoUrl) {
+      document.querySelectorAll('.userAvatarSlot').forEach(slot => {
+        slot.style.backgroundImage = `url('${selectedPhotoUrl}')`;
+        slot.textContent = '';
+      });
+      if (previewAvatarBox) previewAvatarBox.style.backgroundImage = `url('${selectedPhotoUrl}')`;
+      if (previewInitials) previewInitials.textContent = '';
+    }
+
+    if (inputUploadFile) {
+      inputUploadFile.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            selectedPhotoUrl = event.target.result;
+            previewAvatarBox.style.backgroundImage = `url('${selectedPhotoUrl}')`;
+            previewInitials.textContent = '';
+            document.querySelectorAll('.preset-avatar').forEach(p => p.classList.remove('selected'));
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    function seleccionarPresetAvatar(url) {
+      selectedPhotoUrl = url;
+      previewAvatarBox.style.backgroundImage = `url('${url}')`;
+      previewInitials.textContent = '';
+      document.querySelectorAll('.preset-avatar').forEach(p => {
+        p.classList.toggle('selected', p.src === url);
+      });
+    }
+
+    if (btnGuardarFoto) {
+      btnGuardarFoto.addEventListener('click', function() {
+        if (selectedPhotoUrl) {
+          localStorage.setItem('study-match-user-photo', selectedPhotoUrl);
+          document.querySelectorAll('.userAvatarSlot').forEach(slot => {
+            slot.style.backgroundImage = `url('${selectedPhotoUrl}')`;
+            slot.textContent = '';
+          });
+          mostrarToast("¡Foto de perfil actualizada!");
+        }
+        const modalFotoInstance = bootstrap.Modal.getInstance(document.getElementById('modalSubirFoto'));
+        if (modalFotoInstance) modalFotoInstance.hide();
+      });
+    }
+
+    // ==========================================
+    // 5. Toast Helper
+    // ==========================================
+    function mostrarToast(mensaje) {
+      const toastEl = document.getElementById('toastSuccess');
+      document.getElementById('toastMessage').textContent = mensaje;
+      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+      toast.show();
+    }
+
+    // ==========================================
+    // 6. Gestión Interactiva de Solicitudes (Modo Tutor)
+    // ==========================================
+    let totalSolicitudes = 3;
+
+    function actualizarContadorSolicitudes() {
+      const counterBadge = document.getElementById('badgeSolicitudesTutor');
+      const headerBadge = document.getElementById('solicitudesHeaderBadge');
+      const metricCounter = document.getElementById('metricCounterSolicitudes');
+
+      if (totalSolicitudes <= 0) {
+        if (counterBadge) counterBadge.textContent = "0";
+        if (headerBadge) {
+          headerBadge.textContent = "Sin solicitudes pendientes";
+          headerBadge.className = "badge bg-secondary-subtle text-secondary border px-3 py-1.5 rounded-pill";
+        }
+        if (metricCounter) metricCounter.textContent = "0 pendientes";
+        const lista = document.getElementById('listaSolicitudesTutor');
+        if (lista) {
+          lista.innerHTML = `
+            <div class="text-center py-4 text-muted bg-light rounded-3 border border-dashed">
+              <i class="bi bi-check2-circle text-success fs-1 d-block mb-2"></i>
+              <h6 class="fw-bold text-dark mb-1">¡Estás al día!</h6>
+              <p class="small text-secondary mb-0">No tenés solicitudes de alumnos pendientes de respuesta.</p>
+            </div>
+          `;
+        }
+      } else {
+        if (counterBadge) counterBadge.textContent = `${totalSolicitudes} nuevas`;
+        if (headerBadge) headerBadge.textContent = `${totalSolicitudes} pendientes`;
+        if (metricCounter) metricCounter.textContent = `${totalSolicitudes} nuevas`;
+      }
+    }
+
+    function aceptarSolicitud(btn, alumno, materia) {
+      const item = btn.closest('.item-solicitud');
+      if (item) {
+        item.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(25px)';
+        setTimeout(() => {
+          item.remove();
+          totalSolicitudes--;
+          actualizarContadorSolicitudes();
+          mostrarToast(`¡Tutoría con ${alumno} en ${materia} aceptada! Sala de Discord lista.`);
+        }, 280);
+      }
+    }
+
+    function rechazarSolicitud(btn) {
+      const item = btn.closest('.item-solicitud');
+      if (item) {
+        item.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-25px)';
+        setTimeout(() => {
+          item.remove();
+          totalSolicitudes--;
+          actualizarContadorSolicitudes();
+          mostrarToast("Solicitud rechazada");
+        }, 280);
+      }
+    }
+
+    // ==========================================
+    // 7. Publicar Nueva Tutoría (Modo Tutor)
+    // ==========================================
+    const formNuevaTutoria = document.getElementById('formNuevaTutoria');
+    if (formNuevaTutoria) {
+      formNuevaTutoria.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const materia = document.getElementById('nuevaMateriaNombre').value.trim();
+        const horarios = document.getElementById('nuevaMateriaHorarios').value.trim();
+        const desc = document.getElementById('nuevaMateriaDescripcion').value.trim();
+
+        const contenedor = document.getElementById('contenedorTutoriasPublicadas');
+        if (contenedor) {
+          const nuevaCol = document.createElement('div');
+          nuevaCol.className = 'col-md-6 view-fade';
+          const slugMateria = materia.toLowerCase().replace(/[^a-z0-9]/g, '-');
+          nuevaCol.innerHTML = `
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-semibold">
+                    <span class="spinner-grow spinner-grow-sm text-success me-1" style="width: 0.4rem; height: 0.4rem;"></span>
+                    Activa y Visible
+                  </span>
+                  <div class="dropdown">
+                    <button class="btn btn-link text-secondary p-0 shadow-none" data-bs-toggle="dropdown">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                      <li><a class="dropdown-item small" href="#" onclick="mostrarToast('Publicación pausada')">Pausar publicación</a></li>
+                      <li><a class="dropdown-item small" href="#" data-bs-toggle="modal" data-bs-target="#modalNuevaTutoria">Editar detalles</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item small text-danger" href="#" onclick="mostrarToast('Publicación eliminada')">Eliminar materia</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <h5 class="fw-bold text-dark mb-1">${materia}</h5>
+                <p class="text-secondary small mb-3">${desc}</p>
+                <div class="d-flex align-items-center gap-3 small text-secondary mb-3">
+                  <span><i class="bi bi-discord text-primary me-1"></i>discord.gg/utn-${slugMateria}</span>
+                  <span><i class="bi bi-people me-1"></i>0 alumnos activos</span>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                <span class="small fw-semibold text-success"><i class="bi bi-calendar-check me-1"></i>${horarios}</span>
+                <button class="btn btn-sm btn-outline-success rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalDiscordConfig">Administrar Sala</button>
+              </div>
+            </div>
+          `;
+          contenedor.prepend(nuevaCol);
+        }
+
+        formNuevaTutoria.reset();
+        const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalNuevaTutoria'));
+        if (modalInstance) modalInstance.hide();
+        mostrarToast(`¡Materia "${materia}" publicada con éxito!`);
+      });
+    }
+
+    // Cargar perfil guardado si existe
+    const perfilGuardado = localStorage.getItem('study-match-user-profile');
+    if (perfilGuardado) {
+      try {
+        aplicarDatosPerfil(JSON.parse(perfilGuardado));
+      } catch(e) {}
+    }
+  </script>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

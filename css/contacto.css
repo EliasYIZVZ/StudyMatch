@@ -1,0 +1,313 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   STUDY MATCH • Estilos de Contacto y Comunidad (contacto.css)
+   Universidad Tecnológica Nacional (FRH)
+   ========================================================================== */
+
+/* 1. Fondo de la Página de Contacto */
+body.page-contacto {
+  background-color: #f8fafc;
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(124, 58, 237, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.90) 45%, rgba(243, 232, 255, 0.92) 100%);
+  color: #1e293b;
+  min-height: 100vh;
+}
+
+[data-bs-theme="dark"] body.page-contacto {
+  background-color: #090d16;
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(124, 58, 237, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(88, 101, 242, 0.16) 0%, transparent 45%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.96) 0%, rgba(15, 23, 42, 0.92) 50%, rgba(30, 27, 75, 0.94) 100%);
+  color: #e2e8f0;
+}
+
+/* 2. Tarjeta Principal de Formulario Glassmorphism */
+.contact-form-card {
+  background: rgba(255, 255, 255, 0.90) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  border-radius: 24px;
+  box-shadow: 0 16px 40px -12px rgba(124, 58, 237, 0.12), 0 4px 16px rgba(15, 23, 42, 0.04);
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease, background-color 0.3s ease;
+}
+
+/* 3. Selector Visual de Motivo / Tipo de Mensaje */
+.contact-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+}
+
+@media (max-width: 575.98px) {
+  .contact-type-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.contact-type-option {
+  position: relative;
+  cursor: pointer;
+  margin: 0;
+  display: block;
+}
+
+.contact-type-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.contact-type-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  border: 1.5px solid rgba(203, 213, 225, 0.8);
+  background: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #334155;
+  user-select: none;
+}
+
+.contact-type-box .type-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+/* Colores de íconos por categoría */
+.contact-type-option[data-type="sugerencia"] .type-icon {
+  background: rgba(245, 158, 11, 0.14);
+  color: #d97706;
+}
+.contact-type-option[data-type="error"] .type-icon {
+  background: rgba(239, 68, 68, 0.14);
+  color: #dc2626;
+}
+.contact-type-option[data-type="tutoria"] .type-icon {
+  background: rgba(124, 58, 237, 0.14);
+  color: #7c3aed;
+}
+.contact-type-option[data-type="otro"] .type-icon {
+  background: rgba(14, 165, 233, 0.14);
+  color: #0284c7;
+}
+
+.contact-type-option:hover .contact-type-box {
+  border-color: rgba(124, 58, 237, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
+}
+
+.contact-type-option input[type="radio"]:checked + .contact-type-box {
+  border-color: #7c3aed !important;
+  background: rgba(124, 58, 237, 0.08) !important;
+  color: #7c3aed !important;
+  font-weight: 600;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.contact-type-option input[type="radio"]:focus-visible + .contact-type-box {
+  outline: 2px solid #7c3aed;
+  outline-offset: 2px;
+}
+
+/* 4. Tarjeta Especial Comunidad Discord */
+.discord-community-card {
+  background: rgba(255, 255, 255, 0.90) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(88, 101, 242, 0.25) !important;
+  border-radius: 24px;
+  box-shadow: 0 16px 40px -12px rgba(88, 101, 242, 0.16), 0 4px 16px rgba(15, 23, 42, 0.04);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.discord-community-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #5865F2, #7c3aed, #3b82f6);
+}
+
+.discord-community-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 48px -12px rgba(88, 101, 242, 0.26);
+  border-color: rgba(88, 101, 242, 0.45) !important;
+}
+
+.discord-watermark {
+  position: absolute;
+  bottom: -15px;
+  right: -15px;
+  font-size: 8rem;
+  color: #5865F2;
+  opacity: 0.06;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.3s ease, transform 0.4s ease;
+}
+
+.discord-community-card:hover .discord-watermark {
+  opacity: 0.12;
+  transform: rotate(-6deg) scale(1.05);
+}
+
+/* Badge de Discord */
+.badge-discord {
+  background-color: rgba(88, 101, 242, 0.12) !important;
+  color: #5865F2 !important;
+  border: 1px solid rgba(88, 101, 242, 0.28) !important;
+}
+
+/* Botón Oficial de Discord */
+.btn-discord {
+  background-color: #5865F2 !important;
+  color: #ffffff !important;
+  border: 1px solid #5865F2 !important;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(88, 101, 242, 0.32);
+}
+
+.btn-discord:hover {
+  background-color: #4752c4 !important;
+  border-color: #4752c4 !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(88, 101, 242, 0.45);
+}
+
+.btn-discord:active {
+  transform: translateY(0);
+}
+
+/* 5. Tarjeta de Contacto Directo / Email */
+.direct-contact-card {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  border-radius: 20px;
+  box-shadow: 0 10px 28px -10px rgba(15, 23, 42, 0.08);
+  transition: transform 0.24s ease, border-color 0.24s ease;
+}
+
+.direct-contact-card:hover {
+  border-color: rgba(124, 58, 237, 0.3) !important;
+}
+
+.email-copy-pill {
+  background: rgba(241, 245, 249, 0.85);
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.email-copy-pill:hover {
+  background: #ffffff;
+  border-color: #a78bfa;
+}
+
+/* 6. Modo Oscuro Específico de Contacto */
+[data-bs-theme="dark"] .contact-form-card {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border: 1px solid rgba(124, 58, 237, 0.32) !important;
+  box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.7), 0 0 35px rgba(124, 58, 237, 0.14) !important;
+}
+
+[data-bs-theme="dark"] .contact-type-box {
+  background: rgba(30, 41, 59, 0.7) !important;
+  border-color: rgba(100, 116, 139, 0.35) !important;
+  color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .contact-type-option:hover .contact-type-box {
+  border-color: rgba(167, 139, 250, 0.6) !important;
+  background: rgba(30, 41, 59, 0.95) !important;
+}
+
+[data-bs-theme="dark"] .contact-type-option input[type="radio"]:checked + .contact-type-box {
+  border-color: #a78bfa !important;
+  background: rgba(124, 58, 237, 0.25) !important;
+  color: #c4b5fd !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.3);
+}
+
+[data-bs-theme="dark"] .discord-community-card {
+  background: rgba(15, 23, 42, 0.88) !important;
+  border: 1px solid rgba(88, 101, 242, 0.4) !important;
+  box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(88, 101, 242, 0.16) !important;
+}
+
+[data-bs-theme="dark"] .badge-discord {
+  background-color: rgba(88, 101, 242, 0.22) !important;
+  color: #8ea1ff !important;
+  border-color: rgba(88, 101, 242, 0.45) !important;
+}
+
+[data-bs-theme="dark"] .direct-contact-card {
+  background: rgba(15, 23, 42, 0.82) !important;
+  border: 1px solid rgba(124, 58, 237, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .email-copy-pill {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(100, 116, 139, 0.4) !important;
+}
+
+[data-bs-theme="dark"] .email-copy-pill:hover {
+  background: rgba(30, 41, 59, 1) !important;
+  border-color: #a78bfa !important;
+}
+
+/* 7. Inputs en Página de Contacto */
+.contact-form-card .form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.contact-form-card .form-control,
+.contact-form-card .form-select,
+.contact-form-card .input-group-text {
+  font-size: 0.92rem;
+}
+
+[data-bs-theme="dark"] .contact-form-card .form-control,
+[data-bs-theme="dark"] .contact-form-card .form-select,
+[data-bs-theme="dark"] .contact-form-card .input-group-text {
+  background-color: rgba(30, 41, 59, 0.85) !important;
+  border-color: rgba(100, 116, 139, 0.4) !important;
+  color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .contact-form-card .form-control:focus,
+[data-bs-theme="dark"] .contact-form-card .form-select:focus {
+  border-color: #a78bfa !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.35) !important;
+  background-color: rgba(30, 41, 59, 0.98) !important;
+}
+
+[data-bs-theme="dark"] .contact-form-card .form-control::placeholder {
+  color: #64748b !important;
+}

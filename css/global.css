@@ -1,0 +1,467 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   STUDY MATCH • Estilos Globales y Compartidos (global.css)
+   Incluye: Variables, Tipografía, Estructura, Navbar, Botones y Footer
+   Universidad Tecnológica Nacional (FRH)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES DE MARCA Y CONFIGURACIÓN (:root)
+   -------------------------------------------------------------------------- */
+:root {
+  --bs-font-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --bs-font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* Paleta violeta / púrpura característica de Study Match */
+  --bs-primary: #7c3aed;
+  --bs-primary-rgb: 124, 58, 237;
+  --bs-primary-hover: #6d28d9;
+  --bs-primary-light: #ede9fe;
+  --bs-primary-glow: rgba(124, 58, 237, 0.35);
+
+  /* Color de apoyo institucional UTN */
+  --utn-blue: #172554;
+  --utn-blue-hover: #1e3a8a;
+  
+  /* Color oficial Discord */
+  --discord-blurple: #5865F2;
+}
+
+/* --------------------------------------------------------------------------
+   2. TIPOGRAFÍA Y UTILIDADES GLOBALES
+   -------------------------------------------------------------------------- */
+h1, h2, h3, h4, h5, h6,
+.brand-title,
+.stat-number,
+.hero-title,
+.hero-subtitle {
+  font-family: var(--bs-font-heading);
+}
+
+.text-xs {
+  font-size: 0.76rem !important;
+}
+
+.text-primary {
+  color: var(--bs-primary) !important;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* --------------------------------------------------------------------------
+   3. ESTRUCTURA Y FONDOS BASE
+   -------------------------------------------------------------------------- */
+html {
+  height: 100%;
+}
+
+body {
+  font-family: var(--bs-font-sans-serif);
+  background-color: #0f172a;
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.82) 40%, rgba(243, 232, 255, 0.86) 100%),
+    url('../img/Gemini_Generated_Image_o8fa80o8fa80o8fa.jpg') no-repeat center 28% / cover fixed;
+  color: #1e293b;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+@media (min-width: 992px) {
+  body.page-home {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 991.98px) {
+  body {
+    height: auto;
+    overflow-y: auto;
+  }
+}
+
+body.page-quienessomos,
+body.page-programming {
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.90) 0%, rgba(248, 250, 252, 0.85) 40%, rgba(243, 232, 255, 0.88) 100%),
+    url('../img/bg-programming.jpg') no-repeat center center / cover fixed;
+}
+
+/* Insignia UTN compartida */
+.badge-utn {
+  background: rgba(124, 58, 237, 0.07);
+  color: #7c3aed;
+  font-family: var(--bs-font-heading);
+  font-weight: 600;
+  font-size: 0.8rem;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.06);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.badge-utn .badge-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+.badge-utn .badge-subtext {
+  color: #64748b;
+  font-weight: 500;
+  font-size: 0.74rem;
+}
+
+/* --------------------------------------------------------------------------
+   4. BARRA DE NAVEGACIÓN (NAVBAR & HEADER)
+   -------------------------------------------------------------------------- */
+.header-nav {
+  flex-shrink: 0;
+  z-index: 1030;
+}
+
+.navbar-glass {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.04);
+  position: relative;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.08) !important;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar-glass::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 8%;
+  width: 84%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(124, 58, 237, 0.45), rgba(37, 99, 235, 0.35), transparent);
+}
+
+.brand-title {
+  letter-spacing: -0.02em;
+}
+
+.navbar .nav-link {
+  padding: 0.45rem 0.95rem !important;
+  border-radius: 8px;
+  color: #475569;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navbar .nav-link:hover {
+  color: var(--bs-primary) !important;
+  background-color: rgba(124, 58, 237, 0.06);
+}
+
+.navbar .nav-link.active {
+  color: var(--bs-primary) !important;
+  background-color: rgba(124, 58, 237, 0.1);
+  font-weight: 600;
+}
+
+.navbar-toggler {
+  padding: 0.4rem 0.55rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25) !important;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* Logo SVG */
+.logo-svg {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.logo-svg:hover {
+  transform: scale(1.06);
+}
+.logo-birrete-derecha {
+  fill: var(--bs-primary) !important;
+}
+.logo-borla {
+  stroke: var(--bs-primary) !important;
+  fill: var(--bs-primary) !important;
+}
+
+/* Botón Interruptor de Modo Oscuro / Claro */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50rem;
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  background: rgba(124, 58, 237, 0.06);
+  color: #6d28d9;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(124, 58, 237, 0.15);
+  border-color: rgba(124, 58, 237, 0.45);
+  color: #5b21b6;
+  transform: rotate(15deg) scale(1.05);
+}
+
+.theme-toggle-btn .theme-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+  transition: transform 0.35s ease;
+}
+
+/* --------------------------------------------------------------------------
+   5. BOTONES Y ACCIONES
+   -------------------------------------------------------------------------- */
+.btn-primary {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px 0 rgba(124, 58, 237, 0.32);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 24px 0 rgba(124, 58, 237, 0.45);
+  transform: translateY(-1.5px);
+  color: #ffffff !important;
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px 0 rgba(124, 58, 237, 0.3);
+}
+
+.btn-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.35);
+}
+
+.btn-outline-violet {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(124, 58, 237, 0.28);
+  color: #6d28d9;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.btn-outline-violet:hover {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: #7c3aed;
+  color: #7c3aed;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.15);
+  transform: translateY(-1.5px);
+}
+
+.btn-outline-violet:active {
+  transform: translateY(0);
+}
+
+.btn-outline-violet:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+}
+
+.btn-utn {
+  background-color: var(--utn-blue);
+  border-color: var(--utn-blue);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(23, 37, 84, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-utn:hover {
+  background-color: var(--utn-blue-hover);
+  border-color: var(--utn-blue-hover);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(23, 37, 84, 0.35);
+}
+
+.btn-outline-primary {
+  color: var(--bs-primary);
+  border-color: rgba(124, 58, 237, 0.35);
+  background-color: transparent;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-outline-primary:hover {
+  background-color: rgba(124, 58, 237, 0.08);
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.14);
+}
+
+/* --------------------------------------------------------------------------
+   6. PIE DE PÁGINA (FOOTER)
+   -------------------------------------------------------------------------- */
+.app-footer {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(226, 232, 240, 0.8) !important;
+  font-size: 0.76rem;
+  z-index: 10;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.footer-glass {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+.footer-link {
+  transition: color 0.2s ease;
+}
+.footer-link:hover {
+  color: var(--bs-primary) !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. MODO OSCURO PARA ELEMENTOS GLOBALES
+   -------------------------------------------------------------------------- */
+[data-bs-theme="dark"] body {
+  background-color: #090d16;
+  background: 
+    linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(15, 23, 42, 0.90) 50%, rgba(30, 27, 75, 0.92) 100%),
+    url('../img/Gemini_Generated_Image_o8fa80o8fa80o8fa.jpg') no-repeat center 28% / cover fixed;
+  color: #e2e8f0;
+}
+
+[data-bs-theme="dark"] body.page-quienessomos,
+[data-bs-theme="dark"] body.page-programming {
+  background: 
+    linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(15, 23, 42, 0.90) 50%, rgba(30, 27, 75, 0.92) 100%),
+    url('../img/bg-programming.jpg') no-repeat center center / cover fixed;
+}
+
+[data-bs-theme="dark"] h1,
+[data-bs-theme="dark"] h2,
+[data-bs-theme="dark"] h3,
+[data-bs-theme="dark"] h4,
+[data-bs-theme="dark"] h5,
+[data-bs-theme="dark"] h6,
+[data-bs-theme="dark"] .text-dark,
+[data-bs-theme="dark"] .hero-title,
+[data-bs-theme="dark"] .brand-title {
+  color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .text-secondary {
+  color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .border-top {
+  border-color: rgba(124, 58, 237, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .badge-utn {
+  background: rgba(124, 58, 237, 0.18) !important;
+  color: #c4b5fd !important;
+  border-color: rgba(124, 58, 237, 0.38) !important;
+}
+
+[data-bs-theme="dark"] .badge-utn .badge-subtext {
+  color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .navbar-glass {
+  background: rgba(15, 23, 42, 0.88) !important;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.25) !important;
+  box-shadow: 0 4px 25px -4px rgba(0, 0, 0, 0.5);
+}
+
+[data-bs-theme="dark"] .navbar-glass .nav-link {
+  color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] .navbar-glass .nav-link:hover {
+  color: #c4b5fd !important;
+  background-color: rgba(124, 58, 237, 0.16);
+}
+[data-bs-theme="dark"] .navbar-glass .nav-link.active {
+  color: #c4b5fd !important;
+  background-color: rgba(124, 58, 237, 0.28);
+}
+[data-bs-theme="dark"] .navbar-glass .navbar-toggler {
+  filter: invert(1);
+}
+
+[data-bs-theme="dark"] .theme-toggle-btn {
+  border-color: rgba(124, 58, 237, 0.45) !important;
+  background: rgba(124, 58, 237, 0.2) !important;
+  color: #facc15 !important;
+}
+
+[data-bs-theme="dark"] .theme-toggle-btn:hover {
+  background: rgba(124, 58, 237, 0.35) !important;
+  border-color: #a78bfa !important;
+  color: #fef08a !important;
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.28);
+}
+
+[data-bs-theme="dark"] .btn-outline-violet {
+  background: rgba(124, 58, 237, 0.16) !important;
+  border-color: rgba(167, 139, 250, 0.45) !important;
+  color: #c4b5fd !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-violet:hover {
+  background: rgba(124, 58, 237, 0.35) !important;
+  border-color: #a78bfa !important;
+  color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .app-footer,
+[data-bs-theme="dark"] .footer-glass {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border-top: 1px solid rgba(124, 58, 237, 0.22) !important;
+  color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .app-footer .footer-link,
+[data-bs-theme="dark"] .footer-glass .footer-link {
+  color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .app-footer .footer-link:hover,
+[data-bs-theme="dark"] .footer-glass .footer-link:hover {
+  color: #c4b5fd !important;
+}
+
+/* Transiciones Suaves Globales */
+html, body, .navbar-glass, .app-footer {
+  transition: background 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
