@@ -714,6 +714,46 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06);
 }
 
+.search-hybrid-card .form-control,
+.search-hybrid-card .form-select,
+.search-hybrid-card .form-control:hover,
+.search-hybrid-card .form-select:hover,
+.search-hybrid-card .form-control:focus,
+.search-hybrid-card .form-select:focus {
+  transition: none !important;
+  animation: none !important;
+}
+
+.search-hybrid-card .input-group {
+  height: 40px;
+}
+
+.search-hybrid-card .input-group > .form-control,
+.search-hybrid-card .input-group > .input-group-text,
+.search-hybrid-card .form-select,
+.search-hybrid-card .btn {
+  height: 40px;
+  font-size: 1rem;
+}
+
+.search-hybrid-card .input-group > .form-control,
+.search-hybrid-card .input-group > .input-group-text {
+  line-height: 1.5;
+}
+
+.search-hybrid-card .form-control:focus,
+.search-hybrid-card .form-select:focus {
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 0.2rem rgba(100, 116, 139, 0.15);
+}
+
+.search-hybrid-card .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
 .badge-filter-pill {
   border: 1.5px solid #cbd5e1;
   background-color: #ffffff;

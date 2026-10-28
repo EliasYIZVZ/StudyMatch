@@ -37,14 +37,15 @@
             <li class="nav-item"><a class="nav-link text-secondary" href="conoce.html">Conocer Más</a></li>
             <li class="nav-item"><a class="nav-link text-secondary" href="quienessomos.html">Quiénes Somos</a></li>
             <li class="nav-item"><a class="nav-link text-secondary" href="contacto.html">Contacto</a></li>
-            <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
-              <a class="btn btn-outline-primary px-4 py-2 rounded-3 fw-semibold shadow-sm" href="index.html">Iniciar Sesión</a>
-            </li>
             <li class="nav-item ms-lg-2 mt-2 mt-lg-0 d-flex align-items-center">
               <button id="themeToggleBtn" class="theme-toggle-btn shadow-sm" title="Alternar Modo">
                 <i id="themeToggleIcon" class="bi bi-moon-stars-fill"></i>
               </button>
             </li>
+            <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+              <a class="btn btn-outline-primary px-4 py-2 rounded-3 fw-semibold shadow-sm" href="index.html">Iniciar Sesión</a>
+            </li>
+            
           </ul>
         </div>
       </div>

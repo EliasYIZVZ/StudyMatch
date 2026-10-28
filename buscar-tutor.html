@@ -107,7 +107,6 @@
           <button id="btnToggleSidebar" class="btn btn-light border text-secondary p-2 rounded-3" title="Expandir/Contraer menú lateral">
             <i class="bi bi-layout-sidebar fs-5"></i>
           </button>
-         
         </div>
 
         <!-- Switch Rol Dual + Perfil -->
@@ -125,7 +124,6 @@
               <span>Tutor</span>
             </span>
           </div>
-
           <div class="avatar-user-display userAvatarSlot" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil" style="cursor: pointer;">
             AL
           </div>
@@ -135,17 +133,13 @@
 
     <!-- CUERPO DE LA VISTA: BÚSQUEDA HÍBRIDA -->
     <main class="p-3 p-md-4 flex-grow-1 view-fade">
-      
       <!-- Encabezado de la página -->
       <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-2">
         <div>
-         
           <h1 class="h3 fw-bold text-dark mb-1">Buscar Tutor</h1>
           <p class="text-secondary small mb-0">Filtrá por materia, modalidad o disponibilidad para coordinar tu próxima tutoría.</p>
         </div>
-
       </div>
-
       <!-- ======================================================================
            PANEL DE BÚSQUEDA HÍBRIDO (Input Libre + Select + Píldoras Interactivas)
            ====================================================================== -->
@@ -154,29 +148,45 @@
         <!-- Fila Superior: Barra de Búsqueda Libre + Select Desplegable -->
         <div class="row g-3 mb-3">
           <!-- Input Grande y Cómodo de Texto Libre -->
-          <div class="col-lg-8">
+          <div class="col-lg-5">
             <label for="inputBusquedaTutor" class="form-label small fw-semibold text-secondary mb-1">
               ¿Qué materia, tema o tecnología necesitás repasar?
             </label>
-            <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden border">
+            <div class="input-group shadow-sm rounded-3 overflow-hidden border">
               <span class="input-group-text bg-white border-0 text-primary ps-3 pe-2">
                 <i class="bi bi-search fs-5"></i>
               </span>
               <input type="text" id="inputBusquedaTutor" class="form-control border-0 ps-1" 
-                     placeholder="Buscar por materia, tema o nombre (ej. C++, SQL, Álgebra, Parciales, Matías)..."
+                     placeholder="Buscá tu proxima tutoría"
                      aria-label="Buscar tutor">
-              <button class="btn btn-light border-0 text-secondary pe-3" type="button" id="btnClearSearch" title="Borrar búsqueda" style="display: none;">
-                <i class="bi bi-x-circle-fill"></i>
-              </button>
             </div>
           </div>
-
+          <div class="col-sm-6 col-lg-2">
+            <label for="selectCategoriaMateria" class="form-label small fw-semibold text-secondary mb-1">Materia</label>
+            <select id="selectCategoriaMateria" class="form-select shadow-sm">
+              <option value="todas">Todas las materias</option>
+              <option value="programacion">Programación</option>
+              <option value="bbdd">Bases de Datos</option>
+              <option value="matematica">Matemática</option>
+              <option value="sistemas">Sistemas</option>
+            </select>
+          </div>
+          <div class="col-sm-6 col-lg-2">
+            <label for="selectOrdenTutorias" class="form-label small fw-semibold text-secondary mb-1">Ordenar por</label>
+            <select id="selectOrdenTutorias" class="form-select shadow-sm">
+              <option value="reciente">Más reciente</option>
+              <option value="antiguo">Más antiguo</option>
+            </select>
+          </div>
+          <div class="col-12 col-lg-3 d-flex align-items-end gap-2">
+            <button type="button" id="btnBuscarTutor" class="btn btn-primary flex-grow-1">
+              <i class="bi bi-search me-1" aria-hidden="true"></i>Buscar
+            </button>
+            <button type="button" id="btnLimpiarFiltros" class="btn btn-outline-secondary flex-grow-1">
+              <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i>Limpiar
+            </button>
+          </div>
         </div>
-
-
-
-  
-
       </div>
 
       <!-- ======================================================================
@@ -525,11 +535,14 @@
     document.addEventListener('DOMContentLoaded', function() {
       var searchInput = document.getElementById('inputBusquedaTutor');
       var selectCat = document.getElementById('selectCategoriaMateria');
+      var selectOrden = document.getElementById('selectOrdenTutorias');
       var filterPills = document.querySelectorAll('.badge-filter-pill');
       var tutorCards = document.querySelectorAll('.tutor-card-item');
+      var cardOrder = Array.prototype.slice.call(tutorCards);
       var noResults = document.getElementById('noResultsState');
       var totalCount = document.getElementById('totalTutoresCount');
-      var btnClear = document.getElementById('btnClearSearch');
+      var btnBuscar = document.getElementById('btnBuscarTutor');
+      var btnLimpiar = document.getElementById('btnLimpiarFiltros');
       var btnReset = document.getElementById('btnResetFilters');
 
       var currentFilter = 'todos';
@@ -539,11 +552,13 @@
         var selectedCat = selectCat.value;
         var visibleCount = 0;
 
-        if (query.length > 0) {
-          btnClear.style.display = 'block';
-        } else {
-          btnClear.style.display = 'none';
-        }
+        cardOrder.sort(function(a, b) {
+          var indexA = tutorCardsIndex(a);
+          var indexB = tutorCardsIndex(b);
+          return selectOrden.value === 'antiguo' ? indexB - indexA : indexA - indexB;
+        }).forEach(function(card) {
+          card.parentNode.appendChild(card);
+        });
 
         tutorCards.forEach(function(card) {
           var cardText = card.textContent.toLowerCase();
@@ -582,9 +597,14 @@
         }
       }
 
+      function tutorCardsIndex(card) {
+        return Array.prototype.indexOf.call(tutorCards, card);
+      }
+
       // Eventos de entrada
       searchInput.addEventListener('input', applyFilters);
       selectCat.addEventListener('change', applyFilters);
+      selectOrden.addEventListener('change', applyFilters);
 
       // Píldoras de filtro
       filterPills.forEach(function(btn) {
@@ -596,22 +616,28 @@
         });
       });
 
-      // Botón limpiar
-      btnClear.addEventListener('click', function() {
+      // Aplicar la búsqueda actual
+      btnBuscar.addEventListener('click', applyFilters);
+
+      // Limpiar la búsqueda y todos los filtros activos
+      function resetFilters() {
         searchInput.value = '';
+        selectCat.value = 'todas';
+        selectOrden.value = 'reciente';
+        filterPills.forEach(function(b) { b.classList.remove('active'); });
+        var allPill = document.querySelector('.badge-filter-pill[data-filter="todos"]');
+        if (allPill) allPill.classList.add('active');
+        currentFilter = 'todos';
         applyFilters();
         searchInput.focus();
-      });
+      }
+
+      btnLimpiar.addEventListener('click', resetFilters);
 
       // Botón reset
       if (btnReset) {
         btnReset.addEventListener('click', function() {
-          searchInput.value = '';
-          selectCat.value = 'todas';
-          filterPills.forEach(function(b) { b.classList.remove('active'); });
-          document.querySelector('.badge-filter-pill[data-filter="todos"]').classList.add('active');
-          currentFilter = 'todos';
-          applyFilters();
+          resetFilters();
         });
       }
 

@@ -262,6 +262,14 @@
       var form = document.getElementById('contactoForm');
       var feedback = document.getElementById('contactFeedback');
 
+      if (feedback && new URLSearchParams(window.location.search).get('consulta') === 'enviada') {
+        feedback.className = 'alert alert-success alert-dismissible fade show small py-2 px-3 mb-3 d-flex align-items-center gap-2';
+        feedback.innerHTML =
+          '<i class="bi bi-check-circle-fill text-success flex-shrink-0 fs-5"></i>' +
+          '<div><strong>¡Mensaje enviado con éxito!</strong> Recibimos tu consulta y te responderemos a la brevedad.</div>' +
+          '<button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Cerrar"></button>';
+      }
+
       if (form && feedback) {
         form.addEventListener('submit', function() {
           var nombre = document.getElementById('contactNombre').value.trim();
