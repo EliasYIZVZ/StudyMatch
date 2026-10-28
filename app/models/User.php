@@ -26,7 +26,7 @@ final class User
     public function findById($id)
     {
         $statement = $this->database->prepare(
-            'SELECT id_usuario, nombre_usuario, correo_usuario
+            'SELECT id_usuario, nombre_usuario, correo_usuario, carrera_usuario, anio_cursada_usuario
              FROM usuarios
              WHERE id_usuario = :id
              LIMIT 1'

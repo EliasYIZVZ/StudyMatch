@@ -612,6 +612,18 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   color: #ffffff;
 }
 
+.profile-field-readonly,
+.profile-field-readonly:hover,
+.profile-field-readonly:focus {
+  background-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+  color: #64748b !important;
+  box-shadow: none !important;
+  cursor: default;
+  opacity: 1;
+  transition: none !important;
+}
+
 /* --------------------------------------------------------------------------
    9. OVERLAY DE TRANSICIÓN SUAVE ENTRE ROLES (DESENFOQUE SUTIL Y NÍTIDO)
    -------------------------------------------------------------------------- */

@@ -32,6 +32,8 @@ final class AuthController
             echo json_encode([
                 'nombre' => $user['nombre_usuario'],
                 'email' => $user['correo_usuario'],
+                'carrera' => $user['carrera_usuario'],
+                'nivel' => $user['anio_cursada_usuario'],
             ]);
         } catch (PDOException $exception) {
             error_log('Error al cargar el usuario de la sesión: ' . $exception->getMessage());

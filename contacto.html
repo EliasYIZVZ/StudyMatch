@@ -126,14 +126,14 @@
               <div id="contactFeedback" class="d-none"></div>
 
               <!-- Formulario Interactivo -->
-              <form id="contactoForm" novalidate>
+              <form id="contactoForm" action="ValidaMensajeContacto.php" method="POST">
                 
                 <!-- 1. Motivo de la consulta -->
                 <div class="mb-3">
                   <label for="contactMotivo" class="form-label text-dark">Motivo de la consulta</label>
                   <div class="input-group input-group-custom">
                     <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
-                    <input type="text" class="form-control" id="contactMotivo" placeholder="Contanos brevemente el motivo" required>
+                    <input type="text" class="form-control" id="contactMotivo" name="motivo" placeholder="Contanos brevemente el motivo" required>
                   </div>
                 </div>
 
@@ -143,14 +143,14 @@
                     <label for="contactNombre" class="form-label text-dark">Nombre y Apellido</label>
                     <div class="input-group input-group-custom">
                       <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                      <input type="text" class="form-control" id="contactNombre" placeholder="Ej: Lucas Romero" required>
+                      <input type="text" class="form-control" id="contactNombre" name="nombre" placeholder="Ej: Lucas Romero" required>
                     </div>
                   </div>
                   <div class="col-sm-6">
                     <label for="contactEmail" class="form-label text-dark">Correo Electrónico</label>
                     <div class="input-group input-group-custom">
                       <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                      <input type="email" class="form-control" id="contactEmail" placeholder="usuario@alumno.frh.utn.edu.ar" required>
+                      <input type="email" class="form-control" id="contactEmail" name="email" placeholder="usuario@alumno.frh.utn.edu.ar" required>
                     </div>
                   </div>
                 </div>
@@ -160,7 +160,7 @@
                   <label for="contactAsunto" class="form-label text-dark">Asunto</label>
                   <div class="input-group input-group-custom">
                     <span class="input-group-text"><i class="bi bi-bookmark-fill"></i></span>
-                    <input type="text" class="form-control" id="contactAsunto" placeholder="Resumen breve de lo que querés comentarnos" required>
+                    <input type="text" class="form-control" id="contactAsunto" name="asunto" placeholder="Resumen breve de lo que querés comentarnos" required>
                   </div>
                 </div>
 
@@ -170,18 +170,9 @@
                     <span>Mensaje detallado</span>
                     <span class="text-secondary small fw-normal" id="charCounter">0 / 600</span>
                   </label>
-                  <textarea class="form-control" id="contactMensaje" rows="4" maxlength="600" placeholder="Explicá con claridad tu sugerencia, el error que experimentaste (pasos para reproducirlo) o tu consulta general..." required></textarea>
+                  <textarea class="form-control" id="contactMensaje" name="mensaje" style="resize: none;" rows="4" maxlength="600" placeholder="Explicá con claridad tu sugerencia, el error que experimentaste (pasos para reproducirlo) o tu consulta general..." required></textarea>
                 </div>
 
-                <!-- 5. Checkbox de Copia al Email -->
-                <div class="form-check mb-3">
-                  <input class="form-check-input" type="checkbox" value="1" id="contactCopia" checked>
-                  <label class="form-check-label text-secondary small" for="contactCopia">
-                    Deseo recibir una copia de confirmación de este mensaje en mi correo.
-                  </label>
-                </div>
-
-                <!-- 6. Botón de Envío -->
                 <button type="submit" class="btn btn-secondary w-100 py-2.5 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2">
                   <i class="bi bi-send-fill"></i> Enviar Mensaje
                 </button>
@@ -267,14 +258,12 @@
         });
       }
 
-      // 2. Envío del Formulario con Validación y Feedback Interactivo
+      // 2. Validación visual de los campos del formulario
       var form = document.getElementById('contactoForm');
       var feedback = document.getElementById('contactFeedback');
 
       if (form && feedback) {
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-
+        form.addEventListener('submit', function() {
           var nombre = document.getElementById('contactNombre').value.trim();
           var email = document.getElementById('contactEmail').value.trim();
           var motivo = document.getElementById('contactMotivo').value.trim();
@@ -290,27 +279,6 @@
             feedback.classList.remove('d-none');
             return;
           }
-
-          // Mostrar mensaje de éxito simulado
-          feedback.className = 'alert alert-success alert-dismissible fade show small py-2.5 px-3 mb-3 d-flex align-items-center gap-2';
-          feedback.innerHTML = 
-            '<i class="bi bi-check-circle-fill text-success flex-shrink-0 fs-5"></i>' +
-            '<div>' +
-            '  <strong>¡Mensaje enviado con éxito!</strong> Recibimos tu consulta sobre ' +
-            '  <span data-feedback-motivo></span> correctamente. Te responderemos a la brevedad a ' +
-            '  <strong data-feedback-email></strong>.' +
-            '</div>' +
-            '<button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Cerrar"></button>';
-          feedback.querySelector('[data-feedback-motivo]').textContent = motivo;
-          feedback.querySelector('[data-feedback-email]').textContent = email;
-          feedback.classList.remove('d-none');
-
-          // Resetear formulario
-          form.reset();
-          if (charCounter) charCounter.textContent = '0 / 600';
-          
-          // Scroll suave hacia el feedback si fuera necesario
-          feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
       }
 

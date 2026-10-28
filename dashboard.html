@@ -467,22 +467,13 @@
                 <label for="editEmail" class="form-label small fw-semibold text-dark">Correo Institucional UTN</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 text-secondary"><i class="bi bi-envelope"></i></span>
-                  <input type="email" class="form-control border-start-0 ps-0" id="editEmail" value="" required>
+                  <input type="email" class="form-control border-start-0 ps-0 profile-field-readonly" id="editEmail" value="" readonly>
                 </div>
               </div>
 
               <div class="col-md-6">
                 <label for="editRegional" class="form-label small fw-semibold text-dark">Facultad Regional</label>
-                <select class="form-select" id="editRegional">
-                  <option value="FRBA (Buenos Aires)" selected>FRBA (Buenos Aires)</option>
-                  <option value="FRH (Haedo)">FRH (Haedo)</option>
-                  <option value="FRC (Córdoba)">FRC (Córdoba)</option>
-                  <option value="FRP (Paraná)">FRP (Paraná)</option>
-                  <option value="FRGP (General Pacheco)">FRGP (General Pacheco)</option>
-                  <option value="FRSF (Santa Fe)">FRSF (Santa Fe)</option>
-                  <option value="FRRO (Rosario)">FRRO (Rosario)</option>
-                  <option value="FRM (Mendoza)">FRM (Mendoza)</option>
-                </select>
+                <input type="text" class="form-control profile-field-readonly" id="editRegional" value="FRH (Haedo)" readonly>
               </div>
 
               <div class="col-md-6">
@@ -901,6 +892,20 @@
         }
         aplicarNombreDeSesion(user.nombre);
         document.getElementById('editEmail').value = user.email;
+        if (typeof user.carrera === 'string' && user.carrera !== '') {
+          document.getElementById('editCarrera').value = user.carrera;
+        }
+        const nivelPorValorDB = {
+          '1ro': '1° Año',
+          '2do': '2° Año',
+          '3ro': '3° Año',
+          '4to': '4° Año',
+          '5to': '5° Año',
+          'graduado': 'Graduado'
+        };
+        if (typeof user.nivel === 'string' && nivelPorValorDB[user.nivel]) {
+          document.getElementById('editNivel').value = nivelPorValorDB[user.nivel];
+        }
         document.querySelectorAll('.userEmailSlot').forEach(el => {
           el.textContent = user.email;
         });
