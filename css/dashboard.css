@@ -2,7 +2,7 @@
 
 /* ==========================================================================
    STUDY MATCH • Panel de Usuario / Dashboard (dashboard.css)
-   Sistema de Transición Dual: Violeta (Marca) + Azul (Alumno) + Verde (Tutor)
+   Sistema de Transición Dual: Azul (Alumno) + Verde (Tutor)
    Universidad Tecnológica Nacional (FRH)
    ========================================================================== */
 
@@ -12,11 +12,8 @@
 :root {
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
-  /* Color Ancla de Marca (Estable y Permanente) */
-  --brand-violet: #7c3aed;
-  --brand-violet-hover: #6d28d9;
-  --brand-violet-light: #ede9fe;
-  --brand-violet-glow: rgba(124, 58, 237, 0.25);
+  --brand-blue: #1677c8;
+  --brand-blue-glow: rgba(22, 119, 200, 0.25);
 
   /* Rol Alumno: Azul Académico UTN */
   --role-alumno: #2563eb;
@@ -112,18 +109,13 @@ body.dashboard-body {
   padding: 0 !important;
 }
 
-/* Logo SVG en Sidebar (Anclado con Violeta) */
+/* Logo SVG en Sidebar */
 .logo-svg {
   transition: transform 0.25s ease;
 }
 .logo-svg:hover {
   transform: scale(1.08);
 }
-.logo-brand-violet {
-  fill: var(--brand-violet) !important;
-  stroke: var(--brand-violet) !important;
-}
-
 /* Enlaces del Sidebar (Base) */
 .sidebar-link {
   color: #475569;
@@ -495,8 +487,8 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   height: 100px;
   margin: 0 auto;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
-  color: var(--brand-violet);
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  color: var(--brand-blue);
   font-size: 2rem;
   font-weight: 800;
   display: flex;
@@ -511,20 +503,23 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
 .preset-avatar {
   width: 52px;
   height: 52px;
+  display: block;
   border-radius: 50%;
+  object-fit: cover;
   cursor: pointer;
-  border: 3px solid transparent;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, outline-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .preset-avatar:hover {
   transform: scale(1.1);
-  border-color: var(--brand-violet);
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 1px;
 }
 
 .preset-avatar.selected {
-  border-color: var(--brand-violet);
-  box-shadow: 0 0 0 3px var(--brand-violet-glow);
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 3px var(--brand-blue-glow);
 }
 
 /* --------------------------------------------------------------------------
@@ -674,42 +669,6 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
    VISTAS NUEVAS: FEED DE DESCUBRIMIENTO Y BÚSQUEDA HÍBRIDA DE TUTORES
    ========================================================================== */
 
-/* 1. Banner de Bienvenida Superior */
-.welcome-banner-card {
-  background: linear-gradient(135deg, #1e1b4b 0%, #2e1065 50%, #172554 100%);
-  color: #ffffff;
-  border-radius: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: 0 12px 30px -8px rgba(124, 58, 237, 0.35);
-  position: relative;
-  overflow: hidden;
-}
-
-.welcome-banner-glow {
-  position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 260px;
-  height: 260px;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.45) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-/* 2. Salas Públicas / Clases Gratuitas */
-.public-room-card {
-  background: #ffffff;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 1.15rem;
-  transition: all 0.26s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
-}
-
-.public-room-card:hover {
-  transform: translateY(-4px);
-  border-color: #7c3aed;
-  box-shadow: 0 16px 32px -8px rgba(124, 58, 237, 0.2);
-}
-
 .pulse-live-dot {
   width: 8px;
   height: 8px;
@@ -819,14 +778,15 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
 .welcome-banner-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #2e1065 100%) !important;
-  border: 1px solid rgba(139, 92, 246, 0.25) !important;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, #0f172a 0%, #0c4a6e 60%, #075985 100%) !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
   transition: box-shadow 0.25s ease;
 }
 
 .welcome-banner-card:hover {
-  box-shadow: 0 8px 26px -4px rgba(124, 58, 237, 0.16);
+  box-shadow: 0 8px 26px -4px rgba(22, 119, 200, 0.16);
 }
 
 /* 6. Espaciado Generoso entre Encabezados de Sección y Tarjetas */
@@ -845,32 +805,27 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
 
 .public-room-card:hover {
   transform: translateY(-4px);
-  border-color: #5865F2;
-  box-shadow: 0 14px 28px -6px rgba(88, 101, 242, 0.18);
+  border-color: #1677c8;
+  box-shadow: 0 16px 32px -8px rgba(22, 119, 200, 0.2);
 }
 
 /* Botón Discord Oficial */
 .btn-discord {
-  background-color: #5865F2 !important;
+  background-color: #2563eb !important;
   color: #ffffff !important;
-  border: 1px solid #5865F2 !important;
+  border: 1px solid #2563eb !important;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 12px rgba(88, 101, 242, 0.28);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
 }
 
 .btn-discord:hover {
-  background-color: #4752c4 !important;
-  border-color: #4752c4 !important;
+  background-color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
   color: #ffffff !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(88, 101, 242, 0.4);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
 }
 
 .btn-discord:active {
   transform: translateY(0);
 }
-
-
-
-
-

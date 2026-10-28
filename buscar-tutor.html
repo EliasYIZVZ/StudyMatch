@@ -30,13 +30,13 @@
           <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
             <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
-            <polygon points="50,20 90,42 50,62" fill="#7c3aed"/>
-            <line x1="78" y1="48" x2="78" y2="70" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round"/>
-            <circle cx="78" cy="68" r="3.5" fill="#7c3aed"/>
-            <polygon points="78,68 73,82 83,82" fill="#7c3aed"/>
+            <polygon points="50,20 90,42 50,62" fill="#1677c8"/>
+            <line x1="78" y1="48" x2="78" y2="70" stroke="#1677c8" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="78" cy="68" r="3.5" fill="#1677c8"/>
+            <polygon points="78,68 73,82 83,82" fill="#1677c8"/>
             <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="2"/>
           </svg>
-          <span class="fw-bold fs-5 text-dark logo-text">Study <span style="color: var(--brand-violet);">Match</span></span>
+          <span class="fw-bold fs-5 text-dark logo-text">Study <span style="color: var(--brand-blue);">Match</span></span>
         </a>
 
         <!-- Botón para contraer sidebar -->
@@ -107,9 +107,7 @@
           <button id="btnToggleSidebar" class="btn btn-light border text-secondary p-2 rounded-3" title="Expandir/Contraer menú lateral">
             <i class="bi bi-layout-sidebar fs-5"></i>
           </button>
-          <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 small fw-semibold">
-            <i class="bi bi-search me-1"></i> Explorador de Tutores
-          </span>
+         
         </div>
 
         <!-- Switch Rol Dual + Perfil -->
@@ -141,14 +139,11 @@
       <!-- Encabezado de la página -->
       <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-2">
         <div>
-          <span class="mode-indicator-pill mb-2"><i class="bi bi-person-badge-fill"></i> Directorio Académico UTN</span>
+         
           <h1 class="h3 fw-bold text-dark mb-1">Buscar Tutor</h1>
           <p class="text-secondary small mb-0">Filtrá por materia, modalidad o disponibilidad para coordinar tu próxima tutoría.</p>
         </div>
-        <span class="badge bg-white text-secondary border px-3 py-2 rounded-pill shadow-sm small">
-          <span class="spinner-grow spinner-grow-sm text-success me-1" style="width: 0.45rem; height: 0.45rem;"></span>
-          <span id="totalTutoresCount">6</span> tutores encontrados
-        </span>
+
       </div>
 
       <!-- ======================================================================
@@ -176,51 +171,11 @@
             </div>
           </div>
 
-          <!-- Menú Desplegable (<select>) por Categoría o Materia Principal -->
-          <div class="col-lg-4">
-            <label for="selectCategoriaMateria" class="form-label small fw-semibold text-secondary mb-1">
-              Categoría o Área Principal
-            </label>
-            <select id="selectCategoriaMateria" class="form-select form-select-lg shadow-sm rounded-3 border">
-              <option value="todas" selected>Todas las Categorías</option>
-              <option value="programacion">💻 Programación y Algoritmos</option>
-              <option value="bbdd">🗄️ Bases de Datos y SQL</option>
-              <option value="matematica">📐 Matemática y Ciencias Exactas</option>
-              <option value="sistemas">🌐 Sistemas Operativos y Redes</option>
-              <option value="ingles">🇬🇧 Inglés Técnico</option>
-            </select>
-          </div>
         </div>
 
-        <!-- Fila Inferior: Filtros Secundarios en forma de Píldoras / Badges Interactivos -->
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2 border-top">
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <span class="small fw-semibold text-secondary me-1">Modalidad:</span>
-            
-            <button class="badge-filter-pill active" data-filter="todos">
-              <i class="bi bi-grid-fill"></i> Todos
-            </button>
-            <button class="badge-filter-pill" data-filter="particular">
-              <i class="bi bi-person-video3"></i> Clases Particulares
-            </button>
-            <button class="badge-filter-pill" data-filter="gratis">
-              <i class="bi bi-gift-fill"></i> Salas Públicas / Gratis
-            </button>
-            <button class="badge-filter-pill" data-filter="online">
-              <i class="bi bi-circle-fill text-success" style="font-size: 0.5rem;"></i> Disponibles Ahora
-            </button>
-          </div>
 
-          <!-- Selector de Ordenamiento Rápido -->
-          <div class="d-flex align-items-center gap-2">
-            <span class="small text-secondary">Ordenar por:</span>
-            <select class="form-select form-select-sm border-0 bg-light rounded-pill px-3 shadow-none fw-semibold" style="width: auto;">
-              <option selected>Mejor Calificados</option>
-              <option>Más Tutorías Dadas</option>
-              <option>Disponibilidad Inmediata</option>
-            </select>
-          </div>
-        </div>
+
+  
 
       </div>
 
@@ -490,7 +445,7 @@
               <div class="d-flex justify-content-between align-items-start mb-3">
                 <div class="d-flex align-items-center gap-3">
                   <div class="avatar-with-status">
-                    <div class="avatar-circle" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">SM</div>
+                    <div class="avatar-circle" style="background: linear-gradient(135deg, #38bdf8, #1677c8);">SM</div>
                     <span class="status-away-dot" title="Disponible hoy"></span>
                   </div>
                   <div>

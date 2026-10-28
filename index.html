@@ -26,7 +26,6 @@
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/forms.css">
     <link rel="stylesheet" href="css/home.css">
-    <link rel="stylesheet" href="css/style.css">
   </head>
   <body class="page-home d-flex flex-column min-vh-100 justify-content-between">
 
@@ -44,7 +43,7 @@
             <!-- Mitad derecha del birrete (Violeta de marca) -->
             <polygon points="50,20 90,42 50,62" class="logo-birrete-derecha" />
             <!-- Borla colgante derecha (Violeta de marca) -->
-            <line x1="78" y1="48" x2="78" y2="70" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round" class="logo-borla" />
+            <line x1="78" y1="48" x2="78" y2="70" stroke="#1677c8" stroke-width="3.5" stroke-linecap="round" class="logo-borla" />
             <circle cx="78" cy="68" r="3.5" class="logo-borla" />
             <polygon points="78,68 73,82 83,82" class="logo-borla" />
             <!-- Tilde blanca de OK / Match integrada -->
@@ -76,7 +75,7 @@
               <a class="nav-link text-secondary" href="contacto.html">Contacto</a>
             </li>
             <li class="nav-item ms-lg-1">
-              <button class="btn btn-outline-violet btn-sm p-1.5 px-2.5 rounded-pill theme-toggle-btn d-inline-flex align-items-center gap-1.5" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">
+              <button class="btn btn-outline-brand btn-sm p-1.5 px-2.5 rounded-pill theme-toggle-btn d-inline-flex align-items-center gap-1.5" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">
                 <i class="theme-icon bi bi-sun-fill text-warning"></i>
                 <span class="d-lg-none small">Modo Claro/Oscuro</span>
               </button>
@@ -100,16 +99,8 @@
         <!-- COLUMNA IZQUIERDA: Información principal, Título y Métricas -->
         <div class="col-lg-7 text-center text-lg-start">
           
-          <!-- 1. Badge institucional superior -->
-          <div class="d-inline-flex mb-2">
-            <span class="badge badge-utn px-3 py-1.5 rounded-pill d-inline-flex align-items-center gap-2">
-              <i class="bi bi-mortarboard-fill"></i>
-              <span>UTN • Regional Haedo</span>
-              <span class="badge-dot"></span>
-              <span class="badge-subtext">Comunidad Activa</span>
-            </span>
-          </div>
 
+      
           <!-- 2. H1 Principal: El nombre de la plataforma y su rol -->
           <h1 class="hero-title fw-extrabold text-dark mb-2 lh-sm">
             Study Match <span class="hero-sep text-muted fw-light">|</span> <span class="text-gradient">Apoyo Académico</span>
@@ -125,33 +116,14 @@
             Study Match conecta a estudiantes de la Universidad Tecnológica Nacional con tutores y alumnos avanzados. Buscá ayuda específica según tu carrera y plan de estudios, o sumate como tutor en las materias que ya aprobaste.
           </p>
 
-          <!-- 5. Botón Conocer Más y Bloque de Prueba Social -->
+          <!-- 5. Botón Conocer Más  -->
           <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-3 mb-3">
             <a href="conoce.html" class="btn btn-primary px-4 py-2.5 rounded-3 fw-semibold shadow-sm d-inline-flex align-items-center gap-2">
               <span>Conocer más</span>
               <i class="bi bi-arrow-right"></i>
             </a>
 
-            <!-- Prueba Social: Avatares de Alumnos + Calificación -->
-            <div class="social-proof-block d-inline-flex align-items-center gap-2">
-              <div class="avatar-group d-flex">
-                <span class="avatar-circle avatar-1" title="Martina - Ing. Industrial">M</span>
-                <span class="avatar-circle avatar-2" title="Lucas - Ing. Sistemas">L</span>
-                <span class="avatar-circle avatar-3" title="Agustín - Ing. Mecánica">A</span>
-                <span class="avatar-circle avatar-count">+450</span>
-              </div>
-              <div class="social-proof-text text-start lh-1">
-                <div class="d-flex align-items-center gap-1 text-warning" style="font-size: 0.72rem;">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <span class="fw-bold text-dark ms-1">4.9/5</span>
-                </div>
-                <span class="text-secondary text-xs">Alumnos UTN conectados</span>
-              </div>
-            </div>
+       
           </div>
 
           <!-- 6. Barra de Métricas: Materias Activas, Sala de Discord, 100% Pares UTN -->
@@ -197,25 +169,12 @@
             <!-- Glow ambiental decorativo -->
             <div class="hero-glow-blob"></div>
 
-            <!-- Mini badge flotante superior: Match en vivo -->
-            <div class="floating-badge floating-badge-top shadow-sm d-none d-sm-inline-flex align-items-center gap-1.5">
-              <span class="live-dot-pulse"></span>
-              <span class="fw-semibold text-dark">Último match:</span>
-              <span class="text-primary fw-bold">Análisis II</span>
-              <span class="text-muted text-xs ms-1">hace 4 min</span>
-            </div>
-
             <!-- Tarjeta Glassmorphic de Iniciar Sesión -->
             <div class="auth-card rounded-4 p-3 p-xl-4 shadow-lg position-relative">
               
               <!-- Encabezado del Formulario con H2 -->
               <div class="mb-3 text-start">
-                <div class="d-inline-flex align-items-center gap-2 mb-1">
-                  <span class="auth-icon-badge">
-                    <i class="bi bi-box-arrow-in-right text-primary"></i>
-                  </span>
-                  <span class="text-xs fw-bold text-uppercase tracking-wider text-primary">Acceso Estudiantes & Tutores</span>
-                </div>
+              
                 <h2 class="h4 fw-bold text-dark mb-1">Iniciar Sesión</h2>
                 <p class="text-secondary small mb-0">Ingresá tus credenciales para acceder a la plataforma</p>
               </div>
@@ -268,12 +227,7 @@
               </div>
 
             </div>
-
-            <!-- Mini badge flotante inferior: Tutores Verificados -->
-            <div class="floating-badge floating-badge-bottom shadow-sm d-none d-sm-inline-flex align-items-center gap-1.5">
-              <i class="bi bi-patch-check-fill text-primary"></i>
-              <span class="fw-semibold text-dark">100% Tutores Verificados UTN</span>
-            </div>
+          
           </div>
         </div>
 

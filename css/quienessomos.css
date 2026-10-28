@@ -42,8 +42,8 @@
 
 .member-card-horizontal:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 38px -10px rgba(124, 58, 237, 0.18), 0 4px 12px rgba(15, 23, 42, 0.05) !important;
-  border-color: rgba(124, 58, 237, 0.3) !important;
+  box-shadow: 0 18px 38px -10px rgba(22, 119, 200, 0.18), 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+  border-color: rgba(22, 119, 200, 0.3) !important;
 }
 
 .member-card-horizontal:hover .member-avatar-img {
@@ -78,9 +78,9 @@
 
 .btn-social-icon.social-discord:hover {
   color: #ffffff !important;
-  background: #5865F2 !important;
-  border-color: #5865F2 !important;
-  box-shadow: 0 4px 12px rgba(88, 101, 242, 0.35);
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
 }
 
 .btn-social-icon.social-linkedin:hover {
@@ -92,9 +92,9 @@
 
 .btn-social-icon.social-email:hover {
   color: #ffffff !important;
-  background: #7c3aed !important;
-  border-color: #7c3aed !important;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+  background: #1677c8 !important;
+  border-color: #1677c8 !important;
+  box-shadow: 0 4px 12px rgba(22, 119, 200, 0.35);
 }
 
 .btn-social-icon.social-github:hover {
@@ -106,8 +106,8 @@
 
 /* 3. Badges de Colores Suaves (Soft Badges) */
 .badge-soft-primary {
-  background-color: rgba(124, 58, 237, 0.12) !important;
-  color: #7c3aed !important;
+  background-color: rgba(22, 119, 200, 0.12) !important;
+  color: #1677c8 !important;
 }
 .badge-soft-success {
   background-color: rgba(16, 185, 129, 0.14) !important;
@@ -117,37 +117,33 @@
   background-color: rgba(14, 165, 233, 0.14) !important;
   color: #0284c7 !important;
 }
-.badge-soft-warning {
-  background-color: rgba(245, 158, 11, 0.15) !important;
-  color: #d97706 !important;
-}
 
 /* 4. Modo Oscuro Quiénes Somos */
 [data-bs-theme="dark"] .member-card-horizontal {
   background: rgba(15, 23, 42, 0.85) !important;
-  border: 1px solid rgba(124, 58, 237, 0.32) !important;
+  border: 1px solid rgba(22, 119, 200, 0.32) !important;
   box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.55) !important;
 }
 
 [data-bs-theme="dark"] .member-card-horizontal .member-avatar-img {
-  border-color: rgba(124, 58, 237, 0.45) !important;
+  border-color: rgba(22, 119, 200, 0.45) !important;
 }
 
 [data-bs-theme="dark"] .member-card-horizontal .btn-social-icon {
   background: rgba(30, 41, 59, 0.85) !important;
-  border-color: rgba(124, 58, 237, 0.32) !important;
+  border-color: rgba(22, 119, 200, 0.32) !important;
   color: #cbd5e1 !important;
 }
 
 [data-bs-theme="dark"] .member-card-horizontal:hover {
-  border-color: rgba(167, 139, 250, 0.55) !important;
-  box-shadow: 0 20px 42px -10px rgba(0, 0, 0, 0.68), 0 0 28px rgba(124, 58, 237, 0.24) !important;
+  border-color: rgba(96, 165, 250, 0.55) !important;
+  box-shadow: 0 20px 42px -10px rgba(0, 0, 0, 0.68), 0 0 28px rgba(22, 119, 200, 0.24) !important;
 }
 
 [data-bs-theme="dark"] .badge-soft-primary {
-  background-color: rgba(124, 58, 237, 0.25) !important;
-  color: #c4b5fd !important;
-  border: 1px solid rgba(124, 58, 237, 0.35);
+  background-color: rgba(22, 119, 200, 0.25) !important;
+  color: #bfdbfe !important;
+  border: 1px solid rgba(22, 119, 200, 0.35);
 }
 [data-bs-theme="dark"] .badge-soft-success {
   background-color: rgba(16, 185, 129, 0.2) !important;
@@ -158,9 +154,4 @@
   background-color: rgba(14, 165, 233, 0.2) !important;
   color: #7dd3fc !important;
   border: 1px solid rgba(14, 165, 233, 0.32);
-}
-[data-bs-theme="dark"] .badge-soft-warning {
-  background-color: rgba(245, 158, 11, 0.2) !important;
-  color: #fde047 !important;
-  border: 1px solid rgba(245, 158, 11, 0.32);
 }

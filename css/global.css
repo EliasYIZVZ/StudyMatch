@@ -13,19 +13,11 @@
   --bs-font-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --bs-font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
-  /* Paleta violeta / púrpura característica de Study Match */
-  --bs-primary: #7c3aed;
-  --bs-primary-rgb: 124, 58, 237;
-  --bs-primary-hover: #6d28d9;
-  --bs-primary-light: #ede9fe;
-  --bs-primary-glow: rgba(124, 58, 237, 0.35);
+  /* Paleta azul y celeste de Study Match */
+  --bs-primary: #1677c8;
+  --bs-primary-rgb: 22, 119, 200;
+  --bs-primary-hover: #125f9f;
 
-  /* Color de apoyo institucional UTN */
-  --utn-blue: #172554;
-  --utn-blue-hover: #1e3a8a;
-  
-  /* Color oficial Discord */
-  --discord-blurple: #5865F2;
 }
 
 /* --------------------------------------------------------------------------
@@ -48,7 +40,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #2563eb 100%);
+  background: linear-gradient(135deg, #1677c8 0%, #38bdf8 50%, #2563eb 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
@@ -65,8 +57,8 @@ body {
   font-family: var(--bs-font-sans-serif);
   background-color: #0f172a;
   background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.82) 40%, rgba(243, 232, 255, 0.86) 100%),
-    url('../img/Gemini_Generated_Image_o8fa80o8fa80o8fa.jpg') no-repeat center 28% / cover fixed;
+    linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.82) 40%, rgba(224, 242, 254, 0.86) 100%),
+    url('../img/alumnos_utn.png') no-repeat center 28% / cover fixed;
   color: #1e293b;
   min-height: 100vh;
   display: flex;
@@ -92,37 +84,22 @@ body {
 body.page-quienessomos,
 body.page-programming {
   background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.90) 0%, rgba(248, 250, 252, 0.85) 40%, rgba(243, 232, 255, 0.88) 100%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.90) 0%, rgba(248, 250, 252, 0.85) 40%, rgba(224, 242, 254, 0.88) 100%),
     url('../img/bg-programming.jpg') no-repeat center center / cover fixed;
 }
 
 /* Insignia UTN compartida */
 .badge-utn {
-  background: rgba(124, 58, 237, 0.07);
-  color: #7c3aed;
+  background: rgba(22, 119, 200, 0.07);
+  color: #1677c8;
   font-family: var(--bs-font-heading);
   font-weight: 600;
   font-size: 0.8rem;
-  border: 1px solid rgba(124, 58, 237, 0.2);
+  border: 1px solid rgba(22, 119, 200, 0.2);
   letter-spacing: 0.01em;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.06);
+  box-shadow: 0 2px 8px rgba(22, 119, 200, 0.06);
   backdrop-filter: blur(8px);
   transition: all 0.2s ease;
-}
-
-.badge-utn .badge-dot {
-  width: 6px;
-  height: 6px;
-  background-color: #10b981;
-  border-radius: 50%;
-  display: inline-block;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
-}
-
-.badge-utn .badge-subtext {
-  color: #64748b;
-  font-weight: 500;
-  font-size: 0.74rem;
 }
 
 /* --------------------------------------------------------------------------
@@ -139,7 +116,7 @@ body.page-programming {
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.04);
   position: relative;
-  border-bottom: 1px solid rgba(124, 58, 237, 0.08) !important;
+  border-bottom: 1px solid rgba(22, 119, 200, 0.08) !important;
   transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -150,7 +127,7 @@ body.page-programming {
   left: 8%;
   width: 84%;
   height: 1px;
-  background: linear-gradient(to right, transparent, rgba(124, 58, 237, 0.45), rgba(37, 99, 235, 0.35), transparent);
+  background: linear-gradient(to right, transparent, rgba(56, 189, 248, 0.55), rgba(37, 99, 235, 0.35), transparent);
 }
 
 .brand-title {
@@ -167,12 +144,12 @@ body.page-programming {
 
 .navbar .nav-link:hover {
   color: var(--bs-primary) !important;
-  background-color: rgba(124, 58, 237, 0.06);
+  background-color: rgba(22, 119, 200, 0.06);
 }
 
 .navbar .nav-link.active {
   color: var(--bs-primary) !important;
-  background-color: rgba(124, 58, 237, 0.1);
+  background-color: rgba(22, 119, 200, 0.1);
   font-weight: 600;
 }
 
@@ -183,7 +160,7 @@ body.page-programming {
 }
 
 .navbar-toggler:focus {
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25) !important;
+  box-shadow: 0 0 0 3px rgba(22, 119, 200, 0.25) !important;
 }
 
 @media (max-width: 991.98px) {
@@ -216,17 +193,17 @@ body.page-programming {
   width: 38px;
   height: 38px;
   border-radius: 50rem;
-  border: 1px solid rgba(124, 58, 237, 0.25);
-  background: rgba(124, 58, 237, 0.06);
-  color: #6d28d9;
+  border: 1px solid rgba(22, 119, 200, 0.25);
+  background: rgba(22, 119, 200, 0.06);
+  color: #125f9f;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .theme-toggle-btn:hover {
-  background: rgba(124, 58, 237, 0.15);
-  border-color: rgba(124, 58, 237, 0.45);
-  color: #5b21b6;
+  background: rgba(22, 119, 200, 0.15);
+  border-color: rgba(22, 119, 200, 0.45);
+  color: #0c4a6e;
   transform: rotate(15deg) scale(1.05);
 }
 
@@ -240,86 +217,71 @@ body.page-programming {
    5. BOTONES Y ACCIONES
    -------------------------------------------------------------------------- */
 .btn-primary {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  background: linear-gradient(135deg, #1677c8 0%, #125f9f 100%);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff !important;
-  box-shadow: 0 4px 14px 0 rgba(124, 58, 237, 0.32);
+  box-shadow: 0 4px 14px 0 rgba(22, 119, 200, 0.32);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   text-decoration: none;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+  background: linear-gradient(135deg, #125f9f 0%, #0c4a6e 100%);
   border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 24px 0 rgba(124, 58, 237, 0.45);
+  box-shadow: 0 8px 24px 0 rgba(22, 119, 200, 0.45);
   transform: translateY(-1.5px);
   color: #ffffff !important;
 }
 
 .btn-primary:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px 0 rgba(124, 58, 237, 0.3);
+  box-shadow: 0 2px 8px 0 rgba(22, 119, 200, 0.3);
 }
 
 .btn-primary:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 0 0 3px rgba(22, 119, 200, 0.35);
 }
 
-.btn-outline-violet {
+.btn-outline-brand {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1.5px solid rgba(124, 58, 237, 0.28);
-  color: #6d28d9;
+  border: 1.5px solid rgba(22, 119, 200, 0.28);
+  color: #125f9f;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   text-decoration: none;
 }
 
-.btn-outline-violet:hover {
-  background: rgba(124, 58, 237, 0.08);
-  border-color: #7c3aed;
-  color: #7c3aed;
-  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.15);
+.btn-outline-brand:hover {
+  background: rgba(22, 119, 200, 0.08);
+  border-color: #1677c8;
+  color: #1677c8;
+  box-shadow: 0 6px 18px rgba(22, 119, 200, 0.15);
   transform: translateY(-1.5px);
 }
 
-.btn-outline-violet:active {
+.btn-outline-brand:active {
   transform: translateY(0);
 }
 
-.btn-outline-violet:focus-visible {
+.btn-outline-brand:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
-}
-
-.btn-utn {
-  background-color: var(--utn-blue);
-  border-color: var(--utn-blue);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(23, 37, 84, 0.25);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.btn-utn:hover {
-  background-color: var(--utn-blue-hover);
-  border-color: var(--utn-blue-hover);
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(23, 37, 84, 0.35);
+  box-shadow: 0 0 0 3px rgba(22, 119, 200, 0.25);
 }
 
 .btn-outline-primary {
   color: var(--bs-primary);
-  border-color: rgba(124, 58, 237, 0.35);
+  border-color: rgba(22, 119, 200, 0.35);
   background-color: transparent;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .btn-outline-primary:hover {
-  background-color: rgba(124, 58, 237, 0.08);
+  background-color: rgba(22, 119, 200, 0.08);
   border-color: var(--bs-primary);
   color: var(--bs-primary);
   transform: translateY(-1.5px);
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.14);
+  box-shadow: 0 4px 12px rgba(22, 119, 200, 0.14);
 }
 
 /* --------------------------------------------------------------------------
@@ -356,15 +318,15 @@ body.page-programming {
 [data-bs-theme="dark"] body {
   background-color: #090d16;
   background: 
-    linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(15, 23, 42, 0.90) 50%, rgba(30, 27, 75, 0.92) 100%),
-    url('../img/Gemini_Generated_Image_o8fa80o8fa80o8fa.jpg') no-repeat center 28% / cover fixed;
+    linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(15, 23, 42, 0.90) 50%, rgba(12, 74, 110, 0.72) 100%),
+    url('../img/alumnos_utn.png') no-repeat center 28% / cover fixed;
   color: #e2e8f0;
 }
 
 [data-bs-theme="dark"] body.page-quienessomos,
 [data-bs-theme="dark"] body.page-programming {
   background: 
-    linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(15, 23, 42, 0.90) 50%, rgba(30, 27, 75, 0.92) 100%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(15, 23, 42, 0.90) 50%, rgba(12, 74, 110, 0.72) 100%),
     url('../img/bg-programming.jpg') no-repeat center center / cover fixed;
 }
 
@@ -385,22 +347,18 @@ body.page-programming {
 }
 
 [data-bs-theme="dark"] .border-top {
-  border-color: rgba(124, 58, 237, 0.2) !important;
+  border-color: rgba(22, 119, 200, 0.2) !important;
 }
 
 [data-bs-theme="dark"] .badge-utn {
-  background: rgba(124, 58, 237, 0.18) !important;
-  color: #c4b5fd !important;
-  border-color: rgba(124, 58, 237, 0.38) !important;
-}
-
-[data-bs-theme="dark"] .badge-utn .badge-subtext {
-  color: #94a3b8 !important;
+  background: rgba(22, 119, 200, 0.18) !important;
+  color: #bfdbfe !important;
+  border-color: rgba(22, 119, 200, 0.38) !important;
 }
 
 [data-bs-theme="dark"] .navbar-glass {
   background: rgba(15, 23, 42, 0.88) !important;
-  border-bottom: 1px solid rgba(124, 58, 237, 0.25) !important;
+  border-bottom: 1px solid rgba(22, 119, 200, 0.25) !important;
   box-shadow: 0 4px 25px -4px rgba(0, 0, 0, 0.5);
 }
 
@@ -408,46 +366,46 @@ body.page-programming {
   color: #94a3b8 !important;
 }
 [data-bs-theme="dark"] .navbar-glass .nav-link:hover {
-  color: #c4b5fd !important;
-  background-color: rgba(124, 58, 237, 0.16);
+  color: #bfdbfe !important;
+  background-color: rgba(22, 119, 200, 0.16);
 }
 [data-bs-theme="dark"] .navbar-glass .nav-link.active {
-  color: #c4b5fd !important;
-  background-color: rgba(124, 58, 237, 0.28);
+  color: #bfdbfe !important;
+  background-color: rgba(22, 119, 200, 0.28);
 }
 [data-bs-theme="dark"] .navbar-glass .navbar-toggler {
   filter: invert(1);
 }
 
 [data-bs-theme="dark"] .theme-toggle-btn {
-  border-color: rgba(124, 58, 237, 0.45) !important;
-  background: rgba(124, 58, 237, 0.2) !important;
+  border-color: rgba(22, 119, 200, 0.45) !important;
+  background: rgba(22, 119, 200, 0.2) !important;
   color: #facc15 !important;
 }
 
 [data-bs-theme="dark"] .theme-toggle-btn:hover {
-  background: rgba(124, 58, 237, 0.35) !important;
-  border-color: #a78bfa !important;
+  background: rgba(22, 119, 200, 0.35) !important;
+  border-color: #60a5fa !important;
   color: #fef08a !important;
   box-shadow: 0 0 16px rgba(250, 204, 21, 0.28);
 }
 
-[data-bs-theme="dark"] .btn-outline-violet {
-  background: rgba(124, 58, 237, 0.16) !important;
-  border-color: rgba(167, 139, 250, 0.45) !important;
-  color: #c4b5fd !important;
+[data-bs-theme="dark"] .btn-outline-brand {
+  background: rgba(22, 119, 200, 0.16) !important;
+  border-color: rgba(96, 165, 250, 0.45) !important;
+  color: #bfdbfe !important;
 }
 
-[data-bs-theme="dark"] .btn-outline-violet:hover {
-  background: rgba(124, 58, 237, 0.35) !important;
-  border-color: #a78bfa !important;
+[data-bs-theme="dark"] .btn-outline-brand:hover {
+  background: rgba(22, 119, 200, 0.35) !important;
+  border-color: #60a5fa !important;
   color: #ffffff !important;
 }
 
 [data-bs-theme="dark"] .app-footer,
 [data-bs-theme="dark"] .footer-glass {
   background: rgba(15, 23, 42, 0.85) !important;
-  border-top: 1px solid rgba(124, 58, 237, 0.22) !important;
+  border-top: 1px solid rgba(22, 119, 200, 0.22) !important;
   color: #94a3b8 !important;
 }
 
@@ -458,7 +416,7 @@ body.page-programming {
 
 [data-bs-theme="dark"] .app-footer .footer-link:hover,
 [data-bs-theme="dark"] .footer-glass .footer-link:hover {
-  color: #c4b5fd !important;
+  color: #bfdbfe !important;
 }
 
 /* Transiciones Suaves Globales */
