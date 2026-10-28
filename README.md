@@ -38,9 +38,9 @@ Bienvenidos al repositorio de **Study Match**. Este documento detalla los pasos 
 
 3. En la barra lateral izquierda, haz clic en **Nueva** para crear una base de datos.
 
-4. Nombra la base de datos como `study_match` (debe coincidir con el código PHP) y selecciona el cotejamiento `utf8mb4_general_ci` o `utf8_general_ci`. Haz clic en **Crear**.
+4. Nombra la base de datos como `StudyMatch_DB` (igual que en el script SQL) y selecciona el cotejamiento `utf8mb4_general_ci` o `utf8_general_ci`. Haz clic en **Crear**.
 
-5. Selecciona la base de datos `study_match` recién creada en el panel izquierdo.
+5. Selecciona la base de datos `StudyMatch_DB` recién creada en el panel izquierdo.
 
 6. Ve a la pestaña **Importar** en el menú superior.
 
@@ -48,15 +48,9 @@ Bienvenidos al repositorio de **Study Match**. Este documento detalla los pasos 
 
 ### 4. Configurar las Credenciales de PHP
 
-Dependiendo de tu sistema operativo, las contraseñas por defecto de MAMP para MySQL varían. Revisa los archivos `ValidarRegistro.php` y `login.php` y actualiza las credenciales si es necesario:
+Dependiendo de tu sistema operativo, las contraseñas por defecto de MAMP para MySQL varían. Actualiza las credenciales en `app/config/Database.php` o define las variables de entorno `DB_HOST`, `DB_NAME`, `DB_USER` y `DB_PASSWORD`:
 
-```
-$host = 'localhost';
-$dbname = 'studymatch_db'; 
-$username = 'root';
-$password = 'root'; // ¡Ajustar según tu instalación!
-
-```
+Los valores predeterminados son `localhost`, `StudyMatch_DB`, `root` y `root`.
 
 ### 5. Visualizar el Proyecto
 
@@ -66,17 +60,27 @@ Abre tu navegador web e ingresa a la siguiente ruta dependiendo de la configurac
 
 * Si usas el puerto por defecto de Windows (80): `http://localhost/study-match/`
 
-## 📂 Estructura Actual del Proyecto
+## 📂 Estructura del Proyecto
 
 * `index.html` - Landing page y punto de inicio de sesión.
 
-* `registro.html` - Formulario de creación de cuenta (Frontend).
+* `registro.html` - Redirección compatible para los enlaces anteriores al cambio.
 
 * `dashboard.html` - Panel principal post-login (Actualmente maquetado estático).
 
-* `ValidarRegistro.php` - Lógica Backend para encriptar contraseñas y registrar usuarios.
+* `login.php` y `ValidarRegistro.php` - Puntos de entrada compatibles para las acciones de autenticación.
 
-* `login.php` - Lógica Backend para validar credenciales e iniciar sesión.
+* `registro.php` - Controlador de la vista del formulario de registro.
+
+* `app/controllers/` - Controladores que procesan el inicio de sesión y el registro.
+
+* `app/models/` - Acceso a datos de usuarios.
+
+* `app/config/` - Configuración y conexión a la base de datos.
+
+* `app/views/auth/` - Vistas del flujo de autenticación.
+
+* `api/current_user.php` - Devuelve el nombre y correo del usuario asociado a la sesión activa para los dashboards.
 
 * `css/` - Hojas de estilo y personalización (incluye Glassmorphism y Dark mode).
 
@@ -84,6 +88,6 @@ Abre tu navegador web e ingresa a la siguiente ruta dependiendo de la configurac
 
 ## 📌 Notas para el Equipo de Desarrollo
 
-* **Seguridad:** Las contraseñas se están hasheando usando `password_hash()` (Bcrypt). Por favor, **no** inserten usuarios de prueba directamente en phpMyAdmin con contraseñas en texto plano, ya que el sistema no podrá validarlos en `login.php`. Creen los usuarios siempre desde la interfaz de `registro.html`.
+* **Seguridad:** Las contraseñas se hashean usando `password_hash()`. Por favor, **no** inserten usuarios de prueba directamente en phpMyAdmin con contraseñas en texto plano, ya que el sistema no podrá validarlos. Creen los usuarios siempre desde el formulario de registro.
 
-* **Sesiones:** Actualmente `login.php` genera variables de sesión (`$_SESSION['id_usuario']`). En los próximos sprints, convertiremos `dashboard.html` a `.php` para proteger la ruta y consumir esta información.
+* **Sesiones:** `app/controllers/AuthController.php` genera las variables de sesión (`$_SESSION['id_usuario']`). `dashboard.html` todavía es estático y no protege la ruta; su conversión a una vista PHP queda pendiente.

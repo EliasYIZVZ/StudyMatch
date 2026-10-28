@@ -80,7 +80,7 @@
             AL
           </div>
           <div class="sidebar-text text-truncate lh-sm">
-            <span class="d-block fw-bold text-dark small text-truncate userNameSlot">Alex López</span>
+            <span class="d-block fw-bold text-dark small text-truncate userNameSlot">Cargando...</span>
             <span class="text-secondary userCareerSlot" style="font-size: 0.72rem;">Sistemas • 3° año</span>
           </div>
         </div>
@@ -140,7 +140,7 @@
                 AL
               </div>
               <div class="d-none d-md-block text-start lh-1 pe-1">
-                <span class="d-block fw-bold text-dark small userNameSlot">Alex López</span>
+                <span class="d-block fw-bold text-dark small userNameSlot">Cargando...</span>
                 <span class="text-secondary userRoleSlot" style="font-size: 0.72rem;">UTN • Tutor</span>
               </div>
               <i class="bi bi-chevron-down text-secondary small d-none d-md-inline"></i>
@@ -149,8 +149,8 @@
             <!-- Contenido del Menú Desplegable -->
             <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" style="min-width: 270px;">
               <li class="px-3 py-2 border-bottom mb-1 bg-light rounded-3">
-                <div class="fw-bold text-dark userNameSlot">Alex López</div>
-                <div class="text-secondary small userEmailSlot">alex.lopez@utn.edu.ar</div>
+                <div class="fw-bold text-dark userNameSlot">Cargando...</div>
+                <div class="text-secondary small userEmailSlot">Cargando...</div>
                 <div class="d-flex align-items-center gap-1 mt-1">
                   <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem;" id="userLegajoSlot">Tutor Autorizado • FRBA</span>
                 </div>
@@ -475,7 +475,7 @@
                 <label for="editNombre" class="form-label small fw-semibold text-dark">Nombre y Apellido</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 text-secondary"><i class="bi bi-person"></i></span>
-                  <input type="text" class="form-control border-start-0 ps-0" id="editNombre" value="Alex López" required>
+                  <input type="text" class="form-control border-start-0 ps-0" id="editNombre" value="" required>
                 </div>
               </div>
 
@@ -1025,6 +1025,57 @@
         aplicarDatosPerfil(JSON.parse(perfilGuardado));
       } catch(e) {}
     }
+
+    function aplicarNombreDeSesion(nombre) {
+      document.querySelectorAll('.userNameSlot').forEach(el => {
+        el.textContent = nombre;
+      });
+
+      const editNombre = document.getElementById('editNombre');
+      if (editNombre) editNombre.value = nombre;
+
+      if (!selectedPhotoUrl) {
+        const partes = nombre.trim().split(/\s+/);
+        const iniciales = partes.length >= 2
+          ? (partes[0][0] + partes[1][0]).toUpperCase()
+          : nombre.substring(0, 2).toUpperCase();
+        document.querySelectorAll('.userAvatarSlot').forEach(el => {
+          el.style.backgroundImage = 'none';
+          el.textContent = iniciales;
+        });
+        const prevInit = document.getElementById('previewInitials');
+        if (prevInit) prevInit.textContent = iniciales;
+      }
+    }
+
+    fetch('api/current_user.php', { credentials: 'same-origin' })
+      .then(response => {
+        if (!response.ok) throw new Error('No se pudo cargar el usuario de la sesión.');
+        return response.json();
+      })
+      .then(user => {
+        if (
+          typeof user.nombre !== 'string'
+          || user.nombre.trim() === ''
+          || typeof user.email !== 'string'
+          || user.email.trim() === ''
+        ) {
+          throw new Error('La respuesta del usuario no contiene un nombre o correo válido.');
+        }
+        aplicarNombreDeSesion(user.nombre);
+        document.querySelectorAll('.userEmailSlot').forEach(el => {
+          el.textContent = user.email;
+        });
+      })
+      .catch(error => {
+        console.error(error);
+        document.querySelectorAll('.userNameSlot').forEach(el => {
+          el.textContent = 'No disponible';
+        });
+        document.querySelectorAll('.userEmailSlot').forEach(el => {
+          el.textContent = 'No disponible';
+        });
+      });
   </script>
 
   <!-- Bootstrap 5.3 JS Bundle -->

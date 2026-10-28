@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Match - Registro</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="d-flex flex-column min-vh-100 justify-content-between">
+  <header class="sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-glass py-3">
+      <div class="container-xl">
+        <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+          <svg class="logo-svg" width="46" height="46" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554" />
+            <polygon points="50,20 10,42 50,62" fill="#1e3a8a" />
+            <polygon points="50,20 90,42 50,62" fill="#2563eb" />
+            <line x1="78" y1="48" x2="78" y2="70" stroke="#3b82f6" stroke-width="3.5" stroke-linecap="round" />
+            <circle cx="78" cy="68" r="3.5" fill="#2563eb" />
+            <polygon points="78,68 73,82 83,82" fill="#2563eb" />
+            <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="2" />
+          </svg>
+          <span class="fw-bold fs-4 text-dark lh-1 mb-0">Study <span class="text-primary">Match</span></span>
+        </a>
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-1 gap-lg-3 mt-3 mt-lg-0 fw-medium small">
+            <li class="nav-item"><a class="nav-link text-secondary" href="index.html">Inicio</a></li>
+            <li class="nav-item"><a class="nav-link text-secondary" href="conoce.html">Conocer Más</a></li>
+            <li class="nav-item"><a class="nav-link text-secondary" href="quienessomos.html">Quiénes Somos</a></li>
+            <li class="nav-item"><a class="nav-link text-secondary" href="contacto.html">Contacto</a></li>
+            <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+              <a class="btn btn-outline-primary px-4 py-2 rounded-3 fw-semibold shadow-sm" href="index.html">Iniciar Sesión</a>
+            </li>
+            <li class="nav-item ms-lg-2 mt-2 mt-lg-0 d-flex align-items-center">
+              <button id="themeToggleBtn" class="theme-toggle-btn shadow-sm" title="Alternar Modo">
+                <i id="themeToggleIcon" class="bi bi-moon-stars-fill"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="hero-wrapper flex-grow-1 d-flex align-items-center">
+    <div class="hero-bg-container">
+      <img src="img/Gemini_Generated_Image_o8fa80o8fa80o8fa.jpg" alt="Comunidad universitaria Study Match" class="hero-bg-img">
+      <div class="hero-overlay-horizontal"></div>
+      <div class="hero-overlay-vertical"></div>
+    </div>
+
+    <main class="container-xl position-relative py-5" style="z-index: 1;">
+      <div class="row justify-content-center">
+        <div class="col-lg-7 col-xl-6 position-relative">
+          <div class="ambient-glow"></div>
+          <div class="glass-card p-4 p-md-5 rounded-4 shadow-lg position-relative" style="z-index: 1;">
+            <div class="text-center mb-4">
+              <h2 class="h3 fw-bold text-dark mb-2">Crear una cuenta</h2>
+              <p class="text-secondary small mb-0">Únete a la comunidad de Study Match y conecta con tu tutor ideal.</p>
+            </div>
+
+            <form action="ValidarRegistro.php" method="POST" class="d-flex flex-column gap-3">
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label for="nombre_usuario" class="form-label small fw-medium text-dark mb-1">Nombre Completo</label>
+                  <div class="input-group input-group-custom">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text" id="nombre_usuario" name="nombre_usuario" required placeholder="Ej. Alex López" class="form-control py-2.5">
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <label for="correo_usuario" class="form-label small fw-medium text-dark mb-1">Correo Institucional</label>
+                  <div class="input-group input-group-custom">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input type="email" id="correo_usuario" name="correo_usuario" required placeholder="alumno@utn.edu.ar" class="form-control py-2.5">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label for="password_usuario" class="form-label small fw-medium text-dark mb-1">Contraseña</label>
+                  <div class="input-group input-group-custom">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" id="password_usuario" name="password_usuario" required placeholder="••••••••" class="form-control py-2.5">
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <label for="confirm_password" class="form-label small fw-medium text-dark mb-1">Confirmar Contraseña</label>
+                  <div class="input-group input-group-custom">
+                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="••••••••" class="form-control py-2.5">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" value="" id="terminos" required>
+                <label class="form-check-label small text-secondary" for="terminos">
+                  Acepto los <a href="#" class="text-primary text-decoration-none">Términos y Condiciones</a> de Study Match.
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100 py-3 rounded-3 fw-semibold shadow-sm mt-3 d-flex align-items-center justify-content-center gap-2">
+                <i class="bi bi-person-plus"></i>
+                <span>Crear Cuenta</span>
+              </button>
+            </form>
+
+            <div class="mt-4 pt-4 border-top text-center">
+              <p class="small text-secondary mb-0">¿Ya tienes una cuenta? <a href="index.html" class="fw-semibold text-primary text-decoration-none">Inicia sesión aquí</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer-glass border-top py-3 text-secondary small mt-auto">
+    <div class="container-xl d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+      <p class="mb-0 text-muted" style="font-size: 0.8rem;">© 2026 <strong>Study Match</strong> - Proyecto UTN (TUP)</p>
+      <div class="d-flex align-items-center gap-3 text-muted" style="font-size: 0.8rem;">
+        <span class="d-inline-flex align-items-center gap-1"><i class="bi bi-shield-check text-success"></i> Acceso Seguro</span>
+        <span>|</span>
+        <span class="d-inline-flex align-items-center gap-1"><i class="bi bi-mortarboard text-primary"></i> Exclusivo UTN</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeToggleIcon = document.getElementById('themeToggleIcon');
+    function aplicarTema(tema) {
+      document.documentElement.setAttribute('data-bs-theme', tema);
+      localStorage.setItem('study-match-theme', tema);
+      themeToggleIcon.className = tema === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
+    }
+    const temaGuardado = localStorage.getItem('study-match-theme');
+    const prefiereOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    aplicarTema(temaGuardado ? temaGuardado : (prefiereOscuro ? 'dark' : 'light'));
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        const temaActual = document.documentElement.getAttribute('data-bs-theme');
+        aplicarTema(temaActual === 'dark' ? 'light' : 'dark');
+      });
+    }
+
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+      const password = document.getElementById('password_usuario').value;
+      const confirmation = document.getElementById('confirm_password').value;
+      if (password !== confirmation) {
+        event.preventDefault();
+        alert('Las contraseñas no coinciden. Por favor, verifica.');
+      }
+    });
+  </script>
+</body>
+</html>
