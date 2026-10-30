@@ -7,7 +7,7 @@ final class Database
         $host = getenv('DB_HOST') ?: 'localhost';
         $database = getenv('DB_NAME') ?: 'StudyMatch_DB';
         $username = getenv('DB_USER') ?: 'root';
-        $password = getenv('DB_PASSWORD') ?: 'root';
+        $password = getenv('DB_PASSWORD') ?: '';
 
         return new PDO(
             "mysql:host={$host};dbname={$database};charset=utf8mb4",

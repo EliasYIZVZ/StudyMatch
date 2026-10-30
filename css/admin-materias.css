@@ -1,0 +1,114 @@
+/**
+ * ==========================================================================
+ * STUDY MATCH • Estilos de Administración y Gestión de Materias
+ * Archivo: css/admin-materias.css
+ * ==========================================================================
+ */
+
+/* ==========================================================================
+   1. PESTAÑAS HORIZONTALES Y FORMULARIO ÁGIL
+   ========================================================================== */
+.nav-pills-horizontal .nav-link {
+  color: #64748b;
+  background-color: #f1f5f9;
+  border-radius: 50rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 1.1rem;
+  transition: all 0.16s ease;
+}
+
+.nav-pills-horizontal .nav-link:hover {
+  color: #1e293b;
+  background-color: #e2e8f0;
+}
+
+.nav-pills-horizontal .nav-link.active {
+  background-color: #0d6efd;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.25);
+}
+
+[data-bs-theme="dark"] .nav-pills-horizontal .nav-link {
+  background-color: #0f172a;
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .nav-pills-horizontal .nav-link:hover {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+[data-bs-theme="dark"] .nav-pills-horizontal .nav-link.active {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Transición ultra-rápida entre pestañas para eliminar sensación de lentitud */
+.tab-content > .tab-pane.fade {
+  transition: opacity 0.12s linear !important;
+}
+
+/* ==========================================================================
+   2. TABLA DEL CATÁLOGO DE MATERIAS
+   ========================================================================== */
+.table-materias th {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  font-weight: 700;
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 0.85rem 1rem;
+  white-space: nowrap;
+}
+
+.table-materias td {
+  vertical-align: middle;
+  padding: 0.85rem 1rem;
+  font-size: 0.88rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.table-materias tbody tr {
+  transition: background-color 0.16s ease;
+}
+
+.table-materias tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+[data-bs-theme="dark"] .table-materias th {
+  background-color: #0f172a;
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .table-materias td {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
+}
+
+[data-bs-theme="dark"] .table-materias tbody tr:hover {
+  background-color: #162033;
+}
+
+/* Código de materia monoespaciado */
+.materia-code-badge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+}
+
+/* Botones de acción compactos */
+.btn-action-pill {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 50rem;
+  transition: all 0.16s ease;
+}
