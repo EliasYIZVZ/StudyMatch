@@ -1,106 +1,76 @@
 <?php
 
-require_once __DIR__ . '/../config/Database.php';
-
-final class ContactoController
+final class ContactoController extends Controller
 {
     /**
      * Valida los datos del formulario y registra la consulta del usuario.
      */
     public function validarMensaje()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: contacto.html', true, 303);
-            exit();
+        if (!$this->isPost()) {
+            $this->redirect('public/contacto.html', 303);
         }
 
-        $nombre = isset($_POST['nombre']) ? $_POST['nombre'] : '';
-        $email = isset($_POST['email']) ? $_POST['email'] : '';
-        $motivo = isset($_POST['motivo']) ? $_POST['motivo'] : '';
-        $asunto = isset($_POST['asunto']) ? $_POST['asunto'] : '';
-        $mensaje = isset($_POST['mensaje']) ? $_POST['mensaje'] : '';
-
-        if (
-            !is_string($nombre)
-            || !is_string($email)
-            || !is_string($motivo)
-            || !is_string($asunto)
-            || !is_string($mensaje)
-        ) {
-            http_response_code(400);
-            exit('Error: Todos los campos son obligatorios.');
+        $campos = [];
+        foreach (['nombre', 'email', 'motivo', 'asunto', 'mensaje'] as $campo) {
+            $valor = isset($_POST[$campo]) ? $_POST[$campo] : '';
+            if (!is_string($valor)) {
+                $this->fail('Error: Todos los campos son obligatorios.', 400);
+            }
+            $campos[$campo] = trim($valor);
         }
 
-        $nombre = trim($nombre);
-        $email = trim($email);
-        $motivo = trim($motivo);
-        $asunto = trim($asunto);
-        $mensaje = trim($mensaje);
-
-        if ($nombre === '' || $email === '' || $motivo === '' || $asunto === '' || $mensaje === '') {
-            http_response_code(400);
-            exit('Error: Todos los campos son obligatorios.');
+        if (in_array('', $campos, true)) {
+            $this->fail('Error: Todos los campos son obligatorios.', 400);
         }
 
-        $longitudes = [
-            $this->longitud($nombre),
-            $this->longitud($email),
-            $this->longitud($motivo),
-            $this->longitud($asunto),
-            $this->longitud($mensaje),
-        ];
+        $longitudes = array_map([$this, 'longitud'], $campos);
         if (in_array(false, $longitudes, true)) {
-            http_response_code(400);
-            exit('Error: Los campos contienen caracteres no válidos.');
+            $this->fail('Error: Los campos contienen caracteres no válidos.', 400);
         }
 
         if (
-            $longitudes[0] > 100
-            || $longitudes[1] > 100
-            || $longitudes[2] > 255
-            || $longitudes[3] > 255
+            $longitudes['nombre'] > 100
+            || $longitudes['email'] > 100
+            || $longitudes['motivo'] > 255
+            || $longitudes['asunto'] > 255
         ) {
-            http_response_code(400);
-            exit('Error: Uno o más campos superan la longitud permitida.');
+            $this->fail('Error: Uno o más campos superan la longitud permitida.', 400);
         }
 
-        if ($longitudes[4] > 600) {
-            http_response_code(400);
-            exit('Error: El mensaje no puede superar los 600 caracteres.');
+        if ($longitudes['mensaje'] > 600) {
+            $this->fail('Error: El mensaje no puede superar los 600 caracteres.', 400);
         }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            http_response_code(400);
-            exit('Error: El formato del correo no es válido.');
+        if (!filter_var($campos['email'], FILTER_VALIDATE_EMAIL)) {
+            $this->fail('Error: El formato del correo no es válido.', 400);
         }
 
         try {
-            $database = Database::getConnection();
-            $statement = $database->prepare(
-                'INSERT INTO consultausuarios
-                    (nombre_usuario, correo_usuario, motivo, asunto, mensaje)
-                 VALUES
-                    (:nombre, :email, :motivo, :asunto, :mensaje)'
+            (new Consulta(Database::getConnection()))->create(
+                $campos['nombre'],
+                $campos['email'],
+                $campos['motivo'],
+                $campos['asunto'],
+                $campos['mensaje']
             );
-            $statement->execute([
-                'nombre' => $nombre,
-                'email' => $email,
-                'motivo' => $motivo,
-                'asunto' => $asunto,
-                'mensaje' => $mensaje,
-            ]);
-
-            header('Location: contacto.html?consulta=enviada', true, 303);
-            exit();
         } catch (PDOException $exception) {
             error_log('Error al registrar la consulta de contacto: ' . $exception->getMessage());
-            http_response_code(500);
-            exit('No se pudo registrar tu consulta. Por favor, intentá nuevamente más tarde.');
+            $this->fail('No se pudo registrar tu consulta. Por favor, intentá nuevamente más tarde.', 500);
         }
+
+        $this->redirect('public/contacto.html?consulta=enviada', 303);
     }
 
     private function longitud($valor)
     {
         return preg_match_all('/./us', $valor);
+    }
+
+    private function fail($message, $status)
+    {
+        http_response_code($status);
+        header('Content-Type: text/plain; charset=utf-8');
+        exit($message);
     }
 }

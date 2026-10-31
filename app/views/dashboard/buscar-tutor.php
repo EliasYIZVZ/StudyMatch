@@ -1,3 +1,4 @@
+<?php defined('APP_PATH') || exit('Acceso denegado.'); ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -15,7 +16,7 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Estilos del Dashboard y Perfil -->
-  <link rel="stylesheet" href="css/dashboard.css?v=20261026_4">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261026_4">
 </head>
 <body class="dashboard-body" data-role="alumno">
 
@@ -26,7 +27,7 @@
     <div>
       <!-- Header con Logo Study Match y Botón de Colapso -->
       <div class="d-flex align-items-center justify-content-between mb-4 px-2 logo-container">
-        <a href="dashboard.html" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
+        <a href="index.php?r=dashboard" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
           <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
             <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
@@ -50,11 +51,11 @@
         <div class="px-3 pb-1 text-uppercase small text-muted fw-bold sidebar-text" style="font-size: 0.68rem; letter-spacing: 0.08em;">
           Menú Alumno
         </div>
-        <a href="dashboard.html" class="sidebar-link" title="Inicio / Novedades">
+        <a href="index.php?r=dashboard" class="sidebar-link" title="Inicio / Novedades">
           <i class="bi bi-house-door"></i>
           <span class="sidebar-text">Inicio</span>
         </a>
-        <a href="buscar-tutor.html" class="sidebar-link active" title="Buscar Tutor">
+        <a href="index.php?r=buscar-tutor" class="sidebar-link active" title="Buscar Tutor">
           <i class="bi bi-search"></i>
           <span class="sidebar-text">Buscar Tutor</span>
         </a>
@@ -86,7 +87,7 @@
         <i class="bi bi-pencil-square text-secondary sidebar-text fs-6 me-1" title="Editar"></i>
       </div>
 
-      <a href="index.html" class="sidebar-link text-danger p-2" title="Cerrar sesión">
+      <a href="index.php?r=logout" class="sidebar-link text-danger p-2" title="Cerrar sesión">
         <i class="bi bi-box-arrow-left"></i>
         <span class="sidebar-text">Cerrar sesión</span>
       </a>
@@ -306,7 +307,7 @@
               <div class="d-flex justify-content-between align-items-start mb-3">
                 <div class="d-flex align-items-center gap-3">
                   <div class="avatar-with-status">
-                    <img src="img/juli.jpeg" alt="Julieta Abbiati" class="rounded-circle border" style="width: 44px; height: 44px; object-fit: cover;">
+                    <img src="public/img/juli.jpeg" alt="Julieta Abbiati" class="rounded-circle border" style="width: 44px; height: 44px; object-fit: cover;">
                     <span class="status-online-dot" title="En línea ahora"></span>
                   </div>
                   <div>
@@ -672,7 +673,7 @@
     }
 
     function irAModoTutor() {
-      window.location.href = 'dashboard-tutor.html';
+      window.location.href = 'index.php?r=dashboard-tutor';
     }
   </script>
 </body>

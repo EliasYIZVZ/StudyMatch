@@ -1,99 +1,83 @@
 <?php
 
-require_once __DIR__ . '/../config/Database.php';
-require_once __DIR__ . '/../models/User.php';
-
-final class AuthController
+final class AuthController extends Controller
 {
-    public function showRegistrationForm()
-    {
-        require __DIR__ . '/../views/auth/register.php';
-    }
-
-    public function currentUser()
-    {
-        header('Content-Type: application/json; charset=utf-8');
-        session_start();
-
-        if (empty($_SESSION['logueado']) || empty($_SESSION['id_usuario'])) {
-            http_response_code(401);
-            echo json_encode(['error' => 'No hay una sesión activa.']);
-            return;
-        }
-
-        try {
-            $user = (new User(Database::getConnection()))->findById($_SESSION['id_usuario']);
-            if ($user === false) {
-                http_response_code(404);
-                echo json_encode(['error' => 'No se encontró el usuario de la sesión.']);
-                return;
-            }
-
-            echo json_encode([
-                'nombre' => $user['nombre_usuario'],
-                'email' => $user['correo_usuario'],
-                'carrera' => $user['carrera_usuario'],
-                'nivel' => $user['anio_cursada_usuario'],
-            ]);
-        } catch (PDOException $exception) {
-            error_log('Error al cargar el usuario de la sesión: ' . $exception->getMessage());
-            http_response_code(500);
-            echo json_encode(['error' => 'No se pudo cargar el usuario.']);
-        }
-    }
-
     public function login()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.html');
-            exit();
+        if (!$this->isPost()) {
+            $this->redirect('index.php');
         }
-
-        session_start();
 
         $email = isset($_POST['email']) ? $_POST['email'] : '';
         $password = isset($_POST['password']) ? $_POST['password'] : '';
+
+        $fail = function ($message) use ($email) {
+            $_SESSION['login_error'] = $message;
+            $_SESSION['login_datos'] = [
+                'email' => is_string($email) ? trim($email) : '',
+            ];
+
+            $this->redirect('index.php', 303);
+        };
+
         if (!is_string($email) || !is_string($password)) {
-            exit('Error: Por favor, ingresa tu correo y contraseña.');
+            $fail('Por favor, ingresá tu correo y contraseña.');
         }
 
-        $email = trim(filter_var($email, FILTER_SANITIZE_EMAIL));
+        $email = trim($email);
         if ($email === '' || $password === '') {
-            exit('Error: Por favor, ingresa tu correo y contraseña.');
+            $fail('Por favor, ingresá tu correo y contraseña.');
         }
 
         try {
             $user = (new User(Database::getConnection()))->findByEmail($email);
-
-            if ($user === false || !password_verify($password, $user['password_usuario'])) {
-                exit('Error: Las credenciales ingresadas son incorrectas.');
-            }
-
-            session_regenerate_id(true);
-            $_SESSION['id_usuario'] = $user['id_usuario'];
-            $_SESSION['nombre_usuario'] = $user['nombre_usuario'];
-            $_SESSION['logueado'] = true;
-
-            header('Location: dashboard.html');
-            exit();
         } catch (PDOException $exception) {
-            exit('Error de base de datos: ' . $exception->getMessage());
+            error_log('Error al iniciar sesión: ' . $exception->getMessage());
+            $fail('No se pudo iniciar sesión. Intentá nuevamente más tarde.');
         }
+
+        if (
+            $user === false
+            || !password_verify($password, $user['password_usuario'])
+            || $user['estado_usuario'] !== 'activo'
+        ) {
+            $fail('Las credenciales ingresadas son incorrectas.');
+        }
+
+        unset($_SESSION['login_error'], $_SESSION['login_datos']);
+        Session::login($user);
+
+        $this->redirect('index.php?r=dashboard', 303);
+    }
+
+    public function logout()
+    {
+        Session::destroy();
+
+        $this->redirect('index.php', 303);
     }
 
     public function register()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: registro.html');
-            exit();
+        if (!$this->isPost()) {
+            $this->render('auth/register');
+            return;
         }
-
-        session_start();
 
         $name = isset($_POST['nombre_usuario']) ? $_POST['nombre_usuario'] : '';
         $email = isset($_POST['correo_usuario']) ? $_POST['correo_usuario'] : '';
         $password = isset($_POST['password_usuario']) ? $_POST['password_usuario'] : '';
         $confirmPassword = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
+
+        $fail = function ($message) use ($name, $email) {
+            $_SESSION['registro_error'] = $message;
+            $_SESSION['registro_datos'] = [
+                'nombre_usuario' => is_string($name) ? $name : '',
+                'correo_usuario' => is_string($email) ? $email : '',
+            ];
+
+            $this->redirect('index.php?r=registro', 303);
+        };
 
         if (
             !is_string($name)
@@ -101,39 +85,47 @@ final class AuthController
             || !is_string($password)
             || !is_string($confirmPassword)
         ) {
-            exit('Error: Todos los campos son obligatorios.');
+            $fail('Los datos enviados no son válidos.');
         }
 
-        $name = htmlspecialchars(trim($name), ENT_QUOTES, 'UTF-8');
-        $email = trim(filter_var($email, FILTER_SANITIZE_EMAIL));
+        $name = trim($name);
+        $email = trim($email);
 
         if ($name === '' || $email === '' || $password === '' || $confirmPassword === '') {
-            exit('Error: Todos los campos son obligatorios.');
+            $fail('Todos los campos son obligatorios.');
+        }
+
+        if (mb_strlen($name, 'UTF-8') > 100 || mb_strlen($email, 'UTF-8') > 100) {
+            $fail('El nombre o el correo superan la longitud permitida.');
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            exit('Error: El formato del correo no es válido.');
+            $fail('El formato del correo no es válido.');
         }
 
         if ($password !== $confirmPassword) {
-            exit('Error: Las contraseñas no coinciden.');
+            $fail('Las contraseñas no coinciden.');
         }
 
         if (strlen($password) < 8) {
-            exit('Error: La contraseña debe tener al menos 8 caracteres para ser segura.');
+            $fail('La contraseña debe tener al menos 8 caracteres.');
         }
 
         try {
             $user = new User(Database::getConnection());
+
             if ($user->emailExists($email)) {
-                exit('Error: Ya existe una cuenta registrada con este correo institucional.');
+                $fail('Ya existe una cuenta registrada con este correo.');
             }
 
             $user->create($name, $email, password_hash($password, PASSWORD_DEFAULT));
-            header('Location: index.html?registro=exitoso');
-            exit();
         } catch (PDOException $exception) {
-            exit('Error en la base de datos: ' . $exception->getMessage());
+            error_log('Error al registrar usuario: ' . $exception->getMessage());
+            $fail('No se pudo completar el registro. Intentá nuevamente.');
         }
+
+        unset($_SESSION['registro_error'], $_SESSION['registro_datos']);
+
+        $this->redirect('index.php?registro=exitoso', 303);
     }
 }

@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Modelo de la tabla `usuarios`.
+ */
 final class User
 {
     private $database;
@@ -12,21 +15,21 @@ final class User
     public function findByEmail($email)
     {
         $statement = $this->database->prepare(
-            'SELECT id_usuario, nombre_usuario, password_usuario
+            'SELECT id_usuario, nombre_usuario, password_usuario, estado_usuario
              FROM usuarios
              WHERE correo_usuario = :email
              LIMIT 1'
         );
         $statement->execute(['email' => $email]);
-        $user = $statement->fetch();
 
-        return $user;
+        return $statement->fetch();
     }
 
     public function findById($id)
     {
         $statement = $this->database->prepare(
-            'SELECT id_usuario, nombre_usuario, correo_usuario, carrera_usuario, anio_cursada_usuario
+            'SELECT id_usuario, nombre_usuario, correo_usuario, estado_usuario,
+                    carrera_usuario, anio_cursada_usuario
              FROM usuarios
              WHERE id_usuario = :id
              LIMIT 1'

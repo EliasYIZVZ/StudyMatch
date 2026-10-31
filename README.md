@@ -1,93 +1,171 @@
-# Study Match - Entorno de Desarrollo Local
+# Study Match
 
-Bienvenidos al repositorio de **Study Match**. Este documento detalla los pasos necesarios para configurar y ejecutar el proyecto en un entorno local utilizando **MAMP** (Mac o Windows).
+Plataforma web de tutorías entre estudiantes de la UTN (FRH). Proyecto en PHP puro (sin framework ni Composer) con arquitectura **MVC** y un único punto de entrada (*front controller*).
 
-## 🛠 Prerrequisitos
+---
 
-* Tener instalado [MAMP](https://www.mamp.info/).
+## Requisitos
 
-* Contar con el archivo `.sql` del proyecto (que contiene la estructura de la base de datos, incluyendo la tabla `usuarios`).
+- **MAMP** (o cualquier Apache + PHP + MySQL equivalente)
+- **PHP 7.4 o superior** con las extensiones `pdo_mysql` y `mbstring`
+- **MySQL / MariaDB**
 
-## 🚀 Guía de Instalación y Ejecución
+## Puesta en marcha
 
-### 1. Ubicar los archivos del proyecto
+1. Clonar o copiar el proyecto en `C:\MAMP\htdocs\StudyMatch`.
+2. Iniciar los servidores de MAMP (Apache y MySQL).
+3. Crear la base de datos ejecutando `sql/scriptDB.sql` (desde phpMyAdmin o la consola de MySQL).
+4. Revisar la conexión en `app/config/Database.php`. Por defecto usa:
 
-1. Descarga o clona este repositorio en tu computadora.
+   | Variable de entorno | Valor por defecto |
+   |---------------------|-------------------|
+   | `DB_HOST`           | `localhost`       |
+   | `DB_NAME`           | `StudyMatch_DB`   |
+   | `DB_USER`           | `root`            |
+   | `DB_PASSWORD`       | `root`            |
 
-2. Mueve la carpeta completa del proyecto a la carpeta raíz de MAMP:
+   Si tu entorno es distinto, definí esas variables de entorno en lugar de cambiar el código.
+5. Abrir `http://localhost/StudyMatch/` (agregá el puerto si tu Apache no usa el 80, por ejemplo `http://localhost:8888/StudyMatch/`).
 
-   * **Mac:** `/Applications/MAMP/htdocs/`
+> Apache tiene que permitir archivos `.htaccess` (`AllowOverride All`, que es lo habitual en MAMP). Se usan para bloquear el acceso directo a `app/` y `sql/`.
 
-   * **Windows:** `C:\MAMP\htdocs\`
+---
 
-3. Para facilitar el acceso, te recomendamos nombrar la carpeta del proyecto como `study-match`.
+## Estructura del proyecto
 
-### 2. Iniciar los servidores
+```
+StudyMatch/
+├── index.php              # Front controller: toda petición dinámica entra por acá
+├── .htaccess              # DirectoryIndex + sin listado de carpetas
+├── app/                   # Código de la aplicación (no accesible desde el navegador)
+│   ├── config/
+│   │   ├── Database.php   # Conexión PDO a MySQL
+│   │   └── routes.php     # Tabla de rutas
+│   ├── core/
+│   │   ├── Router.php     # Resuelve la ruta y verifica la sesión
+│   │   ├── Controller.php # Clase base: render(), redirect(), json(), isPost()
+│   │   └── Session.php    # Inicio, login, logout y estado de la sesión
+│   ├── controllers/       # Lógica de cada sección
+│   ├── models/            # Acceso a datos (una clase por tabla)
+│   └── views/             # Plantillas PHP/HTML
+│       ├── home/          # Inicio + formulario de login
+│       ├── auth/          # Registro
+│       └── dashboard/     # Área privada
+├── public/                # Archivos accesibles directamente
+│   ├── *.html             # Páginas públicas estáticas
+│   ├── css/  js/  img/
+└── sql/
+    └── scriptDB.sql       # Script de creación de la base de datos
+```
 
-1. Abre la aplicación **MAMP**.
+### Base de datos
 
-2. Haz clic en el botón **"Start Servers"** (Iniciar Servidores).
+De momento existen **dos tablas** (ver `sql/scriptDB.sql`):
 
-3. Asegúrate de que tanto el servidor **Apache** como **MySQL** estén marcados en verde.
+| Tabla              | Modelo                   | Uso                                         |
+|--------------------|--------------------------|---------------------------------------------|
+| `usuarios`         | `app/models/User.php`    | Registro, login y datos del perfil          |
+| `consultausuarios` | `app/models/Consulta.php`| Mensajes enviados desde el formulario de contacto |
 
-### 3. Configurar la Base de Datos (phpMyAdmin)
+---
 
-1. En la pantalla principal de MAMP, haz clic en **"Open WebStart page"** (o ve a `http://localhost:8888/MAMP/` / `http://localhost/MAMP/`).
+## Rutas
 
-2. En el menú superior, ve a **Tools > phpMyAdmin**.
+Todas las URLs dinámicas tienen la forma `index.php?r=<ruta>`. Se definen en `app/config/routes.php`:
 
-3. En la barra lateral izquierda, haz clic en **Nueva** para crear una base de datos.
+| Ruta              | Controlador → método                  | Acceso         | Descripción |
+|-------------------|---------------------------------------|----------------|-------------|
+| *(vacía)*         | `HomeController::index`               | Público        | Inicio con formulario de login |
+| `login`           | `AuthController::login`               | Público (POST) | Valida credenciales e inicia sesión |
+| `registro`        | `AuthController::register`            | Público        | GET muestra el formulario, POST registra |
+| `logout`          | `AuthController::logout`              | Público        | Destruye la sesión y vuelve al inicio |
+| `contacto`        | `ContactoController::validarMensaje`  | Público (POST) | Guarda una consulta de contacto |
+| `dashboard`       | `DashboardController::alumno`         | **Con sesión** | Panel del alumno |
+| `dashboard-tutor` | `DashboardController::tutor`          | **Con sesión** | Panel del tutor |
+| `buscar-tutor`    | `DashboardController::buscarTutor`    | **Con sesión** | Búsqueda de tutores |
+| `usuario-actual`  | `UsuarioController::actual`           | **Con sesión** (API) | JSON con los datos del usuario logueado |
 
-4. Nombra la base de datos como `StudyMatch_DB` (igual que en el script SQL) y selecciona el cotejamiento `utf8mb4_general_ci` o `utf8_general_ci`. Haz clic en **Crear**.
+Páginas públicas estáticas (sin PHP): `public/conoce.html`, `public/quienessomos.html` y `public/contacto.html`.
 
-5. Selecciona la base de datos `StudyMatch_DB` recién creada en el panel izquierdo.
+---
 
-6. Ve a la pestaña **Importar** en el menú superior.
+## Autenticación y control de acceso
 
-7. Haz clic en **Seleccionar archivo**, elige el archivo `.sql` del proyecto que tienes en tu equipo, baja hasta el final de la página y haz clic en **Importar**.
+- El tercer valor de cada ruta en `routes.php` define el acceso:
+  - `null` → pública.
+  - `'page'` → requiere sesión; si no hay, redirige al inicio.
+  - `'api'` → requiere sesión; si no hay, responde **401** en JSON.
+- La verificación la hace `Router` **antes** de llamar al controlador, así que los controladores del área privada no necesitan revisarla.
+- Las páginas privadas se envían con cabeceras `no-store`: después de cerrar sesión, el botón "Atrás" no las muestra desde la caché.
+- Al iniciar sesión se regenera el ID de sesión y la cookie es `HttpOnly` / `SameSite=Lax`.
+- Solo pueden iniciar sesión los usuarios con `estado_usuario = 'activo'`.
+- Las contraseñas se guardan con `password_hash()` y se validan con `password_verify()`.
+- **No hay roles en la base de datos**: cualquier usuario logueado puede entrar a ambos dashboards.
 
-### 4. Configurar las Credenciales de PHP
+Datos que se guardan en `$_SESSION` al iniciar sesión: `id_usuario`, `nombre_usuario` y `logueado`.
 
-Dependiendo de tu sistema operativo, las contraseñas por defecto de MAMP para MySQL varían. Actualiza las credenciales en `app/config/Database.php` o define las variables de entorno `DB_HOST`, `DB_NAME`, `DB_USER` y `DB_PASSWORD`:
+### Mensajes de error en formularios
 
-Los valores predeterminados son `localhost`, `StudyMatch_DB`, `root` y `root`.
+Login y registro siguen el mismo patrón:
 
-### 5. Visualizar el Proyecto
+1. El controlador valida los datos.
+2. Si algo falla, guarda el mensaje en la sesión (`login_error` / `registro_error`) junto con los datos escritos (`login_datos` / `registro_datos`) y redirige al formulario.
+3. La vista muestra la alerta, vuelve a completar los campos y borra esos valores de la sesión.
 
-Abre tu navegador web e ingresa a la siguiente ruta dependiendo de la configuración de puertos de tu MAMP:
+Los errores de base de datos se registran con `error_log()` y nunca se muestran al usuario.
 
-* Si usas el puerto por defecto de Mac (8888): `http://localhost:8888/study-match/`
+---
 
-* Si usas el puerto por defecto de Windows (80): `http://localhost/study-match/`
+## Cómo agregar una página nueva
 
-## 📂 Estructura del Proyecto
+1. Crear la vista en `app/views/<seccion>/<nombre>.php`. La primera línea tiene que ser:
+   ```php
+   <?php defined('APP_PATH') || exit('Acceso denegado.'); ?>
+   ```
+2. Agregar un método al controlador correspondiente (o crear uno nuevo en `app/controllers/`, extendiendo `Controller`):
+   ```php
+   public function miPagina()
+   {
+       $this->render('seccion/nombre');
+   }
+   ```
+3. Registrar la ruta en `app/config/routes.php`:
+   ```php
+   'mi-pagina' => ['MiController', 'miPagina', 'page'], // 'page' si requiere sesión
+   ```
+4. Enlazarla como `index.php?r=mi-pagina`.
 
-* `index.html` - Landing page y punto de inicio de sesión.
+Las clases de `core/`, `controllers/` y `models/` se cargan solas (autoload en `index.php`): el nombre del archivo tiene que coincidir con el de la clase.
 
-* `registro.html` - Redirección compatible para los enlaces anteriores al cambio.
+### Rutas de archivos dentro de las vistas
 
-* `dashboard.html` - Panel principal post-login (Actualmente maquetado estático).
+Las vistas se sirven desde `index.php` (raíz del proyecto), así que los recursos se referencian con `public/` adelante:
 
-* `login.php` y `ValidarRegistro.php` - Puntos de entrada compatibles para las acciones de autenticación.
+```html
+<link rel="stylesheet" href="public/css/dashboard.css">
+<img src="public/img/juli.jpeg">
+<a href="index.php?r=dashboard">Inicio</a>
+```
 
-* `registro.php` - Controlador de la vista del formulario de registro.
+En cambio, desde los `.html` de `public/` se usa `../index.php?r=...` para volver al front controller.
 
-* `app/controllers/` - Controladores que procesan el inicio de sesión y el registro.
+**No usar rutas absolutas con `/StudyMatch/`**: con rutas relativas, el proyecto funciona aunque se renombre la carpeta.
 
-* `app/models/` - Acceso a datos de usuarios.
+---
 
-* `app/config/` - Configuración y conexión a la base de datos.
+## Convenciones
 
-* `app/views/auth/` - Vistas del flujo de autenticación.
+- Consultas SQL **solo en los modelos** y siempre con sentencias preparadas (PDO).
+- Los controladores no imprimen HTML: usan `render()`, `redirect()` o `json()`.
+- Escapar todo dato dinámico en las vistas con `htmlspecialchars($valor, ENT_QUOTES, 'UTF-8')`.
+- Después de un POST exitoso, redirigir con código **303** (patrón Post/Redirect/Get).
 
-* `api/current_user.php` - Devuelve el nombre y correo del usuario asociado a la sesión activa para los dashboards.
+---
 
-* `css/` - Hojas de estilo y personalización (incluye Glassmorphism y Dark mode).
+## Pendientes conocidos
 
-* `img/` - Recursos gráficos e imágenes.
+- Algunas páginas del área privada todavía muestran datos estáticos de ejemplo.
+- El enlace "¿Olvidaste tu contraseña?" apunta a `public/recuperar.html`, que aún no existe.
+- El formulario de contacto muestra sus errores como texto plano.
+- Los formularios no tienen protección CSRF.
 
-## 📌 Notas para el Equipo de Desarrollo
-
-* **Seguridad:** Las contraseñas se hashean usando `password_hash()`. Por favor, **no** inserten usuarios de prueba directamente en phpMyAdmin con contraseñas en texto plano, ya que el sistema no podrá validarlos. Creen los usuarios siempre desde el formulario de registro.
-
-* **Sesiones:** `app/controllers/AuthController.php` genera las variables de sesión (`$_SESSION['id_usuario']`). `dashboard.html` todavía es estático y no protege la ruta; su conversión a una vista PHP queda pendiente.

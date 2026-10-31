@@ -1,3 +1,4 @@
+<?php defined('APP_PATH') || exit('Acceso denegado.'); ?>
 <!doctype html>
 <html lang="es" data-bs-theme="dark">
   <head>
@@ -23,9 +24,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Estilos Personalizados Study Match -->
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/forms.css">
-    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="public/css/global.css">
+    <link rel="stylesheet" href="public/css/forms.css">
+    <link rel="stylesheet" href="public/css/home.css">
   </head>
   <body class="page-home d-flex flex-column min-vh-100 justify-content-between">
 
@@ -34,7 +35,7 @@
     <nav class="navbar navbar-expand-lg navbar-glass py-3">
       <div class="container-xl">
         <!-- Logo Study Match -->
-        <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+        <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="index.php">
           <svg class="logo-svg" width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <!-- Base inferior del gorro (Azul UTN) -->
             <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
@@ -63,16 +64,16 @@
         <div class="collapse navbar-collapse" id="navbarContent">
           <ul class="navbar-nav ms-auto align-items-lg-center gap-1 gap-lg-2 mt-2 mt-lg-0 fw-medium small">
             <li class="nav-item">
-              <a class="nav-link active text-primary fw-semibold" aria-current="page" href="index.html">Inicio</a>
+              <a class="nav-link active text-primary fw-semibold" aria-current="page" href="index.php">Inicio</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-secondary" href="conoce.html">Conocer Más</a>
+              <a class="nav-link text-secondary" href="public/conoce.html">Conocer Más</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-secondary" href="quienessomos.html">Quiénes Somos</a>
+              <a class="nav-link text-secondary" href="public/quienessomos.html">Quiénes Somos</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-secondary" href="contacto.html">Contacto</a>
+              <a class="nav-link text-secondary" href="public/contacto.html">Contacto</a>
             </li>
             <li class="nav-item ms-lg-1">
               <button class="btn btn-outline-brand btn-sm p-1.5 px-2.5 rounded-pill theme-toggle-btn d-inline-flex align-items-center gap-1.5" type="button" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">
@@ -81,7 +82,7 @@
               </button>
             </li>
             <li class="nav-item ms-lg-2">
-              <a class="btn btn-primary btn-sm px-3.5 py-1.5 rounded-3 fw-semibold shadow-sm" href="registro.html">
+              <a class="btn btn-primary btn-sm px-3.5 py-1.5 rounded-3 fw-semibold shadow-sm" href="index.php?r=registro">
                 Registrarse
               </a>
             </li>
@@ -118,7 +119,7 @@
 
           <!-- 5. Botón Conocer Más  -->
           <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-3 mb-3">
-            <a href="conoce.html" class="btn btn-primary px-4 py-2.5 rounded-3 fw-semibold shadow-sm d-inline-flex align-items-center gap-2">
+            <a href="public/conoce.html" class="btn btn-primary px-4 py-2.5 rounded-3 fw-semibold shadow-sm d-inline-flex align-items-center gap-2">
               <span>Conocer más</span>
               <i class="bi bi-arrow-right"></i>
             </a>
@@ -181,13 +182,20 @@
 
               <!-- Formulario de Login Directo -->
               <div id="loginFeedback"></div>
-              <form action="login.php" method="POST">
+              <?php if (!empty($_SESSION['login_error'])): ?>
+                <div class="alert alert-danger" role="alert">
+                  <?= htmlspecialchars($_SESSION['login_error'], ENT_QUOTES, 'UTF-8') ?>
+                </div>
+                <?php unset($_SESSION['login_error']); ?>
+              <?php endif; ?>
+              <form action="index.php?r=login" method="POST">
                 <!-- Campo: Correo o Legajo -->
                 <div class="mb-2 text-start">
                   <label for="loginEmail" class="form-label small fw-semibold text-secondary mb-1">Correo institucional</label>
                   <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
-                    <input type="email" class="form-control border-start-0 ps-0" id="loginEmail" name="email" placeholder="usuario@frh.utn.edu.ar" required autocomplete="email">
+                    <input type="email" class="form-control border-start-0 ps-0" id="loginEmail" name="email" value="<?= htmlspecialchars($_SESSION['login_datos']['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="usuario@frh.utn.edu.ar" required autocomplete="email">
+                    <?php unset($_SESSION['login_datos']); ?>
                   </div>
                 </div>
 
@@ -195,7 +203,7 @@
                 <div class="mb-2 text-start">
                   <div class="d-flex justify-content-between align-items-center mb-1">
                     <label for="loginPassword" class="form-label small fw-semibold text-secondary mb-0">Contraseña</label>
-                    <a href="recuperar.html" class="auth-link text-xs text-primary text-decoration-none">¿Olvidaste tu contraseña?</a>
+                    <a href="public/recuperar.html" class="auth-link text-xs text-primary text-decoration-none">¿Olvidaste tu contraseña?</a>
                   </div>
                   <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-lock"></i></span>
@@ -221,7 +229,7 @@
               <!-- Pie de la Tarjeta: Enlace a Registro -->
               <div class="mt-3 text-center text-xs text-secondary border-top pt-2">
                 ¿Todavía no tenés cuenta? 
-                <a href="registro.html" class="text-primary fw-bold text-decoration-none ms-1">
+                <a href="index.php?r=registro" class="text-primary fw-bold text-decoration-none ms-1">
                   Crear una cuenta
                 </a>
               </div>
@@ -244,9 +252,9 @@
         <span>© 2026 Prototipo Oficial • Universidad Tecnológica Nacional (FRH)</span>
       </div>
       <div class="d-flex align-items-center gap-3">
-        <a href="conoce.html" class="footer-link text-decoration-none text-secondary">Conocer Más</a>
-        <a href="quienessomos.html" class="footer-link text-decoration-none text-secondary">Quiénes Somos</a>
-        <a href="contacto.html" class="footer-link text-decoration-none text-secondary">Contacto</a>
+        <a href="public/conoce.html" class="footer-link text-decoration-none text-secondary">Conocer Más</a>
+        <a href="public/quienessomos.html" class="footer-link text-decoration-none text-secondary">Quiénes Somos</a>
+        <a href="public/contacto.html" class="footer-link text-decoration-none text-secondary">Contacto</a>
         <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="footer-link text-decoration-none text-primary fw-medium d-inline-flex align-items-center gap-1">
           <i class="bi bi-discord"></i> Discord UTN
         </a>
@@ -257,6 +265,6 @@
   <!-- Bootstrap 5.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Script Principal y Selector de Tema (Modo Tradicional) -->
-  <script src="js/main.js"></script>
+  <script src="public/js/main.js"></script>
 </body>
 </html>

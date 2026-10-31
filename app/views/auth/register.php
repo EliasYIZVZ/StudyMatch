@@ -1,5 +1,7 @@
+<?php defined('APP_PATH') || exit('Acceso denegado.'); ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,13 +12,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="public/css/style.css">
 </head>
+
 <body class="d-flex flex-column min-vh-100 justify-content-between">
   <header class="sticky-top">
     <nav class="navbar navbar-expand-lg navbar-glass py-3">
       <div class="container-xl">
-        <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+        <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none" href="index.php">
           <svg class="logo-svg" width="46" height="46" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554" />
             <polygon points="50,20 10,42 50,62" fill="#1e3a8a" />
@@ -33,19 +36,19 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarContent">
           <ul class="navbar-nav ms-auto align-items-lg-center gap-1 gap-lg-3 mt-3 mt-lg-0 fw-medium small">
-            <li class="nav-item"><a class="nav-link text-secondary" href="index.html">Inicio</a></li>
-            <li class="nav-item"><a class="nav-link text-secondary" href="conoce.html">Conocer Más</a></li>
-            <li class="nav-item"><a class="nav-link text-secondary" href="quienessomos.html">Quiénes Somos</a></li>
-            <li class="nav-item"><a class="nav-link text-secondary" href="contacto.html">Contacto</a></li>
+            <li class="nav-item"><a class="nav-link text-secondary" href="index.php">Inicio</a></li>
+            <li class="nav-item"><a class="nav-link text-secondary" href="public/conoce.html">Conocer Más</a></li>
+            <li class="nav-item"><a class="nav-link text-secondary" href="public/quienessomos.html">Quiénes Somos</a></li>
+            <li class="nav-item"><a class="nav-link text-secondary" href="public/contacto.html">Contacto</a></li>
             <li class="nav-item ms-lg-2 mt-2 mt-lg-0 d-flex align-items-center">
               <button id="themeToggleBtn" class="theme-toggle-btn shadow-sm" title="Alternar Modo">
                 <i id="themeToggleIcon" class="bi bi-moon-stars-fill"></i>
               </button>
             </li>
             <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
-              <a class="btn btn-outline-primary px-4 py-2 rounded-3 fw-semibold shadow-sm" href="index.html">Iniciar Sesión</a>
+              <a class="btn btn-outline-primary px-4 py-2 rounded-3 fw-semibold shadow-sm" href="index.php">Iniciar Sesión</a>
             </li>
-            
+
           </ul>
         </div>
       </div>
@@ -54,7 +57,7 @@
 
   <div class="hero-wrapper flex-grow-1 d-flex align-items-center">
     <div class="hero-bg-container">
-      <img src="img/Gemini_Generated_Image_o8fa80o8fa80o8fa.jpg" alt="Comunidad universitaria Study Match" class="hero-bg-img">
+      <img src="public/img/Gemini_Generated_Image_o8fa80o8fa80o8fa.jpg" alt="Comunidad universitaria Study Match" class="hero-bg-img">
       <div class="hero-overlay-horizontal"></div>
       <div class="hero-overlay-vertical"></div>
     </div>
@@ -69,20 +72,29 @@
               <p class="text-secondary small mb-0">Únete a la comunidad de Study Match y conecta con tu tutor ideal.</p>
             </div>
 
-            <form action="ValidarRegistro.php" method="POST" class="d-flex flex-column gap-3">
+
+            <?php if (!empty($_SESSION['registro_error'])): ?>
+              <div class="alert alert-danger" role="alert">
+                <?= htmlspecialchars($_SESSION['registro_error'], ENT_QUOTES, 'UTF-8') ?>
+              </div>
+              <?php unset($_SESSION['registro_error']); ?>
+            <?php endif; ?>
+
+
+            <form action="index.php?r=registro" method="POST" class="d-flex flex-column gap-3">
               <div class="row g-3">
                 <div class="col-sm-6">
                   <label for="nombre_usuario" class="form-label small fw-medium text-dark mb-1">Nombre Completo</label>
                   <div class="input-group input-group-custom">
                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input type="text" id="nombre_usuario" name="nombre_usuario" required placeholder="Ej. Alex López" class="form-control py-2.5">
+                    <input type="text" id="nombre_usuario" name="nombre_usuario" required placeholder="Ej. Alex López" value="<?= htmlspecialchars($_SESSION['registro_datos']['nombre_usuario'] ?? '', ENT_QUOTES, 'UTF-8') ?>" class="form-control py-2.5">
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <label for="correo_usuario" class="form-label small fw-medium text-dark mb-1">Correo Institucional</label>
                   <div class="input-group input-group-custom">
                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                    <input type="email" id="correo_usuario" name="correo_usuario" required placeholder="alumno@utn.edu.ar" class="form-control py-2.5">
+                    <input type="email" id="correo_usuario" name="correo_usuario" required placeholder="alumno@utn.edu.ar" value="<?= htmlspecialchars($_SESSION['registro_datos']['correo_usuario'] ?? '', ENT_QUOTES, 'UTF-8') ?>" class="form-control py-2.5">
                   </div>
                 </div>
               </div>
@@ -118,7 +130,7 @@
             </form>
 
             <div class="mt-4 pt-4 border-top text-center">
-              <p class="small text-secondary mb-0">¿Ya tienes una cuenta? <a href="index.html" class="fw-semibold text-primary text-decoration-none">Inicia sesión aquí</a></p>
+              <p class="small text-secondary mb-0">¿Ya tienes una cuenta? <a href="index.php" class="fw-semibold text-primary text-decoration-none">Inicia sesión aquí</a></p>
             </div>
           </div>
         </div>
@@ -141,6 +153,7 @@
   <script>
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeToggleIcon = document.getElementById('themeToggleIcon');
+
     function aplicarTema(tema) {
       document.documentElement.setAttribute('data-bs-theme', tema);
       localStorage.setItem('study-match-theme', tema);
@@ -155,16 +168,7 @@
         aplicarTema(temaActual === 'dark' ? 'light' : 'dark');
       });
     }
-
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function(event) {
-      const password = document.getElementById('password_usuario').value;
-      const confirmation = document.getElementById('confirm_password').value;
-      if (password !== confirmation) {
-        event.preventDefault();
-        alert('Las contraseñas no coinciden. Por favor, verifica.');
-      }
-    });
   </script>
 </body>
+
 </html>

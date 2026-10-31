@@ -1,3 +1,4 @@
+<?php defined('APP_PATH') || exit('Acceso denegado.'); ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -15,7 +16,7 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Estilos del Dashboard y Perfil (100% Independiente de Landing) -->
-  <link rel="stylesheet" href="css/dashboard.css?v=20261026_4">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261026_4">
 </head>
 <body class="dashboard-body" data-role="tutor">
 
@@ -26,7 +27,7 @@
     <div>
       <!-- Header con Logo Study Match y Botón de Colapso -->
       <div class="d-flex align-items-center justify-content-between mb-4 px-2 logo-container">
-        <a href="dashboard-tutor.html" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
+        <a href="index.php?r=dashboard-tutor" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
           <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
             <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
@@ -50,7 +51,7 @@
         <div class="px-3 pb-1 text-uppercase small text-muted fw-bold sidebar-text" style="font-size: 0.68rem; letter-spacing: 0.08em;">
           Menú Tutor
         </div>
-        <a href="dashboard-tutor.html" class="sidebar-link active" title="Panel Tutor">
+        <a href="index.php?r=dashboard-tutor" class="sidebar-link active" title="Panel Tutor">
           <i class="bi bi-speedometer2"></i>
           <span class="sidebar-text">Panel Tutor</span>
         </a>
@@ -87,7 +88,7 @@
         <i class="bi bi-pencil-square text-secondary sidebar-text fs-6 me-1" title="Editar"></i>
       </div>
 
-      <a href="index.html" class="sidebar-link text-danger p-2" title="Cerrar sesión">
+      <a href="index.php?r=logout" class="sidebar-link text-danger p-2" title="Cerrar sesión">
         <i class="bi bi-box-arrow-left"></i>
         <span class="sidebar-text">Cerrar sesión</span>
       </a>
@@ -118,7 +119,7 @@
         <!-- Switch Rol Dual: Alumno (Azul) / Tutor (Verde) + Perfil -->
         <div class="d-flex align-items-center gap-3">
           
-          <!-- Switch Alumno / Tutor (Cambia a dashboard.html) -->
+          <!-- Switch Alumno / Tutor (Cambia a index.php?r=dashboard) -->
           <div class="role-switch-container d-flex align-items-center gap-1 shadow-sm">
             <span id="label-alumno" class="role-badge-btn text-secondary" onclick="irAModoAlumno()" title="Pasar a Modo Alumno">
               <span class="role-dot"></span>
@@ -183,7 +184,7 @@
               </li>
               <li><hr class="dropdown-divider my-1"></li>
               <li>
-                <a class="dropdown-item text-danger rounded-3 py-2 d-flex align-items-center gap-2" href="index.html">
+                <a class="dropdown-item text-danger rounded-3 py-2 d-flex align-items-center gap-2" href="index.php?r=logout">
                   <i class="bi bi-box-arrow-left fs-6"></i>
                   <span>Cerrar sesión</span>
                 </a>
@@ -577,11 +578,11 @@
           <div class="border-top pt-3">
             <span class="small fw-semibold text-secondary d-block mb-3">O seleccioná un avatar ilustrado:</span>
             <div class="d-flex justify-content-center gap-3">
-              <img src="img/avatares/bicho1.jpeg" 
+              <img src="public/img/avatares/bicho1.jpeg" 
                    class="preset-avatar" alt="Avatar 1" onclick="seleccionarPresetAvatar(this.src)">
-              <img src="img/avatares/bicho2.jfif" 
+              <img src="public/img/avatares/bicho2.jfif" 
                    class="preset-avatar" alt="Avatar 2" onclick="seleccionarPresetAvatar(this.src)">
-              <img src="img/avatares/bicho3.jfif" 
+              <img src="public/img/avatares/bicho3.jfif" 
                    class="preset-avatar" alt="Avatar 3" onclick="seleccionarPresetAvatar(this.src)">
             </div>
           </div>
@@ -763,7 +764,7 @@
       document.body.classList.add('page-fading-out');
 
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'index.php?r=dashboard';
       }, 340);
     }
 
@@ -1039,7 +1040,7 @@
       }
     }
 
-    fetch('api/current_user.php', { credentials: 'same-origin' })
+    fetch('index.php?r=usuario-actual', { credentials: 'same-origin' })
       .then(response => {
         if (!response.ok) throw new Error('No se pudo cargar el usuario de la sesión.');
         return response.json();
