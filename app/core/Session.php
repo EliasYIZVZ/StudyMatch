@@ -33,7 +33,16 @@ final class Session
         session_regenerate_id(true);
         $_SESSION['id_usuario'] = (int) $user['id_usuario'];
         $_SESSION['nombre_usuario'] = $user['nombre_usuario'];
+        $_SESSION['correo_usuario'] = $user['correo_usuario'];
+        $_SESSION['rol_usuario'] = $user['rol_usuario'] === 'admin' ? 'admin' : 'usuario';
         $_SESSION['logueado'] = true;
+    }
+
+    public static function isAdmin()
+    {
+        return self::isAuthenticated()
+            && isset($_SESSION['rol_usuario'])
+            && $_SESSION['rol_usuario'] === 'admin';
     }
 
     public static function userId()

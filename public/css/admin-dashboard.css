@@ -1,0 +1,90 @@
+/**
+ * ==========================================================================
+ * STUDY MATCH • Estilos Específicos: Dashboard y Resumen General
+ * Archivo: css/admin-dashboard.css
+ * ==========================================================================
+ */
+
+/* Tarjetas de Métricas KPI enlazables (4 Principales) */
+.metric-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.metric-card-link:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 28px -8px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(37, 99, 235, 0.2);
+  border-color: #93c5fd !important;
+}
+
+.metric-card-link:hover .metric-shortcut-icon {
+  color: #0d6efd !important;
+  transform: translate(2px, -2px);
+}
+
+.metric-shortcut-icon {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* Pulso indicador para salas públicas en vivo */
+.live-indicator-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  animation: livePulse 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+@keyframes livePulse {
+  to {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+}
+
+/* Elementos de la lista de tutores a verificar */
+.tutor-verify-item {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.tutor-verify-item:hover {
+  background-color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .tutor-verify-item:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Tablas y filas del dashboard */
+.table-dashboard th {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  font-weight: 700;
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 0.85rem 1rem;
+}
+
+.table-dashboard td {
+  vertical-align: middle;
+  padding: 0.85rem 1rem;
+  font-size: 0.86rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+[data-bs-theme="dark"] .table-dashboard th {
+  background-color: #0f172a;
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .table-dashboard td {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
+}
+

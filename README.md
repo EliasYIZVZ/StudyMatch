@@ -15,6 +15,11 @@ Plataforma web de tutorías entre estudiantes de la UTN (FRH). Proyecto en PHP p
 1. Clonar o copiar el proyecto en `C:\MAMP\htdocs\StudyMatch`.
 2. Iniciar los servidores de MAMP (Apache y MySQL).
 3. Crear la base de datos ejecutando `sql/scriptDB.sql` (desde phpMyAdmin o la consola de MySQL).
+   - Si tu base ya existía antes de que se agregara el rol de usuario, ejecutá **una sola vez** `sql/migracion_001_rol_usuario.sql`.
+   - Para tener un administrador, registrá una cuenta normal y después:
+     ```sql
+     UPDATE usuarios SET rol_usuario = 'admin' WHERE correo_usuario = 'tu-correo@frh.utn.edu.ar';
+     ```
 4. Revisar la conexión en `app/config/Database.php`. Por defecto usa:
 
    | Variable de entorno | Valor por defecto |
@@ -50,12 +55,14 @@ StudyMatch/
 │   └── views/             # Plantillas PHP/HTML
 │       ├── home/          # Inicio + formulario de login
 │       ├── auth/          # Registro
-│       └── dashboard/     # Área privada
+│       ├── dashboard/     # Área privada de alumnos/tutores
+│       └── admin/         # Panel de administración
 ├── public/                # Archivos accesibles directamente
 │   ├── *.html             # Páginas públicas estáticas
 │   ├── css/  js/  img/
 └── sql/
-    └── scriptDB.sql       # Script de creación de la base de datos
+    ├── scriptDB.sql       # Script de creación de la base de datos
+    └── migracion_*.sql    # Cambios para bases ya existentes
 ```
 
 ### Base de datos
@@ -64,7 +71,7 @@ De momento existen **dos tablas** (ver `sql/scriptDB.sql`):
 
 | Tabla              | Modelo                   | Uso                                         |
 |--------------------|--------------------------|---------------------------------------------|
-| `usuarios`         | `app/models/User.php`    | Registro, login y datos del perfil          |
+| `usuarios`         | `app/models/User.php`    | Registro, login, datos del perfil y rol (`rol_usuario`: `usuario` / `admin`) |
 | `consultausuarios` | `app/models/Consulta.php`| Mensajes enviados desde el formulario de contacto |
 
 ---
@@ -84,6 +91,11 @@ Todas las URLs dinámicas tienen la forma `index.php?r=<ruta>`. Se definen en `a
 | `dashboard-tutor` | `DashboardController::tutor`          | **Con sesión** | Panel del tutor |
 | `buscar-tutor`    | `DashboardController::buscarTutor`    | **Con sesión** | Búsqueda de tutores |
 | `usuario-actual`  | `UsuarioController::actual`           | **Con sesión** (API) | JSON con los datos del usuario logueado |
+| `admin`           | `AdminController::dashboard`          | **Admin**      | Resumen del panel de administración |
+| `admin-usuarios`  | `AdminController::usuarios`           | **Admin**      | Gestión de usuarios |
+| `admin-materias`  | `AdminController::materias`           | **Admin**      | Gestión de carreras y materias |
+| `admin-salas`     | `AdminController::salas`              | **Admin**      | Moderación de salas públicas |
+| `admin-reportes`  | `AdminController::reportes`           | **Admin**      | Reportes de moderación |
 
 Páginas públicas estáticas (sin PHP): `public/conoce.html`, `public/quienessomos.html` y `public/contacto.html`.
 
@@ -93,16 +105,19 @@ Páginas públicas estáticas (sin PHP): `public/conoce.html`, `public/quienesso
 
 - El tercer valor de cada ruta en `routes.php` define el acceso:
   - `null` → pública.
-  - `'page'` → requiere sesión; si no hay, redirige al inicio.
-  - `'api'` → requiere sesión; si no hay, responde **401** en JSON.
+  - `'page'` → requiere sesión de **usuario común**; sin sesión redirige al inicio y un admin es enviado a su panel.
+  - `'admin'` → requiere sesión con `rol_usuario = 'admin'`; un usuario común es enviado a su dashboard.
+  - `'api'` → requiere cualquier sesión; si no hay, responde **401** en JSON.
 - La verificación la hace `Router` **antes** de llamar al controlador, así que los controladores del área privada no necesitan revisarla.
 - Las páginas privadas se envían con cabeceras `no-store`: después de cerrar sesión, el botón "Atrás" no las muestra desde la caché.
 - Al iniciar sesión se regenera el ID de sesión y la cookie es `HttpOnly` / `SameSite=Lax`.
 - Solo pueden iniciar sesión los usuarios con `estado_usuario = 'activo'`.
 - Las contraseñas se guardan con `password_hash()` y se validan con `password_verify()`.
-- **No hay roles en la base de datos**: cualquier usuario logueado puede entrar a ambos dashboards.
+- **Roles:** todos usan el mismo login. Después de iniciar sesión, un admin va a `index.php?r=admin` y un usuario común a `index.php?r=dashboard`. Cada uno solo puede entrar a su área.
+- Alumno y tutor **no** son roles distintos: cualquier usuario común puede entrar a ambos dashboards.
+- El rol se lee de la base al iniciar sesión. Si se le cambia el rol a alguien, el cambio se aplica en su próximo login.
 
-Datos que se guardan en `$_SESSION` al iniciar sesión: `id_usuario`, `nombre_usuario` y `logueado`.
+Datos que se guardan en `$_SESSION` al iniciar sesión: `id_usuario`, `nombre_usuario`, `correo_usuario`, `rol_usuario` y `logueado`.
 
 ### Mensajes de error en formularios
 
@@ -131,7 +146,7 @@ Los errores de base de datos se registran con `error_log()` y nunca se muestran 
    ```
 3. Registrar la ruta en `app/config/routes.php`:
    ```php
-   'mi-pagina' => ['MiController', 'miPagina', 'page'], // 'page' si requiere sesión
+   'mi-pagina' => ['MiController', 'miPagina', 'page'], // null, 'page', 'admin' o 'api'
    ```
 4. Enlazarla como `index.php?r=mi-pagina`.
 
@@ -165,6 +180,7 @@ En cambio, desde los `.html` de `public/` se usa `../index.php?r=...` para volve
 ## Pendientes conocidos
 
 - Algunas páginas del área privada todavía muestran datos estáticos de ejemplo.
+- **Panel admin:** los datos son simulados. Están en los métodos `datos*()` de `AdminController`, y los comentarios de cada uno explican qué consulta los reemplazaría. Las tablas que necesitan (`materias`, `carreras`, salas, reportes, etc.) todavía no existen. Las acciones de los botones (aprobar, suspender, crear materia…) son solo del lado del navegador.
 - El enlace "¿Olvidaste tu contraseña?" apunta a `public/recuperar.html`, que aún no existe.
 - El formulario de contacto muestra sus errores como texto plano.
 - Los formularios no tienen protección CSRF.

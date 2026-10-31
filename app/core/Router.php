@@ -32,6 +32,17 @@ final class Router
             exit();
         }
 
+        // Cada rol solo accede a su área: el admin al panel admin y el resto a los dashboards.
+        if ($auth === 'admin' && !Session::isAdmin()) {
+            header('Location: index.php?r=dashboard', true, 303);
+            exit();
+        }
+
+        if ($auth === 'page' && Session::isAdmin()) {
+            header('Location: index.php?r=admin', true, 303);
+            exit();
+        }
+
         if ($auth !== null) {
             // Evita que el navegador muestre páginas privadas cacheadas tras cerrar sesión.
             header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');

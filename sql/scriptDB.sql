@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     correo_usuario VARCHAR(100) NOT NULL,
     fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     estado_usuario ENUM('activo', 'inactivo') NOT NULL DEFAULT 'activo',
+    rol_usuario ENUM('usuario', 'admin') NOT NULL DEFAULT 'usuario',
     carrera_usuario VARCHAR(50) NULL, -- completar
     anio_cursada_usuario ENUM('1ro', '2do', '3ro', '4to', '5to', 'graduado') NULL,
     PRIMARY KEY (id_usuario),
@@ -31,4 +32,4 @@ CREATE TABLE IF NOT EXISTS consultausuarios (
     mensaje TEXT NOT NULL,
     fecha_consulta DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id_consulta)
-)
+);

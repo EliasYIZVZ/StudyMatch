@@ -47,7 +47,7 @@ final class AuthController extends Controller
         unset($_SESSION['login_error'], $_SESSION['login_datos']);
         Session::login($user);
 
-        $this->redirect('index.php?r=dashboard', 303);
+        $this->redirect(Session::isAdmin() ? 'index.php?r=admin' : 'index.php?r=dashboard', 303);
     }
 
     public function logout()

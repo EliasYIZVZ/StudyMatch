@@ -1,0 +1,154 @@
+/**
+ * ==========================================================================
+ * STUDY MATCH • Estilos de Administración: Moderación y Alertas
+ * Archivo: css/admin-reportes.css
+ * ==========================================================================
+ */
+
+:root {
+  --admin-accent: #2563eb;
+  --discord-color: #5865F2;
+  --admin-speed: 0.16s;
+}
+
+/* ==========================================================================
+   1. TABLA DE AUDITORÍA DE REPORTES
+   ========================================================================== */
+.table-reportes th {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  font-weight: 700;
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 0.85rem 1rem;
+  white-space: nowrap;
+}
+
+.table-reportes td {
+  vertical-align: middle;
+  padding: 0.85rem 1rem;
+  font-size: 0.86rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.table-reportes tbody tr {
+  transition: background-color var(--admin-speed) ease;
+}
+
+.table-reportes tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.table-reportes tr.fila-resuelta {
+  opacity: 0.65;
+}
+
+/* Botones de acción compactos */
+.btn-action-pill {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50rem;
+  transition: all var(--admin-speed) ease;
+}
+
+/* Botón sutil de icono circular (para descartar) */
+.btn-icon-subtle {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  transition: all var(--admin-speed) ease;
+}
+
+.btn-icon-subtle:hover {
+  background-color: #fee2e2 !important;
+  color: #ef4444 !important;
+  border-color: #fca5a5 !important;
+}
+
+[data-bs-theme="dark"] .btn-icon-subtle {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .btn-icon-subtle:hover {
+  background-color: rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Avatar de usuario creador / reportado */
+.avatar-user-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #334155;
+  flex-shrink: 0;
+}
+
+/* Icono insignia de tipo de elemento */
+.badge-tipo-elemento {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  border-radius: 50rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Animación de pulso para reportes críticos */
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.pulse-warning {
+  background-color: #f59e0b;
+  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+  animation: pulse-warn 1.8s infinite;
+}
+
+@keyframes pulse-warn {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+/* ==========================================================================
+   2. MODO OSCURO (DATA-BS-THEME="DARK")
+   ========================================================================== */
+[data-bs-theme="dark"] .table-reportes th {
+  background-color: #0f172a;
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .table-reportes td {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
+}
+
+[data-bs-theme="dark"] .table-reportes tbody tr:hover {
+  background-color: #162033;
+}
+
+[data-bs-theme="dark"] .avatar-user-badge {
+  background: #334155;
+  color: #f1f5f9;
+}
