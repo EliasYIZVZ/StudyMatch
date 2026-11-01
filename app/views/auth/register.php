@@ -57,7 +57,7 @@
 
   <div class="hero-wrapper flex-grow-1 d-flex align-items-center">
     <div class="hero-bg-container">
-      <img src="public/img/Gemini_Generated_Image_o8fa80o8fa80o8fa.jpg" alt="Comunidad universitaria Study Match" class="hero-bg-img">
+      <img src="public/img/Utn_ia1.jfif" alt="Comunidad universitaria Study Match" class="hero-bg-img">
       <div class="hero-overlay-horizontal"></div>
       <div class="hero-overlay-vertical"></div>
     </div>

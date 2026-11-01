@@ -3,7 +3,7 @@
  * STUDY MATCH • Estilos Globales de Administración
  * Archivo: css/admin-global.css
  * ==========================================================================
- * - Fondo con img/img_admin.png y desenfoque sutil (blur)
+ * - Fondo translúcido del panel sobre imagen gente_utn.png
  * - Sidebar en Modo Claro: gris azulado suave (slate/blue tint)
  * - Sidebar en Modo Oscuro: grafito slate-900 institucional
  * - Topbar con glassmorphism
@@ -45,36 +45,9 @@ body.dashboard-body {
   overflow-x: hidden;
 }
 
-/* Capa fija de fondo con desenfoque sutil (blur) */
-body.dashboard-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-image: url('../img/img_admin.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  filter: blur(8px);
-  -webkit-filter: blur(8px);
-  opacity: 0.12; /* Desenfoque sutil y translúcido en modo claro */
-  pointer-events: none;
-  z-index: -1;
-  transform: scale(1.04); /* Previene bordes blancos por el desenfoque */
-}
-
-/* Modo oscuro para el fondo */
 [data-bs-theme="dark"] body.dashboard-body {
   background-color: var(--admin-bg-dark) !important;
   color: #f1f5f9;
-}
-
-[data-bs-theme="dark"] body.dashboard-body::before {
-  opacity: 0.07;
-  filter: blur(10px) brightness(0.7);
-  -webkit-filter: blur(10px) brightness(0.7);
 }
 
 /* Wrapper del contenido principal */
@@ -447,4 +420,3 @@ body.dashboard-body::before {
 .modal.show .modal-dialog {
   transform: scale(1) !important;
 }
-

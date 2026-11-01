@@ -5,6 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Study Match - Panel de Alumno</title>
+  <script>
+    (function() {
+      var theme = localStorage.getItem('study_match_theme');
+      document.documentElement.setAttribute('data-bs-theme', theme === 'light' ? 'light' : 'dark');
+    })();
+  </script>
 
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +22,7 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Estilos del Dashboard y Perfil (100% Independiente de Landing) -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261026_5">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261101_dashboard_night_polish">
 </head>
 <body class="dashboard-body" data-role="alumno">
 
@@ -117,18 +123,19 @@
 
         <!-- Switch Rol Dual: Alumno (Azul) / Tutor (Verde) + Perfil -->
         <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-outline-brand btn-sm theme-toggle-btn d-inline-flex align-items-center justify-content-center rounded-pill" type="button" aria-label="Cambiar a modo claro" title="Cambiar a modo claro">
+            <i class="theme-icon bi bi-sun-fill text-warning"></i>
+          </button>
           
           <!-- Switch Alumno / Tutor (Cambia a index.php?r=dashboard-tutor) -->
           <div class="role-switch-container d-flex align-items-center gap-1 shadow-sm">
             <span id="label-alumno" class="role-badge-btn" title="Actualmente en Modo Alumno">
-              <span class="role-dot"></span>
               <span>Alumno</span>
             </span>
             <div class="form-check form-switch m-0 p-0 d-flex align-items-center mx-1">
               <input class="form-check-input ms-0" type="checkbox" id="switchRol" onchange="irAModoTutor()" title="Cambiar a Modo Tutor">
             </div>
             <span id="label-tutor" class="role-badge-btn text-secondary" onclick="irAModoTutor()" title="Pasar a Modo Tutor">
-              <span class="role-dot"></span>
               <span>Tutor</span>
             </span>
           </div>
@@ -147,7 +154,7 @@
             </button>
 
             <!-- Contenido del Menú Desplegable -->
-            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" style="min-width: 270px;">
+            <ul class="dropdown-menu profile-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" style="min-width: 270px;">
               <li class="px-3 py-2 border-bottom mb-1 bg-light rounded-3">
                 <div class="fw-bold text-dark userNameSlot">Cargando...</div>
                 <div class="text-secondary small userEmailSlot">Cargando...</div>
@@ -457,7 +464,7 @@
           <div class="modal-body p-4">
             <div class="row g-3">
               <div class="col-md-6">
-                <label for="editNombre" class="form-label small fw-semibold text-dark">Nombre y Apellido</label>
+                <label for="editNombre" class="form-label small fw-semibold text-dark mb-2">Nombre y Apellido</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 text-secondary"><i class="bi bi-person"></i></span>
                   <input type="text" class="form-control border-start-0 ps-0" id="editNombre" value="" required>
@@ -465,7 +472,7 @@
               </div>
 
               <div class="col-md-6">
-                <label for="editEmail" class="form-label small fw-semibold text-dark">Correo Institucional UTN</label>
+                <label for="editEmail" class="form-label small fw-semibold text-dark mb-2">Correo Institucional UTN</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 text-secondary"><i class="bi bi-envelope"></i></span>
                   <input type="email" class="form-control border-start-0 ps-0 profile-field-readonly" id="editEmail" value="" readonly>
@@ -924,5 +931,6 @@
 
   <!-- Bootstrap 5.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="public/js/main.js"></script>
 </body>
 </html>

@@ -26,10 +26,10 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Estilos base compartidos de Dashboards -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261029_admin_clean">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261101_ia4">
 
-  <!-- Estilos globales de Administración (Fondo img_admin.png desenfocado, sidebar claro gris azulado / oscuro grafito) -->
-  <link rel="stylesheet" href="public/css/admin-global.css?v=20261029_v3">
+  <!-- Estilos globales de Administración (sidebar claro gris azulado / oscuro grafito) -->
+  <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
 
   <!-- Estilos específicos del Dashboard -->
   <link rel="stylesheet" href="public/css/admin-dashboard.css?v=20261029_v3">

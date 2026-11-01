@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Estilos Personalizados Study Match -->
-    <link rel="stylesheet" href="public/css/global.css">
+    <link rel="stylesheet" href="public/css/global.css?v=20261101_bg_scrollfix2">
     <link rel="stylesheet" href="public/css/forms.css">
     <link rel="stylesheet" href="public/css/home.css">
   </head>
@@ -82,8 +82,8 @@
               </button>
             </li>
             <li class="nav-item ms-lg-2">
-              <a class="btn btn-primary btn-sm px-3.5 py-1.5 rounded-3 fw-semibold shadow-sm" href="index.php?r=registro">
-                Registrarse
+              <a class="btn btn-primary btn-sm px-3.5 py-1.5 rounded-3 fw-semibold shadow-sm" href="index.php">
+                Iniciar Sesión
               </a>
             </li>
           </ul>

@@ -16,7 +16,7 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Estilos del Dashboard y Perfil -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261026_4">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261101_search_cards_spacing">
 </head>
 <body class="dashboard-body" data-role="alumno">
 
@@ -114,14 +114,12 @@
         <div class="d-flex align-items-center gap-3">
           <div class="role-switch-container d-flex align-items-center gap-1 shadow-sm">
             <span id="label-alumno" class="role-badge-btn" title="Actualmente en Modo Alumno">
-              <span class="role-dot"></span>
               <span>Alumno</span>
             </span>
             <div class="form-check form-switch m-0 p-0 d-flex align-items-center mx-1">
               <input class="form-check-input ms-0" type="checkbox" id="switchRol" onchange="irAModoTutor()" title="Cambiar a Modo Tutor">
             </div>
             <span id="label-tutor" class="role-badge-btn text-secondary" onclick="irAModoTutor()" title="Pasar a Modo Tutor">
-              <span class="role-dot"></span>
               <span>Tutor</span>
             </span>
           </div>
@@ -144,12 +142,12 @@
       <!-- ======================================================================
            PANEL DE BÚSQUEDA HÍBRIDO (Input Libre + Select + Píldoras Interactivas)
            ====================================================================== -->
-      <div class="search-hybrid-card p-4 p-md-4 mb-4">
+      <div class="search-hybrid-card p-3 p-md-4 mb-4">
         
         <!-- Fila Superior: Barra de Búsqueda Libre + Select Desplegable -->
-        <div class="row g-3 mb-3">
+        <div class="row g-3">
           <!-- Input Grande y Cómodo de Texto Libre -->
-          <div class="col-lg-5">
+          <div class="col-12 col-xl-6">
             <label for="inputBusquedaTutor" class="form-label small fw-semibold text-secondary mb-1">
               ¿Qué materia, tema o tecnología necesitás repasar?
             </label>
@@ -162,7 +160,7 @@
                      aria-label="Buscar tutor">
             </div>
           </div>
-          <div class="col-sm-6 col-lg-2">
+          <div class="col-12 col-md-6 col-xl-3">
             <label for="selectCategoriaMateria" class="form-label small fw-semibold text-secondary mb-1">Materia</label>
             <select id="selectCategoriaMateria" class="form-select shadow-sm">
               <option value="todas">Todas las materias</option>
@@ -172,21 +170,21 @@
               <option value="sistemas">Sistemas</option>
             </select>
           </div>
-          <div class="col-sm-6 col-lg-2">
+          <div class="col-12 col-md-6 col-xl-3">
             <label for="selectOrdenTutorias" class="form-label small fw-semibold text-secondary mb-1">Ordenar por</label>
             <select id="selectOrdenTutorias" class="form-select shadow-sm">
               <option value="reciente">Más reciente</option>
               <option value="antiguo">Más antiguo</option>
             </select>
           </div>
-          <div class="col-12 col-lg-3 d-flex align-items-end gap-2">
-            <button type="button" id="btnBuscarTutor" class="btn btn-primary flex-grow-1">
+        </div>
+        <div class="d-flex justify-content-end gap-2 mt-3 search-hybrid-actions">
+            <button type="button" id="btnBuscarTutor" class="btn btn-primary">
               <i class="bi bi-search me-1" aria-hidden="true"></i>Buscar
             </button>
-            <button type="button" id="btnLimpiarFiltros" class="btn btn-outline-secondary flex-grow-1">
+            <button type="button" id="btnLimpiarFiltros" class="btn btn-outline-secondary">
               <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i>Limpiar
             </button>
-          </div>
         </div>
       </div>
 
@@ -215,14 +213,14 @@
               </div>
 
               <!-- Estado de Disponibilidad Actual -->
-              <div class="mb-2.5">
+              <div class="tutor-availability mb-3">
                 <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold">
                   <i class="bi bi-circle-fill me-1" style="font-size: 0.45rem;"></i> Disponible Ahora (Online)
                 </span>
               </div>
 
               <!-- Especialidad y Materias -->
-              <h6 class="fw-bold text-dark mb-1">C++ y POO: Punteros, Listas y Árboles</h6>
+              <h6 class="tutor-specialty-title fw-bold text-dark mb-2">C++ y POO: Punteros, Listas y Árboles</h6>
               <p class="text-secondary small mb-3">
                 Preparación para parciales de Programación II, resolución de TPs de laboratorio y dudas conceptuales.
               </p>
@@ -268,13 +266,13 @@
                 <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
               </div>
 
-              <div class="mb-2.5">
+              <div class="tutor-availability mb-3">
                 <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1 small fw-semibold">
                   <i class="bi bi-clock-fill me-1" style="font-size: 0.55rem;"></i> Disponible hoy desde 18:30 hs
                 </span>
               </div>
 
-              <h6 class="fw-bold text-dark mb-1">SQL Server, MySQL y Normalización DER</h6>
+              <h6 class="tutor-specialty-title fw-bold text-dark mb-2">SQL Server, MySQL y Normalización DER</h6>
               <p class="text-secondary small mb-3">
                 Consultas complejas, subconsultas, triggers, procedimientos almacenados y diseño relacional sin fallas.
               </p>
@@ -318,13 +316,13 @@
                 <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
               </div>
 
-              <div class="mb-2.5">
+              <div class="tutor-availability mb-3">
                 <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold">
                   <i class="bi bi-circle-fill me-1" style="font-size: 0.45rem;"></i> Disponible Ahora (Discord UTN)
                 </span>
               </div>
 
-              <h6 class="fw-bold text-dark mb-1">Arquitectura Backend, APIs REST y PHP</h6>
+              <h6 class="tutor-specialty-title fw-bold text-dark mb-2">Arquitectura Backend, APIs REST y PHP</h6>
               <p class="text-secondary small mb-3">
                 Conexión segura a BD, autenticación con sesiones y estructuración de código limpio para proyectos finales.
               </p>
@@ -368,13 +366,13 @@
                 <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
               </div>
 
-              <div class="mb-2.5">
+              <div class="tutor-availability mb-3">
                 <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 small fw-semibold">
                   <i class="bi bi-calendar-event me-1"></i> Próxima fecha: Mañana 16:00 hs
                 </span>
               </div>
 
-              <h6 class="fw-bold text-dark mb-1">Matemática Discreta y Lógica Booleana</h6>
+              <h6 class="tutor-specialty-title fw-bold text-dark mb-2">Matemática Discreta y Lógica Booleana</h6>
               <p class="text-secondary small mb-3">
                 Grafos, árboles de decisión, tablas de verdad y relaciones de equivalencia explicados de forma práctica.
               </p>
@@ -417,13 +415,13 @@
                 <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
               </div>
 
-              <div class="mb-2.5">
+              <div class="tutor-availability mb-3">
                 <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 small fw-semibold">
                   <span class="pulse-live-dot me-1"></span> En Sala Pública Activa Ahora
                 </span>
               </div>
 
-              <h6 class="fw-bold text-dark mb-1">Análisis Matemático I y Física I</h6>
+              <h6 class="tutor-specialty-title fw-bold text-dark mb-2">Análisis Matemático I y Física I</h6>
               <p class="text-secondary small mb-3">
                 Resolución paso a paso de integrales dobles, derivadas aplicadas y leyes de Newton con ejercicios de examen.
               </p>
@@ -467,13 +465,13 @@
                 <button class="btn btn-link text-secondary p-0 shadow-none"><i class="bi bi-bookmark"></i></button>
               </div>
 
-              <div class="mb-2.5">
+              <div class="tutor-availability mb-3">
                 <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1 small fw-semibold">
                   <i class="bi bi-clock-fill me-1" style="font-size: 0.55rem;"></i> Disponible hoy desde 20:00 hs
                 </span>
               </div>
 
-              <h6 class="fw-bold text-dark mb-1">Sistemas Operativos, Linux y Redes</h6>
+              <h6 class="tutor-specialty-title fw-bold text-dark mb-2">Sistemas Operativos, Linux y Redes</h6>
               <p class="text-secondary small mb-3">
                 Comandos de Bash, gestión de memoria virtual, planificación de CPU y sockets de red en C.
               </p>

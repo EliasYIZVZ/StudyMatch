@@ -39,7 +39,7 @@
   line-height: 1.55;
   color: #1f262f;
   max-width: 550px;
-  margin-inline: auto;
+  margin-inline: 0;
 }
 
 /* 2. Tarjeta de Métricas */

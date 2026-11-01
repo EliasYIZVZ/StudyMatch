@@ -5,15 +5,13 @@
    Universidad Tecnológica Nacional (FRH)
    ========================================================================== */
 
-/* 1. Fondo de la página */
+/* 1. Ajustes de página */
 body.page-contacto {
-  background: #f1f7fc;
   color: #1e293b;
   min-height: 100vh;
 }
 
 [data-bs-theme="dark"] body.page-contacto {
-  background: #101b2a;
   color: #e2e8f0;
 }
 
