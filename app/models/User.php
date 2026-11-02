@@ -30,7 +30,7 @@ final class User
     {
         $statement = $this->database->prepare(
             'SELECT id_usuario, nombre_usuario, correo_usuario, estado_usuario, rol_usuario,
-                    carrera_usuario, anio_cursada_usuario
+                    carrera_usuario, anio_cursada_usuario, foto_usuario
              FROM usuarios
              WHERE id_usuario = :id
              LIMIT 1'
@@ -61,5 +61,18 @@ final class User
             'email' => $email,
             'password' => $passwordHash,
         ]);
+    }
+
+    /**
+     * Guarda la ruta relativa de la foto de perfil (null = sin foto, se muestran las iniciales).
+     */
+    public function actualizarFoto($id, $ruta)
+    {
+        $statement = $this->database->prepare(
+            'UPDATE usuarios SET foto_usuario = :foto WHERE id_usuario = :id'
+        );
+        $statement->bindValue(':foto', $ruta, $ruta === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+        $statement->bindValue(':id', (int) $id, PDO::PARAM_INT);
+        $statement->execute();
     }
 }

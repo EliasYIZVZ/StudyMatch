@@ -33,9 +33,10 @@ $medios = $esGratuita ? [] : Vista::mediosPago($oferta['medios_pago']);
         </span>
       </div>
 
-      <h3 class="h6 fw-bold text-dark mb-2">
-        <i class="bi bi-person-circle text-secondary me-1"></i><?= $e($oferta['tutor']) ?>
-      </h3>
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <?= Vista::avatar($oferta['tutor'], isset($oferta['tutor_foto']) ? $oferta['tutor_foto'] : null, 'avatar-circle avatar-mini bg-primary-subtle text-primary') ?>
+        <h3 class="h6 fw-bold text-dark mb-0"><?= $e($oferta['tutor']) ?></h3>
+      </div>
       <p class="text-secondary small mb-3 lh-base oferta-descripcion">
         <?= $e($oferta['descripcion']) ?>
       </p>

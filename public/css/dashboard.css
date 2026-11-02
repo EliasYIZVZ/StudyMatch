@@ -447,18 +447,23 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   flex-shrink: 0;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   border: 2px solid #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
 }
 
+/* Solo background-color + background-image: el atajo "background" reiniciaba
+   background-size/position y la foto se veía recortada en una esquina. */
 [data-role="alumno"] .avatar-user-display {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  background-color: #dbeafe;
+  background-image: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
   color: #1d4ed8;
 }
 
 [data-role="tutor"] .avatar-user-display {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  background-color: #d1fae5;
+  background-image: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
   color: #065f46;
 }
 
@@ -482,7 +487,11 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   height: 100px;
   margin: 0 auto;
   border-radius: 50%;
-  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  background-color: #e0f2fe;
+  background-image: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: var(--brand-blue);
   font-size: 2rem;
   font-weight: 800;
@@ -1273,4 +1282,26 @@ html[data-bs-theme="dark"] body.dashboard-body .profile-menu .dropdown-item.text
   color: #ffffff;
   background-color: rgba(148, 163, 184, 0.2);
   border-color: #94a3b8;
+}
+
+/* --------------------------------------------------------------------------
+   FOTOS DE PERFIL (Vista::avatar y avatares del usuario)
+   -------------------------------------------------------------------------- */
+.avatar-con-foto {
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: transparent !important;
+}
+
+.avatar-mini {
+  width: 28px;
+  height: 28px;
+  font-size: 0.7rem;
+}
+
+.avatar-grande {
+  width: 56px;
+  height: 56px;
+  font-size: 1.1rem;
 }

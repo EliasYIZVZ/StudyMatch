@@ -31,7 +31,7 @@ $iniciales = function ($nombre) {
   <?php foreach ($solicitudesPendientes as $solicitud): ?>
     <div class="p-3 rounded-3 border bg-light-subtle d-flex align-items-start justify-content-between flex-wrap gap-3 item-solicitud">
       <div class="d-flex align-items-start gap-3">
-        <div class="avatar-circle flex-shrink-0 bg-primary-subtle text-primary"><?= $e($iniciales($solicitud['alumno'])) ?></div>
+        <?= Vista::avatar($solicitud['alumno'], $solicitud['alumno_foto']) ?>
         <div>
           <div class="d-flex align-items-center gap-2 flex-wrap">
             <h6 class="fw-bold text-dark mb-0"><?= $e($solicitud['alumno']) ?></h6>

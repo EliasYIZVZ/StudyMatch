@@ -48,4 +48,5 @@ return [
 
     // API
     'usuario-actual'  => ['UsuarioController', 'actual', 'api'],
+    'foto-perfil'     => ['UsuarioController', 'foto', 'api'],
 ];

@@ -40,6 +40,7 @@ CREATE TABLE usuarios (
     rol_usuario ENUM('usuario', 'admin') NOT NULL DEFAULT 'usuario',
     carrera_usuario VARCHAR(50) NULL, -- completar
     anio_cursada_usuario ENUM('1ro', '2do', '3ro', '4to', '5to', 'graduado') NULL,
+    foto_usuario VARCHAR(255) NULL,                 -- ruta relativa: avatar precargado o foto subida; NULL = iniciales
     PRIMARY KEY (id_usuario),
     UNIQUE KEY uq_usuarios_correo (correo_usuario)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -98,7 +98,7 @@ $sufijoFiltro = $filtro !== 'todas' ? '&amp;estado=' . Vista::e($filtro) : '';
             ?>
             <div class="tutoria-item p-3 rounded-4 border bg-white d-flex flex-wrap align-items-center justify-content-between gap-3">
               <a href="index.php?r=tutoria&amp;id=<?= (int) $t['id_solicitud'] ?>" class="d-flex align-items-start gap-3 text-decoration-none flex-grow-1">
-                <div class="avatar-circle flex-shrink-0 bg-primary-subtle text-primary"><?= Vista::e(Vista::iniciales($otro)) ?></div>
+                <?= Vista::avatar($otro, $rol === 'tutor' ? $t['alumno_foto'] : $t['tutor_foto']) ?>
                 <div>
                   <div class="d-flex align-items-center gap-2 flex-wrap">
                     <h2 class="h6 fw-bold text-dark mb-0"><?= Vista::e($t['materia']) ?></h2>

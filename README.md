@@ -17,6 +17,8 @@ Plataforma web de tutorías entre estudiantes de la UTN (FRH). Proyecto en PHP p
 3. Crear la base de datos ejecutando `sql/studymatch_db.sql` (desde phpMyAdmin o la consola de MySQL).
    - **Atención:** el script borra y vuelve a crear todas las tablas, así que se pierden los datos que hubiera.
    - Opcional: `sql/datos_oferta_tutoria.sql` carga materias, tutores y ofertas de prueba.
+   - Si tu base ya existía antes de la foto de perfil, ejecutá una sola vez `sql/migracion_002_foto_usuario.sql` (no borra datos).
+   - PHP necesita la extensión **GD** (viene activada en MAMP) para procesar las fotos subidas.
    - Para tener un administrador, registrá una cuenta normal y después:
      ```sql
      UPDATE usuarios SET rol_usuario = 'admin' WHERE correo_usuario = 'tu-correo@frh.utn.edu.ar';
@@ -107,6 +109,7 @@ Todas las URLs dinámicas tienen la forma `index.php?r=<ruta>`. Se definen en `a
 | `tutoria`         | `TutoriaController::detalle`       | **Con sesión** | Detalle de una tutoría con su chat (`&id=`). Solo para el alumno y el tutor de esa tutoría |
 | `enviar-mensaje`  | `TutoriaController::enviarMensaje` | **Con sesión** (POST) | Envía un mensaje; responde JSON si se llama con `X-Requested-With: XMLHttpRequest` |
 | `mensajes-tutoria`| `TutoriaController::mensajes`      | **Con sesión** (API) | Mensajes nuevos (`&id=&desde=`); el chat la consulta cada 5 s |
+| `foto-perfil`     | `UsuarioController::foto`        | **Con sesión** (API, POST) | Foto de perfil: `accion=avatar&avatar=<clave>`, `accion=subir` + archivo `foto` (JPG/PNG/WEBP, máx. 2 MB; se recorta a 256×256 con GD y se guarda en `public/uploads/usuarios/<id>/`) o `accion=quitar` |
 | `usuario-actual`  | `UsuarioController::actual`           | **Con sesión** (API) | JSON con los datos del usuario logueado |
 | `admin`           | `AdminController::dashboard`          | **Admin**      | Resumen del panel de administración |
 | `admin-usuarios`  | `AdminController::usuarios`           | **Admin**      | Gestión de usuarios |
@@ -206,3 +209,12 @@ En cambio, desde los `.html` de `public/` se usa `../index.php?r=...` para volve
 - El formulario de contacto muestra sus errores como texto plano.
 - Los formularios no tienen protección CSRF.
 
+
+
+## Fotos de perfil
+
+- La columna `usuarios.foto_usuario` guarda una ruta relativa: un avatar precargado (`public/img/avatares/…`, lista en `app/config/avatares.php`) o una foto subida, guardada en la carpeta del usuario (`public/uploads/usuarios/<id>/perfil_<aleatorio>.jpg`). `NULL` muestra las iniciales.
+- Las fotos subidas se validan por su contenido real y se vuelven a generar como JPG de 256×256 (`app/core/FotoPerfil.php`): así se descartan metadatos y cualquier código escondido. Al cambiar la foto, la anterior se borra del disco.
+- El tipo de imagen se detecta con `getimagesize` (GD), por lo que **no** hace falta la extensión `fileinfo` (MAMP la trae desactivada).
+- `public/uploads/.htaccess` impide ejecutar scripts dentro de esa carpeta.
+- En las vistas, usar `Vista::avatar($nombre, $foto)`: muestra la foto o, si no hay, las iniciales.

@@ -34,7 +34,9 @@ final class SolicitudTutoria
                     t.medios_pago,
                     m.nombre AS materia,
                     a.nombre_usuario AS alumno,
-                    tu.nombre_usuario AS tutor
+                    a.foto_usuario AS alumno_foto,
+                    tu.nombre_usuario AS tutor,
+                    tu.foto_usuario AS tutor_foto
              FROM solicitud_tutoria s
              JOIN oferta_tutoria t ON t.id_tutoria = s.id_oferta
              JOIN materia m        ON m.id_materia = t.id_materia
@@ -94,6 +96,7 @@ final class SolicitudTutoria
                     s.mensaje,
                     s.fecha,
                     a.nombre_usuario AS alumno,
+                    a.foto_usuario AS alumno_foto,
                     m.nombre AS materia
              FROM solicitud_tutoria s
              JOIN oferta_tutoria t ON t.id_tutoria = s.id_oferta

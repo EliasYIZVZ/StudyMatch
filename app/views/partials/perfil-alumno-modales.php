@@ -1,5 +1,13 @@
 <?php defined('APP_PATH') || exit('Acceso denegado.'); ?>
 <?php /* Modales de perfil (editar datos, foto, Discord) y toast de confirmación. Lógica en public/js/perfil.js */ ?>
+<?php
+/**
+ * $perfilRol (opcional): 'alumno' (por defecto) o 'tutor'. Solo cambia textos y colores.
+ */
+$esTutorPerfil = isset($perfilRol) && $perfilRol === 'tutor';
+$colorPerfil = $esTutorPerfil ? 'success' : 'primary';
+$avataresPerfil = require APP_PATH . '/config/avatares.php';
+?>
   <!-- ==========================================================================
        MODAL 1: EDITAR INFORMACIÓN DE PERFIL
        ========================================================================== -->
@@ -8,11 +16,11 @@
       <div class="modal-content rounded-4 border-0 shadow-lg">
         <div class="modal-header border-bottom px-4 pt-4 pb-3">
           <div class="d-flex align-items-center gap-2">
-            <div class="bg-primary-subtle text-primary p-2 rounded-3">
+            <div class="bg-<?= $colorPerfil ?>-subtle text-<?= $colorPerfil ?> p-2 rounded-3">
               <i class="bi bi-person-lines-fill fs-5"></i>
             </div>
             <div>
-              <h5 class="modal-title fw-bold text-dark" id="modalEditarPerfilLabel">Editar Perfil del Estudiante</h5>
+              <h5 class="modal-title fw-bold text-dark" id="modalEditarPerfilLabel"><?= $esTutorPerfil ? 'Editar Perfil del Tutor' : 'Editar Perfil del Estudiante' ?></h5>
               <p class="text-secondary small mb-0">Actualizá tus datos académicos y canales de contacto</p>
             </div>
           </div>
@@ -67,7 +75,7 @@
               </div>
 
               <div class="col-12">
-                <label for="editBio" class="form-label small fw-semibold text-dark">Materias de interés / Breve descripción</label>
+                <label for="editBio" class="form-label small fw-semibold text-dark"><?= $esTutorPerfil ? 'Materias que enseñás / Experiencia' : 'Materias de interés / Breve descripción' ?></label>
                 <textarea class="form-control" id="editBio" rows="3" placeholder="Ingresa tu descripción..."></textarea>
               </div>
             </div>
@@ -75,7 +83,7 @@
 
           <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
             <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary px-4 rounded-pill fw-semibold shadow-sm">
+            <button type="submit" class="btn btn-<?= $colorPerfil ?> px-4 rounded-pill fw-semibold shadow-sm">
               <i class="bi bi-check2 me-1"></i> Guardar Cambios
             </button>
           </div>
@@ -92,7 +100,7 @@
       <div class="modal-content rounded-4 border-0 shadow-lg">
         <div class="modal-header border-bottom px-4 pt-4 pb-3">
           <div class="d-flex align-items-center gap-2">
-            <div class="bg-primary-subtle text-primary p-2 rounded-3">
+            <div class="bg-<?= $colorPerfil ?>-subtle text-<?= $colorPerfil ?> p-2 rounded-3">
               <i class="bi bi-camera-fill fs-5"></i>
             </div>
             <div>
@@ -109,29 +117,32 @@
           </div>
 
           <div class="mb-4">
-            <label for="inputUploadFile" class="btn btn-outline-primary rounded-pill px-4 fw-semibold shadow-sm">
+            <label for="inputUploadFile" class="btn btn-outline-<?= $colorPerfil ?> rounded-pill px-4 fw-semibold shadow-sm">
               <i class="bi bi-upload me-1"></i> Subir imagen desde la PC
             </label>
-            <input type="file" id="inputUploadFile" class="d-none" accept="image/*">
-            <div class="text-muted small mt-1" style="font-size: 0.72rem;">Formatos JPG, PNG. Tamaño máximo 2MB</div>
+            <input type="file" id="inputUploadFile" class="d-none" accept="image/jpeg,image/png,image/webp">
+            <div class="text-muted small mt-1" style="font-size: 0.72rem;">Formatos JPG, PNG o WEBP. Tamaño máximo 2 MB</div>
           </div>
 
           <div class="border-top pt-3">
             <span class="small fw-semibold text-secondary d-block mb-3">O seleccioná un avatar ilustrado:</span>
             <div class="d-flex justify-content-center gap-3">
-              <img src="public/img/avatares/bicho1.jpeg" 
-                   class="preset-avatar" alt="Avatar 1" onclick="seleccionarPresetAvatar(this.src)">
-              <img src="public/img/avatares/bicho2.jfif" 
-                   class="preset-avatar" alt="Avatar 2" onclick="seleccionarPresetAvatar(this.src)">
-              <img src="public/img/avatares/bicho3.jfif" 
-                   class="preset-avatar" alt="Avatar 3" onclick="seleccionarPresetAvatar(this.src)">
+              <?php foreach ($avataresPerfil as $claveAvatar => $rutaAvatar): ?>
+                <img src="<?= Vista::e($rutaAvatar) ?>" class="preset-avatar" alt="Avatar <?= Vista::e($claveAvatar) ?>"
+                     data-avatar="<?= Vista::e($claveAvatar) ?>" tabindex="0" role="button" width="52" height="52">
+              <?php endforeach; ?>
             </div>
           </div>
+
+          <p id="fotoError" class="text-danger small mt-3 mb-0" role="alert"></p>
         </div>
 
         <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
+          <button type="button" id="btnQuitarFoto" class="btn btn-link text-danger text-decoration-none me-auto px-0 d-none">
+            <i class="bi bi-trash me-1"></i>Quitar foto
+          </button>
           <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" id="btnGuardarFoto" class="btn btn-primary px-4 rounded-pill fw-semibold shadow-sm">
+          <button type="button" id="btnGuardarFoto" class="btn btn-<?= $colorPerfil ?> px-4 rounded-pill fw-semibold shadow-sm">
             Guardar Foto
           </button>
         </div>

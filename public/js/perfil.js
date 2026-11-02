@@ -1,206 +1,304 @@
 /**
- * STUDY MATCH • Perfil del usuario (área alumno)
+ * STUDY MATCH • Perfil del usuario
  *
  * Lógica compartida del menú de perfil y sus modales
  * (app/views/partials/perfil-alumno-menu.php y perfil-alumno-modales.php):
- * editar datos, cambiar foto, toast de confirmación y carga de los datos
+ * editar datos, foto de perfil, toast de confirmación y carga de los datos
  * del usuario de la sesión (index.php?r=usuario-actual).
+ *
+ * La foto se guarda en el servidor (index.php?r=foto-perfil): un avatar
+ * precargado o una imagen propia (JPG, PNG o WEBP de hasta 2 MB).
  */
 (function () {
   'use strict';
 
-  // ==========================================
-  // 3. Edición de Perfil y Sincronización LocalStorage
-  // ==========================================
-  const formPerfil = document.getElementById('formPerfil');
-  formPerfil.addEventListener('submit', function(e) {
-    e.preventDefault();
+  var MAX_BYTES = 2 * 1024 * 1024;
+  var TIPOS_FOTO = ['image/jpeg', 'image/png', 'image/webp'];
 
-    const perfilData = {
-      nombre: document.getElementById('editNombre').value.trim(),
-      email: document.getElementById('editEmail').value.trim(),
-      regional: document.getElementById('editRegional').value,
-      carrera: document.getElementById('editCarrera').value,
-      nivel: document.getElementById('editNivel').value,
-      discord: document.getElementById('editDiscord').value.trim()
-    };
+  var nombreActual = '';
+  var fotoActual = null;      // ruta de la foto guardada en el servidor (o null)
+  var seleccion = null;       // cambio elegido en el modal, todavía sin guardar
+  var urlVistaPrevia = null;  // URL temporal de la imagen elegida desde la PC
 
-    localStorage.setItem('study-match-user-profile', JSON.stringify(perfilData));
-    aplicarDatosPerfil(perfilData);
+  // La foto ya no se guarda en el navegador: se limpia el dato viejo
+  try { localStorage.removeItem('study-match-user-photo'); } catch (e) { /* sin almacenamiento */ }
 
-    const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfil'));
-    if (modalInstance) modalInstance.hide();
-    mostrarToast("¡Perfil actualizado con éxito!");
-  });
+  function iniciales(nombre) {
+    var partes = String(nombre || '').trim().split(/\s+/).filter(Boolean);
+    if (partes.length === 0) return '?';
+    var letras = partes.length >= 2 ? partes[0][0] + partes[1][0] : partes[0].substring(0, 2);
+    return letras.toUpperCase();
+  }
 
-  function aplicarDatosPerfil(data) {
-    if (!data) return;
-    document.querySelectorAll('.userNameSlot').forEach(el => el.textContent = data.nombre);
-    document.querySelectorAll('.userEmailSlot').forEach(el => el.textContent = data.email);
-    
-    const carreraCorta = data.carrera.includes('Programación') ? 'TUP' : 'Sistemas';
-    document.querySelectorAll('.userCareerSlot').forEach(el => el.textContent = `${carreraCorta} • ${data.nivel}`);
-    
-    const regionalCorta = data.regional ? data.regional.split(' ')[0] : 'FRH';
-    const legajoSlot = document.getElementById('userLegajoSlot');
-    if (legajoSlot) legajoSlot.textContent = `Legajo: 51294 • ${regionalCorta}`;
-
-    if (!selectedPhotoUrl) {
-      const partes = data.nombre.split(' ');
-      const iniciales = partes.length >= 2 
-        ? (partes[0][0] + partes[1][0]).toUpperCase() 
-        : data.nombre.substring(0, 2).toUpperCase();
-
-      document.querySelectorAll('.userAvatarSlot').forEach(el => {
-        el.style.backgroundImage = 'none';
-        el.textContent = iniciales;
-      });
-      const prevInit = document.getElementById('previewInitials');
-      if (prevInit) prevInit.textContent = iniciales;
+  function pintarCirculo(elemento, url, textoInicial) {
+    if (!elemento) return;
+    if (url) {
+      elemento.style.backgroundImage = 'url("' + String(url).replace(/"/g, '%22') + '")';
+      elemento.textContent = '';
+      elemento.classList.add('avatar-con-foto');
+    } else {
+      elemento.style.backgroundImage = '';
+      elemento.textContent = textoInicial;
+      elemento.classList.remove('avatar-con-foto');
     }
   }
 
-  // ==========================================
-  // 4. Subir y Cambiar Foto de Perfil
-  // ==========================================
-  let selectedPhotoUrl = localStorage.getItem('study-match-user-photo') || null;
-  const inputUploadFile = document.getElementById('inputUploadFile');
-  const previewAvatarBox = document.getElementById('previewAvatarBox');
-  const previewInitials = document.getElementById('previewInitials');
-  const btnGuardarFoto = document.getElementById('btnGuardarFoto');
-
-  if (selectedPhotoUrl) {
-    document.querySelectorAll('.userAvatarSlot').forEach(slot => {
-      slot.style.backgroundImage = `url('${selectedPhotoUrl}')`;
-      slot.textContent = '';
+  // Avatares del usuario en la barra superior, el menú lateral y el menú de perfil
+  function pintarAvatares() {
+    document.querySelectorAll('.userAvatarSlot').forEach(function (slot) {
+      pintarCirculo(slot, fotoActual, iniciales(nombreActual));
     });
-    if (previewAvatarBox) previewAvatarBox.style.backgroundImage = `url('${selectedPhotoUrl}')`;
-    if (previewInitials) previewInitials.textContent = '';
   }
 
+  // ==========================================
+  // 1. Edición de perfil (por ahora en el navegador)
+  // ==========================================
+  var formPerfil = document.getElementById('formPerfil');
+  if (formPerfil) {
+    formPerfil.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var perfilData = {
+        nombre: document.getElementById('editNombre').value.trim(),
+        email: document.getElementById('editEmail').value.trim(),
+        regional: document.getElementById('editRegional').value,
+        carrera: document.getElementById('editCarrera').value,
+        nivel: document.getElementById('editNivel').value,
+        discord: document.getElementById('editDiscord').value.trim()
+      };
+
+      try { localStorage.setItem('study-match-user-profile', JSON.stringify(perfilData)); } catch (err) { /* sin almacenamiento */ }
+      aplicarDatosPerfil(perfilData);
+
+      var modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfil'));
+      if (modalInstance) modalInstance.hide();
+      mostrarToast('¡Perfil actualizado con éxito!');
+    });
+  }
+
+  function aplicarDatosPerfil(data) {
+    if (!data) return;
+    nombreActual = data.nombre || nombreActual;
+    document.querySelectorAll('.userNameSlot').forEach(function (el) { el.textContent = data.nombre; });
+    document.querySelectorAll('.userEmailSlot').forEach(function (el) { el.textContent = data.email; });
+
+    var carreraCorta = String(data.carrera || '').indexOf('Programación') !== -1 ? 'TUP' : 'Sistemas';
+    document.querySelectorAll('.userCareerSlot').forEach(function (el) { el.textContent = carreraCorta + ' • ' + data.nivel; });
+
+    var regionalCorta = data.regional ? data.regional.split(' ')[0] : 'FRH';
+    var legajoSlot = document.getElementById('userLegajoSlot');
+    if (legajoSlot) legajoSlot.textContent = 'Legajo: 51294 • ' + regionalCorta;
+
+    pintarAvatares();
+  }
+
+  // ==========================================
+  // 2. Foto de perfil
+  // ==========================================
+  var modalFoto = document.getElementById('modalSubirFoto');
+  var preview = document.getElementById('previewAvatarBox');
+  var previewInitials = document.getElementById('previewInitials');
+  var inputUploadFile = document.getElementById('inputUploadFile');
+  var btnGuardarFoto = document.getElementById('btnGuardarFoto');
+  var btnQuitarFoto = document.getElementById('btnQuitarFoto');
+  var fotoError = document.getElementById('fotoError');
+
+  function mostrarErrorFoto(mensaje) {
+    if (fotoError) fotoError.textContent = mensaje || '';
+  }
+
+  function pintarVistaPrevia(url) {
+    if (!preview) return;
+    if (url) {
+      preview.style.backgroundImage = 'url("' + String(url).replace(/"/g, '%22') + '")';
+      if (previewInitials) previewInitials.textContent = '';
+    } else {
+      preview.style.backgroundImage = '';
+      if (previewInitials) previewInitials.textContent = iniciales(nombreActual);
+    }
+  }
+
+  function marcarAvatar(clave) {
+    document.querySelectorAll('.preset-avatar').forEach(function (img) {
+      img.classList.toggle('selected', img.getAttribute('data-avatar') === clave);
+    });
+  }
+
+  function liberarVistaPrevia() {
+    if (urlVistaPrevia) {
+      URL.revokeObjectURL(urlVistaPrevia);
+      urlVistaPrevia = null;
+    }
+  }
+
+  if (modalFoto) {
+    // Cada vez que se abre, muestra la foto guardada actualmente
+    modalFoto.addEventListener('show.bs.modal', function () {
+      seleccion = null;
+      liberarVistaPrevia();
+      if (inputUploadFile) inputUploadFile.value = '';
+      mostrarErrorFoto('');
+      marcarAvatar(null);
+      pintarVistaPrevia(fotoActual);
+      if (btnQuitarFoto) btnQuitarFoto.classList.toggle('d-none', !fotoActual);
+      if (btnGuardarFoto) btnGuardarFoto.disabled = false;
+    });
+
+    // Avatares precargados
+    modalFoto.querySelectorAll('.preset-avatar').forEach(function (img) {
+      img.addEventListener('click', function () {
+        liberarVistaPrevia();
+        seleccion = { accion: 'avatar', avatar: img.getAttribute('data-avatar') };
+        marcarAvatar(seleccion.avatar);
+        pintarVistaPrevia(img.getAttribute('src'));
+        mostrarErrorFoto('');
+      });
+      img.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          img.click();
+        }
+      });
+    });
+  }
+
+  // Imagen propia (se valida acá y de nuevo en el servidor)
   if (inputUploadFile) {
-    inputUploadFile.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          selectedPhotoUrl = event.target.result;
-          previewAvatarBox.style.backgroundImage = `url('${selectedPhotoUrl}')`;
-          previewInitials.textContent = '';
-          document.querySelectorAll('.preset-avatar').forEach(p => p.classList.remove('selected'));
-        };
-        reader.readAsDataURL(file);
+    inputUploadFile.addEventListener('change', function () {
+      var archivo = inputUploadFile.files[0];
+      if (!archivo) return;
+
+      if (TIPOS_FOTO.indexOf(archivo.type) === -1) {
+        mostrarErrorFoto('El archivo debe ser una imagen JPG, PNG o WEBP.');
+        inputUploadFile.value = '';
+        return;
       }
+      if (archivo.size > MAX_BYTES) {
+        mostrarErrorFoto('La imagen supera el máximo de 2 MB.');
+        inputUploadFile.value = '';
+        return;
+      }
+
+      liberarVistaPrevia();
+      urlVistaPrevia = URL.createObjectURL(archivo);
+      seleccion = { accion: 'subir', foto: archivo };
+      marcarAvatar(null);
+      pintarVistaPrevia(urlVistaPrevia);
+      mostrarErrorFoto('');
     });
   }
 
-  function seleccionarPresetAvatar(url) {
-    selectedPhotoUrl = url;
-    previewAvatarBox.style.backgroundImage = `url('${url}')`;
-    previewInitials.textContent = '';
-    document.querySelectorAll('.preset-avatar').forEach(p => {
-      p.classList.toggle('selected', p.src === url);
+  if (btnQuitarFoto) {
+    btnQuitarFoto.addEventListener('click', function () {
+      liberarVistaPrevia();
+      if (inputUploadFile) inputUploadFile.value = '';
+      seleccion = { accion: 'quitar' };
+      marcarAvatar(null);
+      pintarVistaPrevia(null);
+      mostrarErrorFoto('');
     });
   }
 
   if (btnGuardarFoto) {
-    btnGuardarFoto.addEventListener('click', function() {
-      if (selectedPhotoUrl) {
-        localStorage.setItem('study-match-user-photo', selectedPhotoUrl);
-        document.querySelectorAll('.userAvatarSlot').forEach(slot => {
-          slot.style.backgroundImage = `url('${selectedPhotoUrl}')`;
-          slot.textContent = '';
-        });
-        mostrarToast("¡Foto de perfil actualizada!");
+    btnGuardarFoto.addEventListener('click', function () {
+      var modal = bootstrap.Modal.getInstance(modalFoto);
+      if (!seleccion) {
+        if (modal) modal.hide();
+        return;
       }
-      const modalFotoInstance = bootstrap.Modal.getInstance(document.getElementById('modalSubirFoto'));
-      if (modalFotoInstance) modalFotoInstance.hide();
+
+      var datos = new FormData();
+      datos.append('accion', seleccion.accion);
+      if (seleccion.accion === 'avatar') datos.append('avatar', seleccion.avatar);
+      if (seleccion.accion === 'subir') datos.append('foto', seleccion.foto);
+
+      btnGuardarFoto.disabled = true;
+      fetch('index.php?r=foto-perfil', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: datos
+      })
+        .then(function (respuesta) {
+          return respuesta.json().catch(function () {
+            throw new Error('No se pudo guardar la foto. Intentá nuevamente.');
+          }).then(function (json) {
+            if (!respuesta.ok) throw new Error(json.error || 'No se pudo guardar la foto.');
+            return json;
+          });
+        })
+        .then(function (json) {
+          fotoActual = json.foto || null;
+          pintarAvatares();
+          liberarVistaPrevia();
+          if (modal) modal.hide();
+          mostrarToast(fotoActual ? '¡Foto de perfil actualizada!' : 'Foto de perfil quitada.');
+        })
+        .catch(function (error) {
+          mostrarErrorFoto(error.message);
+        })
+        .then(function () {
+          btnGuardarFoto.disabled = false;
+        });
     });
   }
 
   // ==========================================
-  // 5. Toast Helper
+  // 3. Toast
   // ==========================================
   function mostrarToast(mensaje) {
-    const toastEl = document.getElementById('toastSuccess');
+    var toastEl = document.getElementById('toastSuccess');
+    if (!toastEl) return;
     document.getElementById('toastMessage').textContent = mensaje;
-    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-    toast.show();
+    new bootstrap.Toast(toastEl, { delay: 3000 }).show();
   }
 
-  // Cargar perfil guardado si existe
-  const perfilGuardado = localStorage.getItem('study-match-user-profile');
-  if (perfilGuardado) {
-    try {
-      aplicarDatosPerfil(JSON.parse(perfilGuardado));
-    } catch(e) {}
-  }
+  // ==========================================
+  // 4. Datos del usuario de la sesión
+  // ==========================================
+  try {
+    var perfilGuardado = localStorage.getItem('study-match-user-profile');
+    if (perfilGuardado) aplicarDatosPerfil(JSON.parse(perfilGuardado));
+  } catch (e) { /* datos viejos o sin almacenamiento */ }
 
   function aplicarNombreDeSesion(nombre) {
-    document.querySelectorAll('.userNameSlot').forEach(el => {
-      el.textContent = nombre;
-    });
-
-    const editNombre = document.getElementById('editNombre');
+    nombreActual = nombre;
+    document.querySelectorAll('.userNameSlot').forEach(function (el) { el.textContent = nombre; });
+    var editNombre = document.getElementById('editNombre');
     if (editNombre) editNombre.value = nombre;
-
-    if (!selectedPhotoUrl) {
-      const partes = nombre.trim().split(/\s+/);
-      const iniciales = partes.length >= 2
-        ? (partes[0][0] + partes[1][0]).toUpperCase()
-        : nombre.substring(0, 2).toUpperCase();
-      document.querySelectorAll('.userAvatarSlot').forEach(el => {
-        el.style.backgroundImage = 'none';
-        el.textContent = iniciales;
-      });
-      const prevInit = document.getElementById('previewInitials');
-      if (prevInit) prevInit.textContent = iniciales;
-    }
+    pintarAvatares();
   }
 
   fetch('index.php?r=usuario-actual', { credentials: 'same-origin' })
-    .then(response => {
+    .then(function (response) {
       if (!response.ok) throw new Error('No se pudo cargar el usuario de la sesión.');
       return response.json();
     })
-    .then(user => {
-      if (
-        typeof user.nombre !== 'string'
-        || user.nombre.trim() === ''
-        || typeof user.email !== 'string'
-        || user.email.trim() === ''
-      ) {
+    .then(function (user) {
+      if (typeof user.nombre !== 'string' || user.nombre.trim() === ''
+        || typeof user.email !== 'string' || user.email.trim() === '') {
         throw new Error('La respuesta del usuario no contiene un nombre o correo válido.');
       }
+      fotoActual = typeof user.foto === 'string' && user.foto !== '' ? user.foto : null;
       aplicarNombreDeSesion(user.nombre);
       document.getElementById('editEmail').value = user.email;
       // La carrera es fija (TUP): no se toma de la base de datos.
-      const nivelPorValorDB = {
-        '1ro': '1° Año',
-        '2do': '2° Año',
-        '3ro': '3° Año',
-        '4to': '4° Año',
-        '5to': '5° Año',
-        'graduado': 'Graduado'
+      var nivelPorValorDB = {
+        '1ro': '1° Año', '2do': '2° Año', '3ro': '3° Año',
+        '4to': '4° Año', '5to': '5° Año', 'graduado': 'Graduado'
       };
-      if (typeof user.nivel === 'string' && nivelPorValorDB[user.nivel]) {
-        document.getElementById('editNivel').value = nivelPorValorDB[user.nivel];
+      var editNivel = document.getElementById('editNivel');
+      if (editNivel && typeof user.nivel === 'string' && nivelPorValorDB[user.nivel]) {
+        editNivel.value = nivelPorValorDB[user.nivel];
       }
-      document.querySelectorAll('.userEmailSlot').forEach(el => {
-        el.textContent = user.email;
-      });
+      document.querySelectorAll('.userEmailSlot').forEach(function (el) { el.textContent = user.email; });
     })
-    .catch(error => {
+    .catch(function (error) {
       console.error(error);
-      document.querySelectorAll('.userNameSlot').forEach(el => {
-        el.textContent = 'No disponible';
-      });
-      document.querySelectorAll('.userEmailSlot').forEach(el => {
-        el.textContent = 'No disponible';
-      });
+      document.querySelectorAll('.userNameSlot').forEach(function (el) { el.textContent = 'No disponible'; });
+      document.querySelectorAll('.userEmailSlot').forEach(function (el) { el.textContent = 'No disponible'; });
     });
 
-  // Funciones usadas desde atributos onclick del HTML
-  window.seleccionarPresetAvatar = seleccionarPresetAvatar;
+  // Usada desde atributos onclick del HTML
   window.mostrarToast = mostrarToast;
 })();

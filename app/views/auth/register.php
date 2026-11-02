@@ -94,7 +94,7 @@
                   <label for="correo_usuario" class="form-label small fw-medium text-dark mb-1">Correo Institucional</label>
                   <div class="input-group input-group-custom">
                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                    <input type="email" id="correo_usuario" name="correo_usuario" required placeholder="alumno@utn.edu.ar" value="<?= htmlspecialchars($_SESSION['registro_datos']['correo_usuario'] ?? '', ENT_QUOTES, 'UTF-8') ?>" class="form-control py-2.5">
+                    <input type="email" id="correo_usuario" name="correo_usuario" required placeholder="@alumnos.frh.utn.edu.ar" value="<?= htmlspecialchars($_SESSION['registro_datos']['correo_usuario'] ?? '', ENT_QUOTES, 'UTF-8') ?>" class="form-control py-2.5">
                   </div>
                 </div>
               </div>

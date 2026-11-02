@@ -18,9 +18,6 @@
               <li class="px-3 py-2 border-bottom mb-1 bg-light rounded-3">
                 <div class="fw-bold text-dark userNameSlot">Cargando...</div>
                 <div class="text-secondary small userEmailSlot">Cargando...</div>
-                <div class="d-flex align-items-center gap-1 mt-1">
-                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;" id="userLegajoSlot">Legajo: 51294 • FRBA</span>
-                </div>
               </li>
               
               <!-- Opciones del menú -->

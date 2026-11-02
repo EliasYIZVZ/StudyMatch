@@ -49,7 +49,13 @@ $scriptsExtra = ['public/js/chat-tutoria.js'];
               <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1"><?= Vista::e($t['materia']) ?></span>
               <span class="badge rounded-pill <?= $estadoClase ?>"><?= Vista::e($estadoTexto) ?></span>
             </div>
-            <h1 class="h5 fw-bold text-dark mb-3"><?= $rol === 'tutor' ? 'Alumno' : 'Tutor' ?>: <?= Vista::e($otro) ?></h1>
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <?= Vista::avatar($otro, $rol === 'tutor' ? $t['alumno_foto'] : $t['tutor_foto'], 'avatar-circle avatar-grande bg-primary-subtle text-primary') ?>
+              <div>
+                <span class="text-secondary small d-block"><?= $rol === 'tutor' ? 'Alumno' : 'Tutor' ?></span>
+                <h1 class="h5 fw-bold text-dark mb-0"><?= Vista::e($otro) ?></h1>
+              </div>
+            </div>
 
             <ul class="list-unstyled small text-secondary d-flex flex-column gap-2 mb-3">
               <li class="d-flex gap-2"><i class="bi bi-laptop"></i><span><?= Vista::e(isset($modalidades[$t['modalidad']]) ? $modalidades[$t['modalidad']] : $t['modalidad']) ?></span></li>
@@ -121,7 +127,7 @@ $scriptsExtra = ['public/js/chat-tutoria.js'];
                   <input type="hidden" name="id_solicitud" value="<?= (int) $t['id_solicitud'] ?>">
                   <div class="flex-grow-1">
                     <label for="chatTexto" class="visually-hidden">Mensaje</label>
-                    <textarea id="chatTexto" name="contenido" class="form-control rounded-4" rows="2" maxlength="<?= (int) $maxMensaje ?>" required
+                    <textarea id="chatTexto" name="contenido" class="form-control rounded-4" rows="2" maxlength="<?= (int) $maxMensaje ?>" style="resize: none;" required
                               placeholder="Escribí un mensaje o pegá un link. Enter envía, Shift+Enter hace un salto de línea."></textarea>
                     <div class="d-flex justify-content-between small mt-1">
                       <span id="chatError" class="text-danger" role="alert"></span>

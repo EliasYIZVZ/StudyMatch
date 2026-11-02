@@ -31,6 +31,7 @@ final class OfertaTutoria
                     t.medios_pago,
                     m.nombre AS materia,
                     u.nombre_usuario AS tutor,
+                    u.foto_usuario AS tutor_foto,
                     s.id_solicitud AS mi_solicitud_id,
                     s.estado AS mi_solicitud_estado
              FROM oferta_tutoria t

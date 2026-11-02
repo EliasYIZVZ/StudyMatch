@@ -111,4 +111,34 @@ final class Vista
             ? '$ ' . number_format((float) $valor, 2, ',', '.') . ' por clase'
             : 'Gratuita';
     }
+
+    /**
+     * Ruta de una foto de perfil lista para usar en HTML, solo si apunta a una
+     * ubicación conocida (avatares precargados o fotos subidas); null en otro caso.
+     */
+    public static function urlFoto($ruta)
+    {
+        if (!is_string($ruta)
+            || !preg_match('~^public/(img/avatares|uploads/perfiles|uploads/usuarios/\d+)/[A-Za-z0-9_-]+\.(jpe?g|png|webp)$~', $ruta)) {
+            return null;
+        }
+
+        return $ruta;
+    }
+
+    /**
+     * Círculo de avatar: la foto si existe, si no las iniciales del nombre.
+     * $clases: clases CSS del círculo (ej. 'avatar-circle bg-primary-subtle text-primary').
+     */
+    public static function avatar($nombre, $foto, $clases = 'avatar-circle bg-primary-subtle text-primary')
+    {
+        $url = self::urlFoto($foto);
+
+        if ($url === null) {
+            return '<div class="' . self::e($clases) . ' flex-shrink-0">' . self::e(self::iniciales($nombre)) . '</div>';
+        }
+
+        return '<div class="' . self::e($clases) . ' avatar-con-foto flex-shrink-0" role="img" aria-label="'
+            . self::e('Foto de ' . $nombre) . '" style="background-image: url(\'' . self::e($url) . '\');"></div>';
+    }
 }
