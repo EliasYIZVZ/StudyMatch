@@ -687,14 +687,21 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
 
 .profile-field-readonly,
 .profile-field-readonly:hover,
-.profile-field-readonly:focus {
+.profile-field-readonly:focus,
+.profile-field-readonly:disabled {
   background-color: #e2e8f0 !important;
   border-color: #cbd5e1 !important;
   color: #64748b !important;
   box-shadow: none !important;
-  cursor: default;
-  opacity: 1;
+  cursor: not-allowed;
+  opacity: 0.7;
   transition: none !important;
+}
+
+/* Ícono que acompaña a un campo bloqueado (ej. correo institucional) */
+.input-group:has(.profile-field-readonly) .input-group-text {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 /* --------------------------------------------------------------------------
@@ -952,6 +959,15 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 
+/* Card de oferta de tutoría: la descripción se corta a 4 líneas
+   para que las cards de una misma fila no queden desparejas. */
+.oferta-card .oferta-descripcion {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .public-room-card:hover {
   transform: translateY(-4px);
   border-color: #1677c8;
@@ -1055,4 +1071,206 @@ html[data-bs-theme="dark"] body.dashboard-body .profile-menu .dropdown-item:hove
 html[data-bs-theme="dark"] body.dashboard-body .profile-menu .dropdown-item.text-danger,
 html[data-bs-theme="dark"] body.dashboard-body .profile-menu .dropdown-item.text-danger i {
   color: #fca5a5 !important;
+}
+
+/* --------------------------------------------------------------------------
+   SIDEBAR EN CELULAR Y TABLET (< 992px): MENÚ DESPLEGABLE
+   El sidebar se oculta fuera de pantalla y se abre por encima del contenido
+   con el botón de la barra superior (lógica en public/js/sidebar.js).
+   -------------------------------------------------------------------------- */
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .sidebar {
+    width: min(280px, 85vw);
+    z-index: 1045;
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.3s;
+  }
+
+  .sidebar.mobile-open {
+    visibility: visible;
+    transform: translateX(0);
+    box-shadow: 0 0 40px rgba(15, 23, 42, 0.35);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
+  }
+
+  /* El modo "contraído" de escritorio no aplica: el contenido ocupa todo el ancho */
+  .sidebar.collapsed ~ .dashboard-main-wrapper,
+  body.sidebar-is-collapsed .dashboard-main-wrapper {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1044;
+    background: rgba(15, 23, 42, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+  }
+
+  .sidebar-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0s;
+  }
+
+  /* Evita que el contenido de fondo se desplace con el menú abierto */
+  body.sidebar-mobile-open {
+    overflow: hidden !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   MIS TUTORÍAS Y CHAT
+   -------------------------------------------------------------------------- */
+.tutoria-item {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tutoria-item:hover {
+  border-color: var(--brand-blue) !important;
+  box-shadow: 0 8px 20px -8px rgba(22, 119, 200, 0.25);
+}
+
+.chat-card {
+  min-height: 520px;
+}
+
+.chat-mensajes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+  min-height: 320px;
+  max-height: 60vh;
+}
+
+.chat-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 78%;
+}
+
+.chat-msg-propio {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.chat-burbuja {
+  padding: 0.6rem 0.9rem;
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  background-color: #f1f5f9;
+  color: #1e293b;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.chat-msg-propio .chat-burbuja {
+  border-radius: 1rem 1rem 0.25rem 1rem;
+  background-color: var(--brand-blue);
+  color: #ffffff;
+}
+
+.chat-texto {
+  overflow-wrap: anywhere;
+}
+
+.chat-burbuja a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.chat-meta {
+  margin-top: 0.2rem;
+  padding: 0 0.25rem;
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .chat-burbuja {
+  background-color: rgba(15, 23, 42, 0.6);
+  color: #e2e8f0;
+}
+
+[data-bs-theme="dark"] .chat-msg-propio .chat-burbuja {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+@media (max-width: 575.98px) {
+  .chat-msg {
+    max-width: 90%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   MIS PUBLICACIONES (tutor)
+   -------------------------------------------------------------------------- */
+.oferta-pausada {
+  opacity: 0.75;
+}
+
+.oferta-descripcion-lista {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Filtros por estado en Mis tutorías */
+.filtro-estado {
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #475569;
+}
+
+.filtro-estado:hover {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+}
+
+.filtro-estado.active,
+.filtro-estado.active:hover {
+  border-color: var(--brand-blue);
+  background-color: var(--brand-blue);
+  color: #ffffff;
+}
+
+[data-bs-theme="dark"] .filtro-estado {
+  border-color: rgba(148, 163, 184, 0.45);
+  background-color: rgba(30, 41, 59, 0.85);
+  color: #cbd5e1;
+}
+
+[data-bs-theme="dark"] .filtro-estado:hover {
+  border-color: #60a5fa;
+  color: #bfdbfe;
+}
+
+[data-bs-theme="dark"] .filtro-estado.active,
+[data-bs-theme="dark"] .filtro-estado.active:hover {
+  border-color: #2563eb;
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Botones secundarios legibles en modo oscuro (Rechazar, Editar, Cancelar...) */
+[data-bs-theme="dark"] body.dashboard-body .btn-outline-secondary {
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.55);
+}
+
+[data-bs-theme="dark"] body.dashboard-body .btn-outline-secondary:hover {
+  color: #ffffff;
+  background-color: rgba(148, 163, 184, 0.2);
+  border-color: #94a3b8;
 }

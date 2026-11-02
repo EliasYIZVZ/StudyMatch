@@ -2,6 +2,12 @@
 
 final class AuthController extends Controller
 {
+    /**
+     * Solo se admiten correos institucionales de alumnos de la UTN FRH (Haedo).
+     * El dominio debe coincidir exactamente: no se aceptan subdominios ni otras terminaciones.
+     */
+    private const PATRON_CORREO_INSTITUCIONAL = '/^[^@\s]+@alumnos\.frh\.utn\.edu\.ar$/i';
+
     public function login()
     {
         if (!$this->isPost()) {
@@ -101,6 +107,10 @@ final class AuthController extends Controller
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $fail('El formato del correo no es válido.');
+        }
+
+        if (!preg_match(self::PATRON_CORREO_INSTITUCIONAL, $email)) {
+            $fail('El correo ingresado no es compatible con un correo institucional. Usá tu cuenta @alumnos.frh.utn.edu.ar.');
         }
 
         if ($password !== $confirmPassword) {

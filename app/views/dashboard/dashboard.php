@@ -29,76 +29,7 @@
   <!-- ==========================================================================
        SIDEBAR LATERAL IZQUIERDA (MODO ALUMNO - 100% FIJO)
        ========================================================================== -->
-  <aside id="mainSidebar" class="sidebar d-flex flex-column justify-content-between p-3">
-    <div>
-      <!-- Header con Logo Study Match y Botón de Colapso -->
-      <div class="d-flex align-items-center justify-content-between mb-4 px-2 logo-container">
-        <a href="index.php?r=dashboard" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
-          <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
-            <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
-            <polygon points="50,20 90,42 50,62" fill="#1677c8"/>
-            <line x1="78" y1="48" x2="78" y2="70" stroke="#1677c8" stroke-width="3.5" stroke-linecap="round"/>
-            <circle cx="78" cy="68" r="3.5" fill="#1677c8"/>
-            <polygon points="78,68 73,82 83,82" fill="#1677c8"/>
-            <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="2"/>
-          </svg>
-          <span class="fw-bold fs-5 text-dark logo-text">Study <span style="color: var(--brand-blue);">Match</span></span>
-        </a>
-
-        <!-- Botón para contraer sidebar -->
-        <button id="btnCollapseSidebar" class="btn btn-sm btn-light border-0 text-secondary p-1 rounded-2 sidebar-hide-collapsed" title="Contraer menú lateral">
-          <i class="bi bi-chevron-left"></i>
-        </button>
-      </div>
-
-      <!-- Menú de Navegación: MODO ALUMNO (Acento Azul) -->
-      <nav class="d-flex flex-column gap-1">
-        <div class="px-3 pb-1 text-uppercase small text-muted fw-bold sidebar-text" style="font-size: 0.68rem; letter-spacing: 0.08em;">
-          Menú Alumno
-        </div>
-        <a href="index.php?r=dashboard" class="sidebar-link active" title="Inicio / Novedades">
-          <i class="bi bi-house-door"></i>
-          <span class="sidebar-text">Inicio</span>
-        </a>
-        <a href="index.php?r=buscar-tutor" class="sidebar-link" title="Buscar Tutor">
-          <i class="bi bi-search"></i>
-          <span class="sidebar-text">Buscar Tutor</span>
-        </a>
-        <a href="#" class="sidebar-link" title="Mis tutorías">
-          <i class="bi bi-calendar3"></i>
-          <span class="sidebar-text">Mis tutorías</span>
-        </a>
-        <a href="#" class="sidebar-link" title="Mensajes">
-          <i class="bi bi-chat-dots"></i>
-          <span class="sidebar-text">Mensajes</span>
-          <span class="badge rounded-pill ms-auto sidebar-text badge-role-counter" style="font-size: 0.65rem;">2</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Usuario abajo en el Sidebar: Tarjeta de Perfil Interactivo -->
-    <div class="border-top pt-3 mt-auto">
-      <div class="user-sidebar-card p-2 d-flex align-items-center justify-content-between mb-2" 
-           data-bs-toggle="modal" data-bs-target="#modalEditarPerfil" title="Haz clic para editar tu perfil">
-        <div class="d-flex align-items-center gap-2 overflow-hidden">
-          <div class="avatar-user-display userAvatarSlot">
-            AL
-          </div>
-          <div class="sidebar-text text-truncate lh-sm">
-            <span class="d-block fw-bold text-dark small text-truncate userNameSlot">Cargando...</span>
-            <span class="text-secondary userCareerSlot" style="font-size: 0.72rem;">Sistemas • 3° año</span>
-          </div>
-        </div>
-        <i class="bi bi-pencil-square text-secondary sidebar-text fs-6 me-1" title="Editar"></i>
-      </div>
-
-      <a href="index.php?r=logout" class="sidebar-link text-danger p-2" title="Cerrar sesión">
-        <i class="bi bi-box-arrow-left"></i>
-        <span class="sidebar-text">Cerrar sesión</span>
-      </a>
-    </div>
-  </aside>
+  <?php $sidebarActivo = 'inicio'; require APP_PATH . '/views/partials/sidebar-alumno.php'; ?>
 
   <!-- ==========================================================================
        CONTENIDO PRINCIPAL: PANEL ALUMNO
@@ -140,189 +71,52 @@
             </span>
           </div>
 
-          <!-- MENÚ DE PERFIL DESPLEGABLE -->
-          <div class="dropdown">
-            <button class="btn p-1 border-0 d-flex align-items-center gap-2 rounded-pill hover-bg-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <div class="avatar-user-display userAvatarSlot">
-                AL
-              </div>
-              <div class="d-none d-md-block text-start lh-1 pe-1">
-                <span class="d-block fw-bold text-dark small userNameSlot">Cargando...</span>
-                <span class="text-secondary userRoleSlot" style="font-size: 0.72rem;">UTN • Alumno</span>
-              </div>
-              <i class="bi bi-chevron-down text-secondary small d-none d-md-inline"></i>
-            </button>
-
-            <!-- Contenido del Menú Desplegable -->
-            <ul class="dropdown-menu profile-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" style="min-width: 270px;">
-              <li class="px-3 py-2 border-bottom mb-1 bg-light rounded-3">
-                <div class="fw-bold text-dark userNameSlot">Cargando...</div>
-                <div class="text-secondary small userEmailSlot">Cargando...</div>
-                <div class="d-flex align-items-center gap-1 mt-1">
-                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;" id="userLegajoSlot">Legajo: 51294 • FRBA</span>
-                </div>
-              </li>
-              
-              <!-- Opciones del menú -->
-              <li>
-                <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2" href="#" onclick="irAModoTutor()">
-                  <i class="bi bi-arrow-left-right text-success fs-6"></i>
-                  <span>Cambiar a Modo Tutor</span>
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2" href="#" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil">
-                  <i class="bi bi-pencil-square text-primary fs-6"></i>
-                  <span>Editar mi información</span>
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2" href="#" data-bs-toggle="modal" data-bs-target="#modalSubirFoto">
-                  <i class="bi bi-camera text-primary fs-6"></i>
-                  <span>Cambiar foto de perfil</span>
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2" href="#" data-bs-toggle="modal" data-bs-target="#modalDiscordConfig">
-                  <i class="bi bi-discord fs-6" style="color: #2563eb;"></i>
-                  <span>Vincular Discord UTN</span>
-                </a>
-              </li>
-              <li><hr class="dropdown-divider my-1"></li>
-              <li>
-                <a class="dropdown-item text-danger rounded-3 py-2 d-flex align-items-center gap-2" href="index.php?r=logout">
-                  <i class="bi bi-box-arrow-left fs-6"></i>
-                  <span>Cerrar sesión</span>
-                </a>
-              </li>
-            </ul>
-          </div>
+          <?php require APP_PATH . '/views/partials/perfil-alumno-menu.php'; ?>
 
         </div>
       </div>
     </header>
 
     <main class="p-3 p-md-4 flex-grow-1 view-fade">
-
-      <!-- ====================================================================
-           1. MENSAJE DE BIENVENIDA (SIMPLE Y PROLIJO)
-           ==================================================================== -->
-      <div class="welcome-banner-card px-4 py-3 mb-4 mb-md-5 rounded-4 text-white shadow-sm d-flex align-items-center justify-content-between"
-           style="background: linear-gradient(135deg, #0f172a 0%, #0c4a6e 60%, #075985 100%) !important; border: 1px solid rgba(56, 189, 248, 0.25) !important;">
-        <div class="d-flex align-items-center gap-3">
-          <div class="d-none d-sm-flex align-items-center justify-content-center rounded-circle bg-white bg-opacity-10 border border-white border-opacity-15 text-white" style="width: 46px; height: 46px; flex-shrink: 0;">
-            <i class="bi bi-person-workspace fs-4 text-light"></i>
-          </div>
-          <div>
-            <h1 class="h5 fw-bold mb-0.5 text-white">
-              ¡Hola de nuevo, <span class="userNameSlot">Cargando...</span>! 👋
-            </h1>
-            <p class="text-white text-opacity-75 small mb-0" style="font-size: 0.86rem;">
-              Bienvenido a tu panel de estudio colaborativo en UTN Haedo.
-            </p>
-          </div>
-        </div>
-        <div class="d-none d-md-block text-end">
-          <span class="badge bg-white bg-opacity-10 text-white text-opacity-75 rounded-pill px-3 py-1.5 fw-normal small border border-white border-opacity-10">
-            <i class="bi bi-mortarboard me-1 text-warning"></i> Espacio Alumno
-          </span>
-        </div>
-      </div>
-
+      <?php require APP_PATH . '/views/partials/flash.php'; ?>
       <!-- ====================================================================
            2. SECCIÓN DESTACADA: SALAS PÚBLICAS / CLASES GRATUITAS
            ==================================================================== -->
       <section id="salas-publicas" class="mb-5 pb-2">
         <div class="d-flex justify-content-between align-items-end section-heading-spacing flex-wrap gap-3">
           <div>
-            <div class="d-flex align-items-center gap-2 mb-2">
-             
-            <h2 class="h4 fw-bold text-dark mb-0">Salas Públicas y Clases Gratuitas</h2>
-          </div>
-          <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline-brand btn-sm rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1">
-            <i class="bi bi-discord"></i> Ver Canales de Audio UTN
-          </a>
-        </div>
-
-        <div class="row g-4">
-          <!-- Sala 1: Programación II (C++) -->
-          <div class="col-md-6 col-xl-4">
-            <div class="public-room-card p-4 h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="mb-3">
-                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 small fw-semibold">
-                    Programación II
-                  </span>
-                </div>
-
-                <h3 class="h6 fw-bold text-dark mb-2">
-                  Taller Práctico: Punteros Dobles, Memoria Dinámica y Listas
-                </h3>
-                <p class="text-secondary small mb-4 lh-base">
-                  Resolución de ejercicios de exámenes anteriores y preparación intensiva para el segundo parcial de C++.
-                </p>
-              </div>
-
-              <div>
-                <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="btn btn-discord w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
-                  <i class="bi bi-discord fs-5"></i> Unirse a la sala
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sala 2: Análisis Matemático I -->
-          <div class="col-md-6 col-xl-4">
-            <div class="public-room-card p-4 h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="mb-3">
-                  <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-1 small fw-semibold">
-                    Análisis Matemático I
-                  </span>
-                </div>
-
-                <h3 class="h6 fw-bold text-dark mb-2">
-                  Modelos de Parcial: Integrales por Sustitución y Partes
-                </h3>
-                <p class="text-secondary small mb-4 lh-base">
-                  Explicación paso a paso de los métodos de integración más evaluados y resolución de dudas en vivo.
-                </p>
-              </div>
-
-              <div>
-                <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="btn btn-discord w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
-                  <i class="bi bi-discord fs-5"></i> Unirse a la sala
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sala 3: Bases de Datos -->
-          <div class="col-md-6 col-xl-4">
-            <div class="public-room-card p-4 h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="mb-3">
-                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 small fw-semibold">
-                    Bases de Datos
-                  </span>
-                </div>
-
-                <h3 class="h6 fw-bold text-dark mb-2">
-                  Consultas SQL Complejas: Subconsultas y GROUP BY
-                </h3>
-                <p class="text-secondary small mb-4 lh-base">
-                  Práctica intensiva con casos reales de negocio, normalización y optimización de índices en bases relacionales.
-                </p>
-              </div>
-
-              <div>
-                <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="btn btn-discord w-100 rounded-pill fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
-                  <i class="bi bi-discord fs-5"></i> Unirse a la sala
-                </a>
-              </div>
-            </div>
+            <h2 class="h4 fw-bold text-dark mb-0">Encontrá tu proxima clase</h2>
           </div>
         </div>
+
+        <!-- Grilla de tutorías (DashboardController::alumno -> OfertaTutoria).
+             4 por fila en pantallas grandes (xl), 3 en tablet / notebook (md-lg), 1 en celular. -->
+        <?php if ($errorOfertas): ?>
+          <div class="public-room-card p-4 p-md-5 text-center">
+            <i class="bi bi-exclamation-triangle fs-1 text-warning d-block mb-2"></i>
+            <p class="text-secondary mb-0">No se pudieron cargar las tutorías. Intentá nuevamente más tarde.</p>
+          </div>
+        <?php elseif (empty($ofertas)): ?>
+          <div class="public-room-card p-4 p-md-5 text-center">
+            <i class="bi bi-journal-x fs-1 text-secondary d-block mb-2"></i>
+            <p class="text-secondary mb-0">Aún no existen ofertas de tutoría. Podés realizar publicaciones en tu módulo de tutor.</p>
+          </div>
+        <?php else: ?>
+          <div class="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4" id="salasPublicasGrid">
+            <?php foreach ($ofertas as $oferta): ?>
+              <?php require APP_PATH . '/views/partials/oferta-tutoria-card.php'; ?>
+            <?php endforeach; ?>
+          </div>
+
+          <?php if ($hayMasOfertas): ?>
+            <div class="text-center mt-4">
+              <!-- Botón estático: la funcionalidad se agregará más adelante -->
+              <button type="button" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">
+                Ver más <i class="bi bi-chevron-down ms-1"></i>
+              </button>
+            </div>
+          <?php endif; ?>
+        <?php endif; ?>
       </section>
 
       <!-- ====================================================================
@@ -441,195 +235,8 @@
     </main>
   </div>
 
-  <!-- ==========================================================================
-       MODAL 1: EDITAR INFORMACIÓN DE PERFIL
-       ========================================================================== -->
-  <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-labelledby="modalEditarPerfilLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content rounded-4 border-0 shadow-lg">
-        <div class="modal-header border-bottom px-4 pt-4 pb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="bg-primary-subtle text-primary p-2 rounded-3">
-              <i class="bi bi-person-lines-fill fs-5"></i>
-            </div>
-            <div>
-              <h5 class="modal-title fw-bold text-dark" id="modalEditarPerfilLabel">Editar Perfil del Estudiante</h5>
-              <p class="text-secondary small mb-0">Actualizá tus datos académicos y canales de contacto</p>
-            </div>
-          </div>
-          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-
-        <form id="formPerfil">
-          <div class="modal-body p-4">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="editNombre" class="form-label small fw-semibold text-dark mb-2">Nombre y Apellido</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light border-end-0 text-secondary"><i class="bi bi-person"></i></span>
-                  <input type="text" class="form-control border-start-0 ps-0" id="editNombre" value="" required>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <label for="editEmail" class="form-label small fw-semibold text-dark mb-2">Correo Institucional UTN</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light border-end-0 text-secondary"><i class="bi bi-envelope"></i></span>
-                  <input type="email" class="form-control border-start-0 ps-0 profile-field-readonly" id="editEmail" value="" readonly>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <label for="editRegional" class="form-label small fw-semibold text-dark">Facultad Regional</label>
-                <input type="text" class="form-control profile-field-readonly" id="editRegional" value="FRH (Haedo)" readonly>
-              </div>
-
-              <div class="col-md-6">
-                <label for="editCarrera" class="form-label small fw-semibold text-dark">Carrera</label>
-                <select class="form-select" id="editCarrera">
-                  <option value="Ingeniería en Sistemas de Información" selected>Ingeniería en Sistemas de Información</option>
-                  <option value="Tecnicatura Universitaria en Programación (TUP)">Tecnicatura Universitaria en Programación (TUP)</option>
-                  <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
-                  <option value="Ingeniería Mecánica">Ingeniería Mecánica</option>
-                  <option value="Ingeniería Química">Ingeniería Química</option>
-                  <option value="Ingeniería Industrial">Ingeniería Industrial</option>
-                </select>
-              </div>
-
-              <div class="col-md-6">
-                <label for="editNivel" class="form-label small fw-semibold text-dark">Año de Cursada</label>
-                <select class="form-select" id="editNivel">
-                  <option value="1° Año">1° Año (Ingresante)</option>
-                  <option value="2° Año">2° Año</option>
-                  <option value="3° Año" selected>3° Año</option>
-                  <option value="4° Año">4° Año</option>
-                  <option value="5° Año">5° Año (Avanzado)</option>
-                  <option value="Graduado">Graduado</option>
-                </select>
-              </div>
-
-              <div class="col-md-6">
-                <label for="editDiscord" class="form-label small fw-semibold text-dark">Usuario de Discord</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light border-end-0" style="color: #2563eb;"><i class="bi bi-discord"></i></span>
-                  <input type="text" class="form-control border-start-0 ps-0" id="editDiscord" value="" placeholder="usuario#0000">
-                </div>
-              </div>
-
-              <div class="col-12">
-                <label for="editBio" class="form-label small fw-semibold text-dark">Materias de interés / Breve descripción</label>
-                <textarea class="form-control" id="editBio" rows="3" placeholder="Ingresa tu descripción..."></textarea>
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
-            <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary px-4 rounded-pill fw-semibold shadow-sm">
-              <i class="bi bi-check2 me-1"></i> Guardar Cambios
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==========================================================================
-       MODAL 2: SUBIR / CAMBIAR FOTO DE PERFIL
-       ========================================================================== -->
-  <div class="modal fade" id="modalSubirFoto" tabindex="-1" aria-labelledby="modalSubirFotoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content rounded-4 border-0 shadow-lg">
-        <div class="modal-header border-bottom px-4 pt-4 pb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="bg-primary-subtle text-primary p-2 rounded-3">
-              <i class="bi bi-camera-fill fs-5"></i>
-            </div>
-            <div>
-              <h5 class="modal-title fw-bold text-dark" id="modalSubirFotoLabel">Actualizar Foto de Perfil</h5>
-              <p class="text-secondary small mb-0">Seleccioná un avatar o subí tu propia foto</p>
-            </div>
-          </div>
-          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-
-        <div class="modal-body p-4 text-center">
-          <div class="preview-avatar-box mb-3" id="previewAvatarBox">
-            <span id="previewInitials">AL</span>
-          </div>
-
-          <div class="mb-4">
-            <label for="inputUploadFile" class="btn btn-outline-primary rounded-pill px-4 fw-semibold shadow-sm">
-              <i class="bi bi-upload me-1"></i> Subir imagen desde la PC
-            </label>
-            <input type="file" id="inputUploadFile" class="d-none" accept="image/*">
-            <div class="text-muted small mt-1" style="font-size: 0.72rem;">Formatos JPG, PNG. Tamaño máximo 2MB</div>
-          </div>
-
-          <div class="border-top pt-3">
-            <span class="small fw-semibold text-secondary d-block mb-3">O seleccioná un avatar ilustrado:</span>
-            <div class="d-flex justify-content-center gap-3">
-              <img src="public/img/avatares/bicho1.jpeg" 
-                   class="preset-avatar" alt="Avatar 1" onclick="seleccionarPresetAvatar(this.src)">
-              <img src="public/img/avatares/bicho2.jfif" 
-                   class="preset-avatar" alt="Avatar 2" onclick="seleccionarPresetAvatar(this.src)">
-              <img src="public/img/avatares/bicho3.jfif" 
-                   class="preset-avatar" alt="Avatar 3" onclick="seleccionarPresetAvatar(this.src)">
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
-          <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" id="btnGuardarFoto" class="btn btn-primary px-4 rounded-pill fw-semibold shadow-sm">
-            Guardar Foto
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==========================================================================
-       MODAL 3: DISCORD Y SALAS DE ESTUDIO
-       ========================================================================== -->
-  <div class="modal fade" id="modalDiscordConfig" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content rounded-4 border-0 shadow-lg">
-        <div class="modal-header border-bottom px-4 pt-4 pb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="p-2 rounded-3 text-white" style="background-color: #2563eb;">
-              <i class="bi bi-discord fs-5"></i>
-            </div>
-            <div>
-              <h5 class="modal-title fw-bold text-dark">Comunidad de Discord UTN</h5>
-              <p class="text-secondary small mb-0">Canales de voz y salas de estudio compartidas</p>
-            </div>
-          </div>
-          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body p-4">
-          <div class="p-3 rounded-3 mb-3 border d-flex align-items-center justify-content-between" style="background-color: #f5f6fe;">
-            <div class="d-flex align-items-center gap-3">
-              <i class="bi bi-broadcast fs-3" style="color: #2563eb;"></i>
-              <div>
-                <span class="d-block fw-bold text-dark small">Servidor Oficial Study Match</span>
-                <span class="text-muted" style="font-size: 0.75rem;">+250 estudiantes en línea ahora</span>
-              </div>
-            </div>
-            <span class="badge bg-success rounded-pill px-2.5 py-1 small">Conectado</span>
-          </div>
-          <p class="text-secondary small">
-            Al realizar un match con un tutor, se les asigna automáticamente una sala privada de audio y video en nuestro servidor de Discord para compartir pantalla y resolver dudas.
-          </p>
-        </div>
-        <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
-          <button type="button" class="btn btn-primary w-100 rounded-pill fw-semibold shadow-sm" data-bs-dismiss="modal">
-            Entendido
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <?php require APP_PATH . '/views/partials/perfil-alumno-modales.php'; ?>
+  <?php require APP_PATH . '/views/partials/modal-solicitar-tutoria.php'; ?>
 
   <!-- OVERLAY DE TRANSICIÓN SUAVE ENTRE ROLES -->
   <div id="roleTransitionOverlay" class="role-transition-overlay">
@@ -645,42 +252,9 @@
     </div>
   </div>
 
-  <!-- TOAST FLOTANTE DE NOTIFICACIÓN -->
-  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
-    <div id="toastSuccess" class="toast align-items-center text-bg-dark border-0 rounded-4 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body d-flex align-items-center gap-2">
-          <i class="bi bi-check-circle-fill text-success fs-5"></i>
-          <span id="toastMessage">¡Perfil actualizado correctamente!</span>
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-      </div>
-    </div>
-  </div>
-
   <!-- JavaScript: Funciones de Panel Alumno -->
   <script>
-    // ==========================================
-    // 1. Colapso / Expansión del Sidebar
-    // ==========================================
-    const sidebar = document.getElementById('mainSidebar');
-    const btnToggleSidebar = document.getElementById('btnToggleSidebar');
-    const btnCollapseSidebar = document.getElementById('btnCollapseSidebar');
-
-    function toggleSidebar() {
-      sidebar.classList.toggle('collapsed');
-      const isCollapsed = sidebar.classList.contains('collapsed');
-      document.body.classList.toggle('sidebar-is-collapsed', isCollapsed);
-      localStorage.setItem('study-match-sidebar-collapsed', isCollapsed ? 'true' : 'false');
-    }
-
-    if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', toggleSidebar);
-    if (btnCollapseSidebar) btnCollapseSidebar.addEventListener('click', toggleSidebar);
-
-    if (localStorage.getItem('study-match-sidebar-collapsed') === 'true') {
-      sidebar.classList.add('collapsed');
-      document.body.classList.add('sidebar-is-collapsed');
-    }
+    // 1. Colapso / Expansión del Sidebar: ver public/js/sidebar.js
 
     // ==========================================
     // 2. Transición Visual Suave a Modo Tutor
@@ -695,124 +269,7 @@
       }, 340);
     }
 
-    // ==========================================
-    // 3. Edición de Perfil y Sincronización LocalStorage
-    // ==========================================
-    const formPerfil = document.getElementById('formPerfil');
-    formPerfil.addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const perfilData = {
-        nombre: document.getElementById('editNombre').value.trim(),
-        email: document.getElementById('editEmail').value.trim(),
-        regional: document.getElementById('editRegional').value,
-        carrera: document.getElementById('editCarrera').value,
-        nivel: document.getElementById('editNivel').value,
-        discord: document.getElementById('editDiscord').value.trim()
-      };
-
-      localStorage.setItem('study-match-user-profile', JSON.stringify(perfilData));
-      aplicarDatosPerfil(perfilData);
-
-      const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfil'));
-      if (modalInstance) modalInstance.hide();
-      mostrarToast("¡Perfil actualizado con éxito!");
-    });
-
-    function aplicarDatosPerfil(data) {
-      if (!data) return;
-      document.querySelectorAll('.userNameSlot').forEach(el => el.textContent = data.nombre);
-      document.querySelectorAll('.userEmailSlot').forEach(el => el.textContent = data.email);
-      
-      const carreraCorta = data.carrera.includes('Programación') ? 'TUP' : 'Sistemas';
-      document.querySelectorAll('.userCareerSlot').forEach(el => el.textContent = `${carreraCorta} • ${data.nivel}`);
-      
-      const regionalCorta = data.regional ? data.regional.split(' ')[0] : 'FRH';
-      const legajoSlot = document.getElementById('userLegajoSlot');
-      if (legajoSlot) legajoSlot.textContent = `Legajo: 51294 • ${regionalCorta}`;
-
-      if (!selectedPhotoUrl) {
-        const partes = data.nombre.split(' ');
-        const iniciales = partes.length >= 2 
-          ? (partes[0][0] + partes[1][0]).toUpperCase() 
-          : data.nombre.substring(0, 2).toUpperCase();
-
-        document.querySelectorAll('.userAvatarSlot').forEach(el => {
-          el.style.backgroundImage = 'none';
-          el.textContent = iniciales;
-        });
-        const prevInit = document.getElementById('previewInitials');
-        if (prevInit) prevInit.textContent = iniciales;
-      }
-    }
-
-    // ==========================================
-    // 4. Subir y Cambiar Foto de Perfil
-    // ==========================================
-    let selectedPhotoUrl = localStorage.getItem('study-match-user-photo') || null;
-    const inputUploadFile = document.getElementById('inputUploadFile');
-    const previewAvatarBox = document.getElementById('previewAvatarBox');
-    const previewInitials = document.getElementById('previewInitials');
-    const btnGuardarFoto = document.getElementById('btnGuardarFoto');
-
-    if (selectedPhotoUrl) {
-      document.querySelectorAll('.userAvatarSlot').forEach(slot => {
-        slot.style.backgroundImage = `url('${selectedPhotoUrl}')`;
-        slot.textContent = '';
-      });
-      if (previewAvatarBox) previewAvatarBox.style.backgroundImage = `url('${selectedPhotoUrl}')`;
-      if (previewInitials) previewInitials.textContent = '';
-    }
-
-    if (inputUploadFile) {
-      inputUploadFile.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(event) {
-            selectedPhotoUrl = event.target.result;
-            previewAvatarBox.style.backgroundImage = `url('${selectedPhotoUrl}')`;
-            previewInitials.textContent = '';
-            document.querySelectorAll('.preset-avatar').forEach(p => p.classList.remove('selected'));
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-    }
-
-    function seleccionarPresetAvatar(url) {
-      selectedPhotoUrl = url;
-      previewAvatarBox.style.backgroundImage = `url('${url}')`;
-      previewInitials.textContent = '';
-      document.querySelectorAll('.preset-avatar').forEach(p => {
-        p.classList.toggle('selected', p.src === url);
-      });
-    }
-
-    if (btnGuardarFoto) {
-      btnGuardarFoto.addEventListener('click', function() {
-        if (selectedPhotoUrl) {
-          localStorage.setItem('study-match-user-photo', selectedPhotoUrl);
-          document.querySelectorAll('.userAvatarSlot').forEach(slot => {
-            slot.style.backgroundImage = `url('${selectedPhotoUrl}')`;
-            slot.textContent = '';
-          });
-          mostrarToast("¡Foto de perfil actualizada!");
-        }
-        const modalFotoInstance = bootstrap.Modal.getInstance(document.getElementById('modalSubirFoto'));
-        if (modalFotoInstance) modalFotoInstance.hide();
-      });
-    }
-
-    // ==========================================
-    // 5. Toast Helper
-    // ==========================================
-    function mostrarToast(mensaje) {
-      const toastEl = document.getElementById('toastSuccess');
-      document.getElementById('toastMessage').textContent = mensaje;
-      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-      toast.show();
-    }
+    // 3-5. Perfil, foto y toast: ver public/js/perfil.js
 
     // ==========================================
     // 6. Buscador y Filtros de Tutores en Tiempo Real
@@ -854,83 +311,14 @@
       });
     });
 
-    // Cargar perfil guardado si existe
-    const perfilGuardado = localStorage.getItem('study-match-user-profile');
-    if (perfilGuardado) {
-      try {
-        aplicarDatosPerfil(JSON.parse(perfilGuardado));
-      } catch(e) {}
-    }
-
-    function aplicarNombreDeSesion(nombre) {
-      document.querySelectorAll('.userNameSlot').forEach(el => {
-        el.textContent = nombre;
-      });
-
-      const editNombre = document.getElementById('editNombre');
-      if (editNombre) editNombre.value = nombre;
-
-      if (!selectedPhotoUrl) {
-        const partes = nombre.trim().split(/\s+/);
-        const iniciales = partes.length >= 2
-          ? (partes[0][0] + partes[1][0]).toUpperCase()
-          : nombre.substring(0, 2).toUpperCase();
-        document.querySelectorAll('.userAvatarSlot').forEach(el => {
-          el.style.backgroundImage = 'none';
-          el.textContent = iniciales;
-        });
-        const prevInit = document.getElementById('previewInitials');
-        if (prevInit) prevInit.textContent = iniciales;
-      }
-    }
-
-    fetch('index.php?r=usuario-actual', { credentials: 'same-origin' })
-      .then(response => {
-        if (!response.ok) throw new Error('No se pudo cargar el usuario de la sesión.');
-        return response.json();
-      })
-      .then(user => {
-        if (
-          typeof user.nombre !== 'string'
-          || user.nombre.trim() === ''
-          || typeof user.email !== 'string'
-          || user.email.trim() === ''
-        ) {
-          throw new Error('La respuesta del usuario no contiene un nombre o correo válido.');
-        }
-        aplicarNombreDeSesion(user.nombre);
-        document.getElementById('editEmail').value = user.email;
-        if (typeof user.carrera === 'string' && user.carrera !== '') {
-          document.getElementById('editCarrera').value = user.carrera;
-        }
-        const nivelPorValorDB = {
-          '1ro': '1° Año',
-          '2do': '2° Año',
-          '3ro': '3° Año',
-          '4to': '4° Año',
-          '5to': '5° Año',
-          'graduado': 'Graduado'
-        };
-        if (typeof user.nivel === 'string' && nivelPorValorDB[user.nivel]) {
-          document.getElementById('editNivel').value = nivelPorValorDB[user.nivel];
-        }
-        document.querySelectorAll('.userEmailSlot').forEach(el => {
-          el.textContent = user.email;
-        });
-      })
-      .catch(error => {
-        console.error(error);
-        document.querySelectorAll('.userNameSlot').forEach(el => {
-          el.textContent = 'No disponible';
-        });
-        document.querySelectorAll('.userEmailSlot').forEach(el => {
-          el.textContent = 'No disponible';
-        });
-      });
+    // Carga de datos del usuario de la sesión: ver public/js/perfil.js
   </script>
 
   <!-- Bootstrap 5.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="public/js/perfil.js"></script>
+  <script src="public/js/solicitud-tutoria.js"></script>
+  <script src="public/js/sidebar.js"></script>
   <script src="public/js/main.js"></script>
 </body>
 </html>

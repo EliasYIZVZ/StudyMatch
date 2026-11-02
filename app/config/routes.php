@@ -23,6 +23,22 @@ return [
     'dashboard-tutor' => ['DashboardController', 'tutor', 'page'],
     'buscar-tutor'    => ['DashboardController', 'buscarTutor', 'page'],
 
+    // Solicitudes de tutoría (solo POST)
+    'solicitar-tutoria'   => ['SolicitudController', 'solicitar', 'page'],
+    'responder-solicitud' => ['SolicitudController', 'responder', 'page'],
+    'cancelar-solicitud'  => ['SolicitudController', 'cancelar', 'page'],
+
+    // Mis publicaciones (ofertas del tutor)
+    'mis-publicaciones' => ['OfertaController', 'lista', 'page'],
+    'guardar-oferta'    => ['OfertaController', 'guardar', 'page'],
+    'estado-oferta'     => ['OfertaController', 'cambiarEstado', 'page'],
+
+    // Mis tutorías y chat (compartido entre alumno y tutor)
+    'mis-tutorias'     => ['TutoriaController', 'lista', 'page'],
+    'tutoria'          => ['TutoriaController', 'detalle', 'page'],
+    'enviar-mensaje'   => ['TutoriaController', 'enviarMensaje', 'page'],
+    'mensajes-tutoria' => ['TutoriaController', 'mensajes', 'api'],
+
     // Panel de administración (solo rol_usuario = 'admin')
     'admin'           => ['AdminController', 'dashboard', 'admin'],
     'admin-usuarios'  => ['AdminController', 'usuarios', 'admin'],

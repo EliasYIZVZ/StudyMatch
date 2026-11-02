@@ -5,6 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Study Match - Buscar Tutor</title>
+  <script>
+    (function() {
+      var theme = localStorage.getItem('study_match_theme');
+      document.documentElement.setAttribute('data-bs-theme', theme === 'light' ? 'light' : 'dark');
+    })();
+  </script>
 
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,76 +29,7 @@
   <!-- ==========================================================================
        SIDEBAR LATERAL IZQUIERDA (MODO ALUMNO - 100% FIJO)
        ========================================================================== -->
-  <aside id="mainSidebar" class="sidebar d-flex flex-column justify-content-between p-3">
-    <div>
-      <!-- Header con Logo Study Match y Botón de Colapso -->
-      <div class="d-flex align-items-center justify-content-between mb-4 px-2 logo-container">
-        <a href="index.php?r=dashboard" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
-          <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
-            <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
-            <polygon points="50,20 90,42 50,62" fill="#1677c8"/>
-            <line x1="78" y1="48" x2="78" y2="70" stroke="#1677c8" stroke-width="3.5" stroke-linecap="round"/>
-            <circle cx="78" cy="68" r="3.5" fill="#1677c8"/>
-            <polygon points="78,68 73,82 83,82" fill="#1677c8"/>
-            <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="2"/>
-          </svg>
-          <span class="fw-bold fs-5 text-dark logo-text">Study <span style="color: var(--brand-blue);">Match</span></span>
-        </a>
-
-        <!-- Botón para contraer sidebar -->
-        <button id="btnCollapseSidebar" class="btn btn-sm btn-light border-0 text-secondary p-1 rounded-2 sidebar-hide-collapsed" title="Contraer menú lateral">
-          <i class="bi bi-chevron-left"></i>
-        </button>
-      </div>
-
-      <!-- Menú de Navegación: MODO ALUMNO -->
-      <nav class="d-flex flex-column gap-1">
-        <div class="px-3 pb-1 text-uppercase small text-muted fw-bold sidebar-text" style="font-size: 0.68rem; letter-spacing: 0.08em;">
-          Menú Alumno
-        </div>
-        <a href="index.php?r=dashboard" class="sidebar-link" title="Inicio / Novedades">
-          <i class="bi bi-house-door"></i>
-          <span class="sidebar-text">Inicio</span>
-        </a>
-        <a href="index.php?r=buscar-tutor" class="sidebar-link active" title="Buscar Tutor">
-          <i class="bi bi-search"></i>
-          <span class="sidebar-text">Buscar Tutor</span>
-        </a>
-        <a href="#" class="sidebar-link" title="Mis tutorías">
-          <i class="bi bi-calendar3"></i>
-          <span class="sidebar-text">Mis tutorías</span>
-        </a>
-        <a href="#" class="sidebar-link" title="Mensajes">
-          <i class="bi bi-chat-dots"></i>
-          <span class="sidebar-text">Mensajes</span>
-          <span class="badge rounded-pill ms-auto sidebar-text badge-role-counter" style="font-size: 0.65rem;">2</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Usuario abajo en el Sidebar -->
-    <div class="border-top pt-3 mt-auto">
-      <div class="user-sidebar-card p-2 d-flex align-items-center justify-content-between mb-2" 
-           data-bs-toggle="modal" data-bs-target="#modalEditarPerfil" title="Haz clic para editar tu perfil">
-        <div class="d-flex align-items-center gap-2 overflow-hidden">
-          <div class="avatar-user-display userAvatarSlot">
-            AL
-          </div>
-          <div class="sidebar-text text-truncate lh-sm">
-            <span class="d-block fw-bold text-dark small text-truncate userNameSlot">Alex López</span>
-            <span class="text-secondary userCareerSlot" style="font-size: 0.72rem;">Sistemas • 3° año</span>
-          </div>
-        </div>
-        <i class="bi bi-pencil-square text-secondary sidebar-text fs-6 me-1" title="Editar"></i>
-      </div>
-
-      <a href="index.php?r=logout" class="sidebar-link text-danger p-2" title="Cerrar sesión">
-        <i class="bi bi-box-arrow-left"></i>
-        <span class="sidebar-text">Cerrar sesión</span>
-      </a>
-    </div>
-  </aside>
+  <?php $sidebarActivo = 'buscar'; require APP_PATH . '/views/partials/sidebar-alumno.php'; ?>
 
   <!-- ==========================================================================
        CONTENIDO PRINCIPAL: BÚSQUEDA HÍBRIDA DE TUTORES
@@ -112,6 +49,10 @@
 
         <!-- Switch Rol Dual + Perfil -->
         <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-outline-brand btn-sm theme-toggle-btn d-inline-flex align-items-center justify-content-center rounded-pill" type="button" aria-label="Cambiar a modo claro" title="Cambiar a modo claro">
+            <i class="theme-icon bi bi-sun-fill text-warning"></i>
+          </button>
+
           <div class="role-switch-container d-flex align-items-center gap-1 shadow-sm">
             <span id="label-alumno" class="role-badge-btn" title="Actualmente en Modo Alumno">
               <span>Alumno</span>
@@ -123,9 +64,8 @@
               <span>Tutor</span>
             </span>
           </div>
-          <div class="avatar-user-display userAvatarSlot" data-bs-toggle="modal" data-bs-target="#modalEditarPerfil" style="cursor: pointer;">
-            AL
-          </div>
+
+          <?php require APP_PATH . '/views/partials/perfil-alumno-menu.php'; ?>
         </div>
       </div>
     </header>
@@ -513,6 +453,8 @@
     </main>
   </div>
 
+  <?php require APP_PATH . '/views/partials/perfil-alumno-modales.php'; ?>
+
   <!-- TOAST DE NOTIFICACIÓN DE RESERVA -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
     <div id="toastReserva" class="toast align-items-center text-bg-primary border-0 rounded-4 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
@@ -528,6 +470,9 @@
 
   <!-- Bootstrap 5.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="public/js/perfil.js"></script>
+  <script src="public/js/sidebar.js"></script>
+  <script src="public/js/main.js"></script>
 
   <!-- Lógica de Búsqueda Híbrida y Filtrado Interactivo -->
   <script>
@@ -640,24 +585,7 @@
         });
       }
 
-      // Toggle Sidebar
-      var btnToggle = document.getElementById('btnToggleSidebar');
-      var btnCollapse = document.getElementById('btnCollapseSidebar');
-      var sidebar = document.getElementById('mainSidebar');
-
-      function toggleSidebar() {
-        sidebar.classList.toggle('collapsed');
-        var isCollapsed = sidebar.classList.contains('collapsed');
-        document.body.classList.toggle('sidebar-is-collapsed', isCollapsed);
-        localStorage.setItem('study-match-sidebar-collapsed', isCollapsed ? 'true' : 'false');
-      }
-      if (btnToggle) btnToggle.addEventListener('click', toggleSidebar);
-      if (btnCollapse) btnCollapse.addEventListener('click', toggleSidebar);
-
-      if (localStorage.getItem('study-match-sidebar-collapsed') === 'true') {
-        sidebar.classList.add('collapsed');
-        document.body.classList.add('sidebar-is-collapsed');
-      }
+      // Toggle Sidebar: ver public/js/sidebar.js
     });
 
     function reservarTutor(nombre, materia) {

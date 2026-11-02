@@ -25,101 +25,27 @@
   <link rel="stylesheet" href="public/css/dashboard.css?v=20261101_tutor_bg_ia7">
 </head>
 <body class="dashboard-body" data-role="tutor">
+<?php $cantPendientes = (int) $resumenSolicitudes['pendientes']; ?>
 
   <!-- ==========================================================================
        SIDEBAR LATERAL IZQUIERDA (MODO TUTOR - 100% FIJO)
        ========================================================================== -->
-  <aside id="mainSidebar" class="sidebar d-flex flex-column justify-content-between p-3">
-    <div>
-      <!-- Header con Logo Study Match y Botón de Colapso -->
-      <div class="d-flex align-items-center justify-content-between mb-4 px-2 logo-container">
-        <a href="index.php?r=dashboard-tutor" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
-          <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
-            <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
-            <polygon points="50,20 90,42 50,62" fill="#1677c8"/>
-            <line x1="78" y1="48" x2="78" y2="70" stroke="#1677c8" stroke-width="3.5" stroke-linecap="round"/>
-            <circle cx="78" cy="68" r="3.5" fill="#1677c8"/>
-            <polygon points="78,68 73,82 83,82" fill="#1677c8"/>
-            <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="2"/>
-          </svg>
-          <span class="fw-bold fs-5 text-dark logo-text">Study <span style="color: var(--brand-blue);">Match</span></span>
-        </a>
-
-        <!-- Botón para contraer sidebar -->
-        <button id="btnCollapseSidebar" class="btn btn-sm btn-light border-0 text-secondary p-1 rounded-2 sidebar-hide-collapsed" title="Contraer menú lateral">
-          <i class="bi bi-chevron-left"></i>
-        </button>
-      </div>
-
-      <!-- Menú de Navegación: MODO TUTOR (Acento Verde) -->
-      <nav class="d-flex flex-column gap-1">
-        <div class="px-3 pb-1 text-uppercase small text-muted fw-bold sidebar-text" style="font-size: 0.68rem; letter-spacing: 0.08em;">
-          Menú Tutor
-        </div>
-        <a href="index.php?r=dashboard-tutor" class="sidebar-link active" title="Panel Tutor">
-          <i class="bi bi-speedometer2"></i>
-          <span class="sidebar-text">Panel Tutor</span>
-        </a>
-        <a href="#mis-publicaciones" class="sidebar-link" title="Mis publicaciones">
-          <i class="bi bi-journal-bookmark"></i>
-          <span class="sidebar-text">Mis publicaciones</span>
-        </a>
-        <a href="#solicitudes" class="sidebar-link" title="Solicitudes">
-          <i class="bi bi-person-check"></i>
-          <span class="sidebar-text">Solicitudes</span>
-          <span id="badgeSolicitudesTutor" class="badge rounded-pill ms-auto sidebar-text badge-role-counter" style="font-size: 0.65rem;">3 nuevas</span>
-        </a>
-        <a href="#" class="sidebar-link" title="Mensajes">
-          <i class="bi bi-chat-dots"></i>
-          <span class="sidebar-text">Mensajes</span>
-          <span class="badge rounded-pill ms-auto sidebar-text badge-role-counter" style="font-size: 0.65rem;">2</span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Usuario abajo en el Sidebar: Tarjeta de Perfil Interactivo -->
-    <div class="border-top pt-3 mt-auto">
-      <div class="user-sidebar-card p-2 d-flex align-items-center justify-content-between mb-2" 
-           data-bs-toggle="modal" data-bs-target="#modalEditarPerfil" title="Haz clic para editar tu perfil">
-        <div class="d-flex align-items-center gap-2 overflow-hidden">
-          <div class="avatar-user-display userAvatarSlot">
-            AL
-          </div>
-          <div class="sidebar-text text-truncate lh-sm">
-            <span class="d-block fw-bold text-dark small text-truncate userNameSlot">Cargando...</span>
-            <span class="text-secondary userCareerSlot" style="font-size: 0.72rem;">Sistemas • 3° año</span>
-          </div>
-        </div>
-        <i class="bi bi-pencil-square text-secondary sidebar-text fs-6 me-1" title="Editar"></i>
-      </div>
-
-      <a href="index.php?r=logout" class="sidebar-link text-danger p-2" title="Cerrar sesión">
-        <i class="bi bi-box-arrow-left"></i>
-        <span class="sidebar-text">Cerrar sesión</span>
-      </a>
-    </div>
-  </aside>
+  <?php $sidebarActivo = 'panel'; require APP_PATH . '/views/partials/sidebar-tutor.php'; ?>
 
   <!-- ==========================================================================
        CONTENIDO PRINCIPAL: PANEL TUTOR
        ========================================================================== -->
   <div class="dashboard-main-wrapper">
 
-    <!-- TOPBAR CON BUSCADOR, SWITCH DE ROL Y MENÚ DE PERFIL -->
+    <!-- TOPBAR CON SWITCH DE ROL Y MENÚ DE PERFIL -->
     <header class="topbar-header px-4 py-3 sticky-top">
       <div class="d-flex align-items-center justify-content-between gap-3">
         
-        <!-- Toggle de Sidebar + Buscador Central -->
-        <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 600px;">
+        <!-- Toggle de Sidebar -->
+        <div class="d-flex align-items-center gap-2">
           <button id="btnToggleSidebar" class="btn btn-light border text-secondary p-2 rounded-3" title="Expandir/Contraer menú lateral">
             <i class="bi bi-layout-sidebar fs-5"></i>
           </button>
-
-          <div class="position-relative flex-grow-1">
-            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-            <input type="text" id="mainSearchInput" class="form-control rounded-pill ps-5 bg-light border-0 shadow-none py-2" placeholder="Buscar alumnos, solicitudes o materias...">
-          </div>
         </div>
 
         <!-- Switch Rol Dual: Alumno (Azul) / Tutor (Verde) + Perfil -->
@@ -205,254 +131,115 @@
 
     <!-- CUERPO PRINCIPAL DEL DASHBOARD TUTOR -->
     <main class="p-4 p-md-5 flex-grow-1 view-fade">
+      <?php require APP_PATH . '/views/partials/flash.php'; ?>
 
       <!-- Encabezado Modo Tutor -->
       <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
         <div>
           <span class="mode-indicator-pill mb-2"><i class="bi bi-patch-check-fill"></i> Modo Tutor</span>
-          <h1 class="h3 fw-bold text-dark mb-1">Panel del Tutor: Tus Tutorías y Alumnos</h1>
-          <p class="text-secondary small mb-0">Gestioná tus solicitudes entrantes, coordiná clases y publicá nuevas materias.</p>
+          <h1 class="h3 fw-bold text-dark mb-1">Panel del Tutor</h1>
+          <p class="text-secondary small mb-0">Un resumen de tus publicaciones, solicitudes y tutorías.</p>
         </div>
-        <button class="btn btn-role-action rounded-pill px-4 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevaTutoria">
+        <a href="index.php?r=mis-publicaciones&amp;nueva=1" class="btn btn-role-action rounded-pill px-4 py-2 fw-semibold shadow-sm">
           <i class="bi bi-plus-lg me-1"></i> Publicar nueva tutoría
-        </button>
+        </a>
       </div>
 
-      <!-- Fila de Métricas del Tutor -->
+      <!-- Métricas del tutor (datos reales) -->
       <div class="row g-3 mb-4">
         <div class="col-sm-6 col-xl-3">
-          <div class="metric-card p-3 p-xl-4 h-100">
+          <a href="index.php?r=mis-publicaciones" class="metric-card p-3 p-xl-4 h-100 d-block text-decoration-none">
             <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="text-secondary small fw-semibold">Horas Impartidas</span>
-              <div class="bg-success-subtle text-success p-2 rounded-3">
-                <i class="bi bi-clock-history fs-5"></i>
-              </div>
+              <span class="text-secondary small fw-semibold">Publicaciones activas</span>
+              <div class="bg-success-subtle text-success p-2 rounded-3"><i class="bi bi-journal-check fs-5"></i></div>
             </div>
-            <h3 class="fw-bold text-dark mb-1">18 hrs</h3>
-            <span class="badge bg-success-subtle text-success small" style="font-size: 0.72rem;">+4 hrs esta semana</span>
-          </div>
+            <h3 class="fw-bold text-dark mb-1"><?= (int) $resumenOfertas['activas'] ?></h3>
+            <span class="text-secondary small" style="font-size: 0.72rem;">de <?= (int) $resumenOfertas['total'] ?> publicada<?= (int) $resumenOfertas['total'] === 1 ? '' : 's' ?></span>
+          </a>
         </div>
 
         <div class="col-sm-6 col-xl-3">
-          <div class="metric-card p-3 p-xl-4 h-100">
+          <a href="index.php?r=mis-tutorias&amp;rol=tutor&amp;estado=pendientes" class="metric-card p-3 p-xl-4 h-100 d-block text-decoration-none">
             <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="text-secondary small fw-semibold">Alumnos Asistidos</span>
-              <div class="bg-primary-subtle text-primary p-2 rounded-3">
-                <i class="bi bi-people-fill fs-5"></i>
-              </div>
+              <span class="text-secondary small fw-semibold">Solicitudes pendientes</span>
+              <div class="bg-danger-subtle text-danger p-2 rounded-3"><i class="bi bi-bell-fill fs-5"></i></div>
             </div>
-            <h3 class="fw-bold text-dark mb-1">12 alumnos</h3>
-            <span class="text-secondary small" style="font-size: 0.72rem;">UTN FRH • FRBA</span>
-          </div>
+            <h3 class="fw-bold text-dark mb-1" id="metricCounterSolicitudes"><?= $cantPendientes ?></h3>
+            <span class="<?= $cantPendientes > 0 ? 'text-danger fw-semibold' : 'text-secondary' ?> small" style="font-size: 0.72rem;">
+              <?= $cantPendientes > 0 ? 'Requieren tu respuesta' : 'Estás al día' ?>
+            </span>
+          </a>
         </div>
 
         <div class="col-sm-6 col-xl-3">
-          <div class="metric-card p-3 p-xl-4 h-100">
+          <a href="index.php?r=mis-tutorias&amp;rol=tutor&amp;estado=en-curso" class="metric-card p-3 p-xl-4 h-100 d-block text-decoration-none">
             <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="text-secondary small fw-semibold">Calificación Promedio</span>
-              <div class="bg-warning-subtle text-warning p-2 rounded-3">
-                <i class="bi bi-star-fill fs-5"></i>
-              </div>
+              <span class="text-secondary small fw-semibold">Tutorías en curso</span>
+              <div class="bg-primary-subtle text-primary p-2 rounded-3"><i class="bi bi-chat-dots fs-5"></i></div>
             </div>
-            <h3 class="fw-bold text-dark mb-1">4.9 <small class="text-secondary fs-6 fw-normal">/ 5.0</small></h3>
-            <span class="text-secondary small" style="font-size: 0.72rem;">15 valoraciones</span>
-          </div>
+            <h3 class="fw-bold text-dark mb-1"><?= (int) $resumenSolicitudes['en_curso'] ?></h3>
+            <span class="text-secondary small" style="font-size: 0.72rem;">Coordinalas por chat</span>
+          </a>
         </div>
 
         <div class="col-sm-6 col-xl-3">
-          <div class="metric-card p-3 p-xl-4 h-100">
+          <a href="index.php?r=mis-tutorias&amp;rol=tutor&amp;estado=historial" class="metric-card p-3 p-xl-4 h-100 d-block text-decoration-none">
             <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="text-secondary small fw-semibold">Solicitudes Pendientes</span>
-              <div class="bg-danger-subtle text-danger p-2 rounded-3">
-                <i class="bi bi-bell-fill fs-5"></i>
-              </div>
+              <span class="text-secondary small fw-semibold">Tutorías finalizadas</span>
+              <div class="bg-warning-subtle text-warning p-2 rounded-3"><i class="bi bi-trophy fs-5"></i></div>
             </div>
-            <h3 class="fw-bold text-dark mb-1" id="metricCounterSolicitudes">3 nuevas</h3>
-            <span class="text-danger small fw-semibold" style="font-size: 0.72rem;">Requieren tu respuesta</span>
-          </div>
+            <h3 class="fw-bold text-dark mb-1"><?= (int) $resumenSolicitudes['finalizadas'] ?></h3>
+            <span class="text-secondary small" style="font-size: 0.72rem;"><?= (int) $resumenSolicitudes['alumnos'] ?> alumno<?= (int) $resumenSolicitudes['alumnos'] === 1 ? '' : 's' ?> distinto<?= (int) $resumenSolicitudes['alumnos'] === 1 ? '' : 's' ?></span>
+          </a>
         </div>
       </div>
 
-      <!-- SECCIÓN: Solicitudes de Alumnos Pendientes -->
+      <!-- Solicitudes más antiguas sin responder -->
       <div id="solicitudes" class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
         <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
           <div>
             <h5 class="fw-bold text-dark mb-1">
-              <i class="bi bi-inbox-fill text-success me-2"></i>Solicitudes de Tutoría Recibidas
+              <i class="bi bi-inbox-fill text-success me-2"></i>Solicitudes por responder
             </h5>
-            <p class="text-secondary small mb-0">Alumnos que solicitaron tu ayuda en tus materias publicadas</p>
+            <p class="text-secondary small mb-0">Las más antiguas primero. Al aceptar se abre el chat con el alumno.</p>
           </div>
-          <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill" id="solicitudesHeaderBadge">
-            3 pendientes
-          </span>
+          <?php if ($cantPendientes > 0): ?>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill" id="solicitudesHeaderBadge">
+              <?= $cantPendientes ?> pendiente<?= $cantPendientes === 1 ? '' : 's' ?>
+            </span>
+          <?php else: ?>
+            <span class="badge bg-secondary-subtle text-secondary border px-3 py-1.5 rounded-pill" id="solicitudesHeaderBadge">
+              Sin solicitudes pendientes
+            </span>
+          <?php endif; ?>
         </div>
 
         <div class="d-flex flex-column gap-3" id="listaSolicitudesTutor">
-          <!-- Solicitud 1 -->
-          <div class="p-3 rounded-3 border bg-light-subtle d-flex align-items-start justify-content-between flex-wrap gap-3 item-solicitud">
-            <div class="d-flex align-items-start gap-3">
-              <div class="avatar-circle flex-shrink-0 bg-primary-subtle text-primary">LB</div>
-              <div>
-                <div class="d-flex align-items-center gap-2">
-                  <h6 class="fw-bold text-dark mb-0">Lucas Benítez</h6>
-                  <span class="badge bg-primary-subtle text-primary" style="font-size: 0.7rem;">Programación II</span>
-                </div>
-                <p class="text-secondary small mb-1 mt-1">
-                  "Hola, tengo dudas con punteros dobles y asignación dinámica de memoria antes del primer parcial de C++."
-                </p>
-                <span class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-clock me-1"></i>Hace 25 minutos • UTN FRH</span>
-              </div>
-            </div>
-            <div class="d-flex align-items-center gap-2 ms-auto">
-              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="rechazarSolicitud(this)">Rechazar</button>
-              <button class="btn btn-sm btn-success rounded-pill px-3 fw-semibold shadow-sm" onclick="aceptarSolicitud(this, 'Lucas Benítez', 'Programación II')">
-                <i class="bi bi-check-lg me-1"></i> Aceptar tutoría
-              </button>
-            </div>
-          </div>
-
-          <!-- Solicitud 2 -->
-          <div class="p-3 rounded-3 border bg-light-subtle d-flex align-items-start justify-content-between flex-wrap gap-3 item-solicitud">
-            <div class="d-flex align-items-start gap-3">
-              <div class="avatar-circle flex-shrink-0 bg-success-subtle text-success">SG</div>
-              <div>
-                <div class="d-flex align-items-center gap-2">
-                  <h6 class="fw-bold text-dark mb-0">Sofía Gómez</h6>
-                  <span class="badge bg-success-subtle text-success" style="font-size: 0.7rem;">Bases de Datos</span>
-                </div>
-                <p class="text-secondary small mb-1 mt-1">
-                  "Hola! ¿Podríamos revisar la normalización a 3FN de mi trabajo práctico de MySQL? Es para este viernes."
-                </p>
-                <span class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-clock me-1"></i>Hace 2 horas • UTN FRBA</span>
-              </div>
-            </div>
-            <div class="d-flex align-items-center gap-2 ms-auto">
-              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="rechazarSolicitud(this)">Rechazar</button>
-              <button class="btn btn-sm btn-success rounded-pill px-3 fw-semibold shadow-sm" onclick="aceptarSolicitud(this, 'Sofía Gómez', 'Bases de Datos')">
-                <i class="bi bi-check-lg me-1"></i> Aceptar tutoría
-              </button>
-            </div>
-          </div>
-
-          <!-- Solicitud 3 -->
-          <div class="p-3 rounded-3 border bg-light-subtle d-flex align-items-start justify-content-between flex-wrap gap-3 item-solicitud">
-            <div class="d-flex align-items-start gap-3">
-              <div class="avatar-circle flex-shrink-0 bg-warning-subtle text-warning">IP</div>
-              <div>
-                <div class="d-flex align-items-center gap-2">
-                  <h6 class="fw-bold text-dark mb-0">Ignacio Peralta</h6>
-                  <span class="badge bg-info-subtle text-info-emphasis" style="font-size: 0.7rem;">Laboratorio I</span>
-                </div>
-                <p class="text-secondary small mb-1 mt-1">
-                  "Buenas tardes, necesitaría ayuda para resolver la guía de matrices y structs en Lenguaje C."
-                </p>
-                <span class="text-muted" style="font-size: 0.72rem;"><i class="bi bi-clock me-1"></i>Ayer • UTN FRP</span>
-              </div>
-            </div>
-            <div class="d-flex align-items-center gap-2 ms-auto">
-              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="rechazarSolicitud(this)">Rechazar</button>
-              <button class="btn btn-sm btn-success rounded-pill px-3 fw-semibold shadow-sm" onclick="aceptarSolicitud(this, 'Ignacio Peralta', 'Laboratorio I')">
-                <i class="bi bi-check-lg me-1"></i> Aceptar tutoría
-              </button>
-            </div>
-          </div>
+          <?php require APP_PATH . '/views/partials/solicitudes-tutor.php'; ?>
         </div>
+
+        <?php if ($cantPendientes > count($solicitudesPendientes)): ?>
+          <div class="text-center mt-3">
+            <a href="index.php?r=mis-tutorias&amp;rol=tutor&amp;estado=pendientes" class="btn btn-sm btn-outline-success rounded-pill px-4">
+              Ver todas las solicitudes (<?= $cantPendientes ?>)
+            </a>
+          </div>
+        <?php endif; ?>
       </div>
 
-      <!-- SECCIÓN: Tus Publicaciones de Tutoría -->
-      <div id="mis-publicaciones" class="mb-4">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <h5 class="fw-bold text-dark mb-0">
-            <i class="bi bi-journal-bookmark-fill text-success me-2"></i>Tus Materias Publicadas
+      <?php if ((int) $resumenOfertas['activas'] === 0): ?>
+        <!-- Invitación a publicar cuando no hay ofertas activas -->
+        <div class="text-center py-5 bg-white rounded-4 border border-dashed">
+          <i class="bi bi-mortarboard text-success fs-1 d-block mb-2"></i>
+          <h5 class="fw-bold">
+            <?= (int) $resumenOfertas['total'] === 0 ? '¿Querés empezar a dar tutorías?' : 'No tenés publicaciones activas' ?>
           </h5>
+          <p class="text-secondary small mb-3">Publicá las materias que aprobaste y ayudá a tus compañeros de la TUP.</p>
+          <a href="index.php?r=mis-publicaciones&amp;nueva=1" class="btn btn-role-action rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Publicar una tutoría
+          </a>
         </div>
-
-        <div class="row g-4" id="contenedorTutoriasPublicadas">
-          <!-- Publicación 1 -->
-          <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                  <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-semibold">
-                    <span class="spinner-grow spinner-grow-sm text-success me-1" style="width: 0.4rem; height: 0.4rem;"></span>
-                    Activa y Visible
-                  </span>
-                  <div class="dropdown">
-                    <button class="btn btn-link text-secondary p-0 shadow-none" data-bs-toggle="dropdown">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
-                      <li><a class="dropdown-item small" href="#" onclick="mostrarToast('Publicación pausada')">Pausar publicación</a></li>
-                      <li><a class="dropdown-item small" href="#" data-bs-toggle="modal" data-bs-target="#modalNuevaTutoria">Editar detalles</a></li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item small text-danger" href="#" onclick="mostrarToast('Publicación eliminada')">Eliminar materia</a></li>
-                    </ul>
-                  </div>
-                </div>
-                <h5 class="fw-bold text-dark mb-1">Laboratorio de Computación I</h5>
-                <p class="text-secondary small mb-3">
-                  Clases de apoyo en C, manejo de matrices, funciones y estructuras de datos para ingresantes.
-                </p>
-                <div class="d-flex align-items-center gap-3 small text-secondary mb-3">
-                  <span><i class="bi bi-discord text-primary me-1"></i>discord.gg/utn-lab1</span>
-                  <span><i class="bi bi-people me-1"></i>5 alumnos activos</span>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                <span class="small fw-semibold text-success"><i class="bi bi-calendar-check me-1"></i>Mar y Jue 18:30hs</span>
-                <button class="btn btn-sm btn-outline-success rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalDiscordConfig">Administrar Sala</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Publicación 2 -->
-          <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                  <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-semibold">
-                    <span class="spinner-grow spinner-grow-sm text-success me-1" style="width: 0.4rem; height: 0.4rem;"></span>
-                    Activa y Visible
-                  </span>
-                  <div class="dropdown">
-                    <button class="btn btn-link text-secondary p-0 shadow-none" data-bs-toggle="dropdown">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
-                      <li><a class="dropdown-item small" href="#" onclick="mostrarToast('Publicación pausada')">Pausar publicación</a></li>
-                      <li><a class="dropdown-item small" href="#" data-bs-toggle="modal" data-bs-target="#modalNuevaTutoria">Editar detalles</a></li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item small text-danger" href="#" onclick="mostrarToast('Publicación eliminada')">Eliminar materia</a></li>
-                    </ul>
-                  </div>
-                </div>
-                <h5 class="fw-bold text-dark mb-1">Arquitectura de Computadoras</h5>
-                <p class="text-secondary small mb-3">
-                  Repaso de representación numérica (binario, hexa, punto flotante IEEE 754), mapas de Karnaugh y microprocesadores.
-                </p>
-                <div class="d-flex align-items-center gap-3 small text-secondary mb-3">
-                  <span><i class="bi bi-discord text-primary me-1"></i>discord.gg/utn-arqui</span>
-                  <span><i class="bi bi-people me-1"></i>3 alumnos activos</span>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                <span class="small fw-semibold text-success"><i class="bi bi-calendar-check me-1"></i>Sábados 10:00hs</span>
-                <button class="btn btn-sm btn-outline-success rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalDiscordConfig">Administrar Sala</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Banner Publicar Otra Materia -->
-      <div class="text-center py-5 bg-white rounded-4 border border-dashed">
-        <i class="bi bi-mortarboard text-success fs-1 d-block mb-2"></i>
-        <h5 class="fw-bold">¿Querés enseñar otra materia aprobada?</h5>
-        <p class="text-secondary small mb-3">Compartí tus conocimientos con compañeros ingresantes y sumá experiencia como tutor universitario.</p>
-        <button class="btn btn-role-action rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevaTutoria">
-          <i class="bi bi-plus-circle me-1"></i> Publicar otra materia
-        </button>
-      </div>
+      <?php endif; ?>
 
     </main>
   </div>
@@ -502,13 +289,8 @@
 
               <div class="col-md-6">
                 <label for="editCarrera" class="form-label small fw-semibold text-dark">Carrera</label>
-                <select class="form-select" id="editCarrera">
-                  <option value="Ingeniería en Sistemas de Información" selected>Ingeniería en Sistemas de Información</option>
-                  <option value="Tecnicatura Universitaria en Programación (TUP)">Tecnicatura Universitaria en Programación (TUP)</option>
-                  <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
-                  <option value="Ingeniería Mecánica">Ingeniería Mecánica</option>
-                  <option value="Ingeniería Química">Ingeniería Química</option>
-                  <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                <select class="form-select profile-field-readonly" id="editCarrera" disabled>
+                  <option value="Tecnicatura Universitaria en Programación (TUP)" selected>Tecnicatura Universitaria en Programación (TUP)</option>
                 </select>
               </div>
 
@@ -647,72 +429,6 @@
     </div>
   </div>
 
-  <!-- ==========================================================================
-       MODAL 4: PUBLICAR NUEVA TUTORÍA (MODO TUTOR)
-       ========================================================================== -->
-  <div class="modal fade" id="modalNuevaTutoria" tabindex="-1" aria-labelledby="modalNuevaTutoriaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content rounded-4 border-0 shadow-lg">
-        <div class="modal-header border-bottom px-4 pt-4 pb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="p-2 rounded-3 bg-success-subtle text-success">
-              <i class="bi bi-journal-plus fs-5"></i>
-            </div>
-            <div>
-              <h5 class="modal-title fw-bold text-dark" id="modalNuevaTutoriaLabel">Publicar Nueva Materia de Tutoría</h5>
-              <p class="text-secondary small mb-0">Ofrecé apoyo académico en materias que tengas regularizadas o aprobadas</p>
-            </div>
-          </div>
-          <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-
-        <form id="formNuevaTutoria">
-          <div class="modal-body p-4">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="nuevaMateriaNombre" class="form-label small fw-semibold text-dark">Nombre de la Materia</label>
-                <input type="text" class="form-control" id="nuevaMateriaNombre" placeholder="Ej. Sistemas Operativos" required>
-              </div>
-              <div class="col-md-6">
-                <label for="nuevaMateriaCarrera" class="form-label small fw-semibold text-dark">Carrera</label>
-                <select class="form-select" id="nuevaMateriaCarrera">
-                  <option value="Ingeniería en Sistemas de Información" selected>Ingeniería en Sistemas</option>
-                  <option value="Tecnicatura Universitaria en Programación (TUP)">TUP</option>
-                  <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
-                  <option value="Ingeniería Química">Ingeniería Química</option>
-                  <option value="Ingeniería Industrial">Ingeniería Industrial</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label for="nuevaMateriaHorarios" class="form-label small fw-semibold text-dark">Días y Horarios Disponibles</label>
-                <input type="text" class="form-control" id="nuevaMateriaHorarios" placeholder="Ej. Miércoles y Viernes de 18 a 20hs" required>
-              </div>
-              <div class="col-md-6">
-                <label for="nuevaMateriaModalidad" class="form-label small fw-semibold text-dark">Modalidad de Clase</label>
-                <select class="form-select" id="nuevaMateriaModalidad">
-                  <option value="Discord UTN Oficial" selected>Discord UTN Oficial</option>
-                  <option value="Google Meet">Google Meet</option>
-                  <option value="Presencial en Facultad">Presencial en Facultad</option>
-                  <option value="Híbrido">Híbrido (Online / Presencial)</option>
-                </select>
-              </div>
-              <div class="col-12">
-                <label for="nuevaMateriaDescripcion" class="form-label small fw-semibold text-dark">Descripción y Enfoque de la Tutoría</label>
-                <textarea class="form-control" id="nuevaMateriaDescripcion" rows="3" placeholder="Explicá en qué temas podés ayudar (ej. preparación de parciales, trabajos prácticos, resolución de ejercicios)..." required></textarea>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
-            <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-success px-4 rounded-pill fw-semibold shadow-sm">
-              <i class="bi bi-check-lg me-1"></i> Publicar Materia
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
   <!-- OVERLAY DE TRANSICIÓN SUAVE ENTRE ROLES -->
   <div id="roleTransitionOverlay" class="role-transition-overlay">
     <div class="role-transition-card text-center p-4">
@@ -742,25 +458,7 @@
 
   <!-- JavaScript: Funciones de Panel Tutor -->
   <script>
-    // ==========================================
-    // 1. Colapso / Expansión del Sidebar
-    // ==========================================
-    const sidebar = document.getElementById('mainSidebar');
-    const btnToggleSidebar = document.getElementById('btnToggleSidebar');
-    const btnCollapseSidebar = document.getElementById('btnCollapseSidebar');
-
-    function toggleSidebar() {
-      sidebar.classList.toggle('collapsed');
-      const isCollapsed = sidebar.classList.contains('collapsed');
-      localStorage.setItem('study-match-sidebar-collapsed', isCollapsed ? 'true' : 'false');
-    }
-
-    if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', toggleSidebar);
-    if (btnCollapseSidebar) btnCollapseSidebar.addEventListener('click', toggleSidebar);
-
-    if (localStorage.getItem('study-match-sidebar-collapsed') === 'true') {
-      sidebar.classList.add('collapsed');
-    }
+    // 1. Colapso / Expansión del Sidebar: ver public/js/sidebar.js
 
     // ==========================================
     // 2. Transición Visual Suave a Modo Alumno
@@ -894,128 +592,9 @@
       toast.show();
     }
 
-    // ==========================================
-    // 6. Gestión Interactiva de Solicitudes (Modo Tutor)
-    // ==========================================
-    let totalSolicitudes = 3;
+    // 6. Solicitudes: se aceptan / rechazan en el servidor (SolicitudController::responder)
 
-    function actualizarContadorSolicitudes() {
-      const counterBadge = document.getElementById('badgeSolicitudesTutor');
-      const headerBadge = document.getElementById('solicitudesHeaderBadge');
-      const metricCounter = document.getElementById('metricCounterSolicitudes');
-
-      if (totalSolicitudes <= 0) {
-        if (counterBadge) counterBadge.textContent = "0";
-        if (headerBadge) {
-          headerBadge.textContent = "Sin solicitudes pendientes";
-          headerBadge.className = "badge bg-secondary-subtle text-secondary border px-3 py-1.5 rounded-pill";
-        }
-        if (metricCounter) metricCounter.textContent = "0 pendientes";
-        const lista = document.getElementById('listaSolicitudesTutor');
-        if (lista) {
-          lista.innerHTML = `
-            <div class="text-center py-4 text-muted bg-light rounded-3 border border-dashed">
-              <i class="bi bi-check2-circle text-success fs-1 d-block mb-2"></i>
-              <h6 class="fw-bold text-dark mb-1">¡Estás al día!</h6>
-              <p class="small text-secondary mb-0">No tenés solicitudes de alumnos pendientes de respuesta.</p>
-            </div>
-          `;
-        }
-      } else {
-        if (counterBadge) counterBadge.textContent = `${totalSolicitudes} nuevas`;
-        if (headerBadge) headerBadge.textContent = `${totalSolicitudes} pendientes`;
-        if (metricCounter) metricCounter.textContent = `${totalSolicitudes} nuevas`;
-      }
-    }
-
-    function aceptarSolicitud(btn, alumno, materia) {
-      const item = btn.closest('.item-solicitud');
-      if (item) {
-        item.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
-        item.style.opacity = '0';
-        item.style.transform = 'translateX(25px)';
-        setTimeout(() => {
-          item.remove();
-          totalSolicitudes--;
-          actualizarContadorSolicitudes();
-          mostrarToast(`¡Tutoría con ${alumno} en ${materia} aceptada! Sala de Discord lista.`);
-        }, 280);
-      }
-    }
-
-    function rechazarSolicitud(btn) {
-      const item = btn.closest('.item-solicitud');
-      if (item) {
-        item.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
-        item.style.opacity = '0';
-        item.style.transform = 'translateX(-25px)';
-        setTimeout(() => {
-          item.remove();
-          totalSolicitudes--;
-          actualizarContadorSolicitudes();
-          mostrarToast("Solicitud rechazada");
-        }, 280);
-      }
-    }
-
-    // ==========================================
-    // 7. Publicar Nueva Tutoría (Modo Tutor)
-    // ==========================================
-    const formNuevaTutoria = document.getElementById('formNuevaTutoria');
-    if (formNuevaTutoria) {
-      formNuevaTutoria.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const materia = document.getElementById('nuevaMateriaNombre').value.trim();
-        const horarios = document.getElementById('nuevaMateriaHorarios').value.trim();
-        const desc = document.getElementById('nuevaMateriaDescripcion').value.trim();
-
-        const contenedor = document.getElementById('contenedorTutoriasPublicadas');
-        if (contenedor) {
-          const nuevaCol = document.createElement('div');
-          nuevaCol.className = 'col-md-6 view-fade';
-          const slugMateria = materia.toLowerCase().replace(/[^a-z0-9]/g, '-');
-          nuevaCol.innerHTML = `
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                  <span class="badge bg-success-subtle text-success px-3 py-1.5 rounded-pill fw-semibold">
-                    <span class="spinner-grow spinner-grow-sm text-success me-1" style="width: 0.4rem; height: 0.4rem;"></span>
-                    Activa y Visible
-                  </span>
-                  <div class="dropdown">
-                    <button class="btn btn-link text-secondary p-0 shadow-none" data-bs-toggle="dropdown">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
-                      <li><a class="dropdown-item small" href="#" onclick="mostrarToast('Publicación pausada')">Pausar publicación</a></li>
-                      <li><a class="dropdown-item small" href="#" data-bs-toggle="modal" data-bs-target="#modalNuevaTutoria">Editar detalles</a></li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item small text-danger" href="#" onclick="mostrarToast('Publicación eliminada')">Eliminar materia</a></li>
-                    </ul>
-                  </div>
-                </div>
-                <h5 class="fw-bold text-dark mb-1">${materia}</h5>
-                <p class="text-secondary small mb-3">${desc}</p>
-                <div class="d-flex align-items-center gap-3 small text-secondary mb-3">
-                  <span><i class="bi bi-discord text-primary me-1"></i>discord.gg/utn-${slugMateria}</span>
-                  <span><i class="bi bi-people me-1"></i>0 alumnos activos</span>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                <span class="small fw-semibold text-success"><i class="bi bi-calendar-check me-1"></i>${horarios}</span>
-                <button class="btn btn-sm btn-outline-success rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalDiscordConfig">Administrar Sala</button>
-              </div>
-            </div>
-          `;
-          contenedor.prepend(nuevaCol);
-        }
-
-        formNuevaTutoria.reset();
-        const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalNuevaTutoria'));
-        if (modalInstance) modalInstance.hide();
-        mostrarToast(`¡Materia "${materia}" publicada con éxito!`);
-      });
-    }
+    // 7. Publicar tutorías: ver Mis publicaciones (OfertaController)
 
     // Cargar perfil guardado si existe
     const perfilGuardado = localStorage.getItem('study-match-user-profile');
@@ -1063,9 +642,7 @@
         }
         aplicarNombreDeSesion(user.nombre);
         document.getElementById('editEmail').value = user.email;
-        if (typeof user.carrera === 'string' && user.carrera !== '') {
-          document.getElementById('editCarrera').value = user.carrera;
-        }
+        // La carrera es fija (TUP): no se toma de la base de datos.
         const nivelPorValorDB = {
           '1ro': '1° Año',
           '2do': '2° Año',
@@ -1094,6 +671,7 @@
 
   <!-- Bootstrap 5.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="public/js/sidebar.js"></script>
   <script src="public/js/main.js"></script>
 </body>
 </html>

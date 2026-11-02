@@ -109,12 +109,12 @@
 
           <!-- 3. H2 con la frase principal atractiva -->
           <h2 class="hero-subtitle mb-2">
-            Hacé match con el tutor ideal para tus materias de la <span class="text-primary fw-bold">UTN</span>.
+            Hacé match con el tutor ideal para tus materias de la <span class="text-primary fw-bold">UTN-FRH</span>.
           </h2>
 
           <!-- 4. Párrafo descriptivo -->
           <p class="hero-description text-secondary mb-3 lead">
-            Study Match conecta a estudiantes de la Universidad Tecnológica Nacional con tutores y alumnos avanzados. Buscá ayuda específica según tu carrera y plan de estudios, o sumate como tutor en las materias que ya aprobaste.
+            Study Match conecta a estudiantes de la UTN-FRH, con tutores y alumnos avanzados. Buscá ayuda específica según tu carrera y plan de estudios, o sumate como tutor en las materias que ya aprobaste.
           </p>
 
           <!-- 5. Botón Conocer Más  -->
@@ -155,7 +155,7 @@
                 <div class="stat-number">100%</div>
                 <div class="stat-label">
                   <i class="bi bi-people-fill text-primary"></i>
-                  <span>Pares UTN</span>
+                  <span>Pares UTN-FRH</span>
                 </div>
               </div>
 
