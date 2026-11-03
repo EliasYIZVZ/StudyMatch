@@ -11,9 +11,9 @@ USE StudyMatch_DB;
 SET NAMES utf8mb4;
 
 -- --------------------------------------------------------------------------
--- 1. Materias de la TUP usadas en las ofertas (asociadas a la carrera TUP)
+-- 1. INSERT reemplazado completo en el script principal
 -- --------------------------------------------------------------------------
-INSERT IGNORE INTO materia (id_carrera, nombre, descripcion)
+/*INSERT IGNORE INTO materia (id_carrera, nombre, descripcion)
 SELECT c.id_carrera, x.nombre, x.descripcion
 FROM carreras c
 CROSS JOIN (
@@ -25,7 +25,7 @@ CROSS JOIN (
     UNION ALL SELECT 'Inglés I', 'Lectura comprensiva de textos técnicos.'
 ) AS x
 WHERE c.codigo_carrera = 'TUP';
-
+ */
 -- --------------------------------------------------------------------------
 -- 2. Tutores de prueba (contraseña de los tres: Tutor2026!)
 --    Si ya tenés usuarios propios, podés omitir este bloque y cambiar
