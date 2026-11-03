@@ -26,6 +26,9 @@ DROP TABLE IF EXISTS materia;
 DROP TABLE IF EXISTS carreras;
 DROP TABLE IF EXISTS consultausuarios;
 DROP TABLE IF EXISTS usuarios;
+DROP TABLE IF EXISTS auditoria;
+DROP TABLE IF EXISTS reportes;
+
 
 -- --------------------------------------------------------------------------
 -- 2. Usuarios
@@ -166,13 +169,57 @@ CREATE TABLE mensaje_tutoria (
         REFERENCES usuarios (id_usuario) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-SET FOREIGN_KEY_CHECKS = 1;
+-- --------------------------------------------------------------------------
+-- 9. Auditoria 
+--    la idea es que no solo audite acciones de ADMIN 
+--    sino de usuario, como login y logout
+-- --------------------------------------------------------------------------
+CREATE TABLE auditoria (
+    id_auditoria INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    id_usuario INT UNSIGNED NOT NULL,
+    accion ENUM('crear', 'modificar', 'eliminar', 'login', 'logout') NOT NULL,
+    descripcion VARCHAR(255) NOT NULL,
+    detalle_previo TEXT NOT NULL,
+    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ip VARCHAR(45) NOT NULL,
+    PRIMARY KEY (id_auditoria),
+    CONSTRAINT fk_auditoria_usuario FOREIGN KEY (id_usuario) 
+        REFERENCES usuarios(id_usuario) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------------------------
--- 9. Datos base
+-- 10. Reportes.
+--    cualquier usuario puede reportar segun opciones en front 
+--    mediante back enviar sobre que tipo entidad se genera el reporte
+-- --------------------------------------------------------------------------
+CREATE TABLE reportes (
+    id_reporte INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    id_usuario INT UNSIGNED NOT NULL,
+    entidad VARCHAR(100) NOT NULL, 
+    descripcion TEXT NOT NULL,
+    estado ENUM('pendiente', 'en revision', 'resuelto', 'rechazado') NOT NULL DEFAULT 'pendiente',
+    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_resolucion DATETIME NULL,
+    PRIMARY KEY (id_reporte),
+    CONSTRAINT fk_reportes_usuario FOREIGN KEY (id_usuario) 
+        REFERENCES usuarios(id_usuario) ON DELETE CASCADE ON UPDATE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+SET FOREIGN_KEY_CHECKS = 1;
+-- --------------------------------------------------------------------------
+-- 11. Datos base !! si ya se ejecuto "datos_oferta_tutoria.sql" va a duplicar materias
 -- --------------------------------------------------------------------------
 INSERT INTO carreras (nombre_carrera, codigo_carrera)
 VALUES ('Tecnicatura Universitaria en Programación', 'TUP');
 
+
+
+
 -- Para convertir una cuenta existente en administrador:
 -- UPDATE usuarios SET rol_usuario = 'admin' WHERE correo_usuario = 'admin@frh.utn.edu.ar';
+
+
+
+
+
