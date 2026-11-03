@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Estilos base compartidos de Dashboards -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261101_ia4">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261103_page_title">
 
   <!-- Estilos globales de Administración (sidebar claro gris azulado / oscuro grafito) -->
   <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
@@ -41,7 +41,7 @@
        ========================================================================== -->
   <aside id="mainSidebar" class="sidebar sidebar-admin d-flex flex-column justify-content-between p-3">
     <div>
-      <!-- Header con Logo Study Match y Botón de Colapso -->
+      <!-- Header con Logo Study Match -->
       <div class="d-flex align-items-center justify-content-between mb-4 px-2 logo-container">
         <a href="index.php?r=admin" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
           <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,11 +58,6 @@
             <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill ms-1 sidebar-hide-collapsed" style="font-size: 0.65rem; padding: 2px 7px;">ADMIN</span>
           </div>
         </a>
-
-        <!-- Botón para contraer sidebar -->
-        <button id="btnCollapseSidebar" class="btn btn-sm btn-light border p-1 rounded-2 sidebar-hide-collapsed" title="Contraer menú lateral">
-          <i class="bi bi-chevron-left"></i>
-        </button>
       </div>
 
       <!-- Menú de Navegación: GESTIÓN Y ADMINISTRACIÓN -->
@@ -211,7 +206,7 @@
             <span class="badge bg-primary text-white rounded-pill px-3 py-1 small fw-semibold mb-2 d-inline-block">
               <i class="bi bi-people-fill me-1"></i> Padrón de Usuarios
             </span>
-            <h1 class="h3 fw-bold mb-1 text-white">
+            <h1 class="page-title fw-bold mb-1 text-white">
               Gestión de Alumnos y Tutores
             </h1>
             <p class="text-white text-opacity-75 small mb-0">
@@ -556,7 +551,6 @@
     // ==========================================
     const sidebar = document.getElementById('mainSidebar');
     const btnToggleSidebar = document.getElementById('btnToggleSidebar');
-    const btnCollapseSidebar = document.getElementById('btnCollapseSidebar');
 
     function toggleSidebar() {
       sidebar.classList.toggle('collapsed');
@@ -566,7 +560,6 @@
     }
 
     if (btnToggleSidebar) btnToggleSidebar.addEventListener('click', toggleSidebar);
-    if (btnCollapseSidebar) btnCollapseSidebar.addEventListener('click', toggleSidebar);
 
     if (localStorage.getItem('study-match-admin-sidebar-collapsed') === 'true') {
       sidebar.classList.add('collapsed');

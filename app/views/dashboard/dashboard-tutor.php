@@ -22,7 +22,7 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Estilos del Dashboard y Perfil (100% Independiente de Landing) -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261101_tutor_bg_ia7">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261103_page_title">
 </head>
 <body class="dashboard-body" data-role="tutor">
 <?php $cantPendientes = (int) $resumenSolicitudes['pendientes']; ?>
@@ -134,7 +134,7 @@
       <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
         <div>
           <span class="mode-indicator-pill mb-2"><i class="bi bi-patch-check-fill"></i> Modo Tutor</span>
-          <h1 class="h3 fw-bold text-dark mb-1">Panel del Tutor</h1>
+          <h1 class="page-title fw-bold text-dark mb-1">Panel del Tutor</h1>
           <p class="text-secondary small mb-0">Un resumen de tus publicaciones, solicitudes y tutorías.</p>
         </div>
         <a href="index.php?r=mis-publicaciones&amp;nueva=1" class="btn btn-role-action rounded-pill px-4 py-2 fw-semibold shadow-sm">

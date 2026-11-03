@@ -17,6 +17,12 @@ final class OfertaTutoria
      * Las publicadas más recientemente primero. Incluye la solicitud vigente
      * (pendiente / aceptada) que el alumno ya tenga sobre cada oferta, si existe.
      *
+     * Un usuario es tutor si tiene al menos una oferta activa: la consulta parte
+     * de `oferta_tutoria` (índice idx_oferta_estado_fecha) y une `usuarios` por
+     * clave primaria, así cada fila ya es de un tutor sin consultas extra por usuario.
+     * `tutorias_dadas` cuenta las solicitudes finalizadas de todas sus ofertas
+     * (índices fk_tutorias_tutor e idx_solicitud_oferta_estado).
+     *
      * @param int $idUsuario Usuario logueado (sus propias ofertas se excluyen).
      * @param int $limite    Cantidad máxima de filas a devolver.
      */
@@ -24,14 +30,24 @@ final class OfertaTutoria
     {
         $statement = $this->database->prepare(
             "SELECT t.id_tutoria,
+                    t.id_tutor,
                     t.disponibilidad,
                     t.modalidad,
                     t.descripcion,
                     t.precio,
                     t.medios_pago,
+                    t.fecha_publicacion,
+                    m.id_materia,
                     m.nombre AS materia,
                     u.nombre_usuario AS tutor,
                     u.foto_usuario AS tutor_foto,
+                    u.carrera_usuario AS tutor_carrera,
+                    u.anio_cursada_usuario AS tutor_anio,
+                    (SELECT COUNT(*)
+                     FROM oferta_tutoria ot
+                     JOIN solicitud_tutoria sf ON sf.id_oferta = ot.id_tutoria
+                     WHERE ot.id_tutor = t.id_tutor
+                       AND sf.estado = 'finalizada') AS tutorias_dadas,
                     s.id_solicitud AS mi_solicitud_id,
                     s.estado AS mi_solicitud_estado
              FROM oferta_tutoria t

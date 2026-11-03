@@ -1,11 +1,11 @@
 /**
  * STUDY MATCH • Menú lateral (sidebar) del área privada
  *
- * - Escritorio (>= 992px): el botón contrae / expande el sidebar y el estado
- *   se recuerda en localStorage.
+ * - Escritorio (>= 992px): el botón de la barra superior contrae / expande el
+ *   sidebar y el estado se recuerda en localStorage.
  * - Celular y tablet (< 992px): el sidebar es un menú desplegable que se abre
  *   por encima del contenido, con fondo oscuro. Se cierra con el fondo, la
- *   tecla Esc, el botón del sidebar o al elegir una opción.
+ *   tecla Esc, el mismo botón o al elegir una opción.
  */
 (function () {
   'use strict';
@@ -17,7 +17,6 @@
   if (!sidebar) return;
 
   var btnToggle = document.getElementById('btnToggleSidebar');
-  var btnCollapse = document.getElementById('btnCollapseSidebar');
 
   var backdrop = document.createElement('div');
   backdrop.className = 'sidebar-backdrop';
@@ -103,18 +102,6 @@
       var collapsed = !sidebar.classList.contains('collapsed');
       setCollapsed(collapsed);
       saveCollapsed(collapsed);
-    });
-  }
-
-  if (btnCollapse) {
-    btnCollapse.addEventListener('click', function () {
-      if (isMobile()) {
-        closeMobile(true);
-        return;
-      }
-
-      setCollapsed(true);
-      saveCollapsed(true);
     });
   }
 

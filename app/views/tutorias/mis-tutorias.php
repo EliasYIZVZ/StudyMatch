@@ -26,7 +26,7 @@ $sufijoFiltro = $filtro !== 'todas' ? '&amp;estado=' . Vista::e($filtro) : '';
       <?php require APP_PATH . '/views/partials/flash.php'; ?>
 
       <div class="mb-4">
-        <h1 class="h3 fw-bold text-dark mb-1">Mis tutorías</h1>
+        <h1 class="page-title fw-bold text-dark mb-1">Mis tutorías</h1>
         <p class="text-secondary small mb-0">Seguí tus solicitudes, coordiná los encuentros por chat y revisá tu historial.</p>
       </div>
 

@@ -33,7 +33,7 @@ $datosModal = function (array $oferta) {
 
       <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
         <div>
-          <h1 class="h3 fw-bold text-dark mb-1">Mis publicaciones</h1>
+          <h1 class="page-title fw-bold text-dark mb-1">Mis publicaciones</h1>
           <p class="text-secondary small mb-0">Publicá las materias en las que das tutorías y gestioná su disponibilidad.</p>
         </div>
         <?php if (!$errorOfertas && !empty($materias)): ?>

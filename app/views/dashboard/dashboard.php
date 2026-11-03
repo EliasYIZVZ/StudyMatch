@@ -22,7 +22,7 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Estilos del Dashboard y Perfil (100% Independiente de Landing) -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261101_dashboard_night_polish">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261103_page_title">
 </head>
 <body class="dashboard-body" data-role="alumno">
 
@@ -45,11 +45,6 @@
           <button id="btnToggleSidebar" class="btn btn-light border text-secondary p-2 rounded-3" title="Expandir/Contraer menú lateral">
             <i class="bi bi-layout-sidebar fs-5"></i>
           </button>
-
-          <div class="position-relative flex-grow-1">
-            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
-            <input type="text" id="mainSearchInput" class="form-control rounded-pill ps-5 bg-light border-0 shadow-none py-2" placeholder="Buscar por materia, tutor o carrera (ej. Programación II)...">
-          </div>
         </div>
 
         <!-- Switch Rol Dual: Alumno (Azul) / Tutor (Verde) + Perfil -->
@@ -83,14 +78,30 @@
            2. SECCIÓN DESTACADA: SALAS PÚBLICAS / CLASES GRATUITAS
            ==================================================================== -->
       <section id="salas-publicas" class="mb-5 pb-2">
-        <div class="d-flex justify-content-between align-items-end section-heading-spacing flex-wrap gap-3">
+        <div class="d-flex justify-content-between align-items-end mb-3 flex-wrap gap-3">
           <div>
-            <h2 class="h4 fw-bold text-dark mb-0">Encontrá tu proxima clase</h2>
+            <h1 class="page-title fw-bold text-dark mb-1">Encontrá tu próxima clase</h1>
+            <p class="text-secondary small mb-0">Tutorías pensadas de estudiantes para estudiantes.</p>
           </div>
         </div>
 
+        <?php if (!$errorOfertas && !empty($ofertas)): ?>
+          <?php
+          $buscador = [
+              'grid' => 'salasPublicasGrid',
+              'pagina' => $ofertasVisibles,
+              'placeholder' => 'Materia, tutor, tema o modalidad…',
+              'materias' => $materias,
+              'total' => count($ofertas),
+              'unidad' => 'tutorías',
+          ];
+          require APP_PATH . '/views/partials/buscador-compacto.php';
+          ?>
+        <?php endif; ?>
+
         <!-- Grilla de tutorías (DashboardController::alumno -> OfertaTutoria).
-             4 por fila en pantallas grandes (xl), 3 en tablet / notebook (md-lg), 1 en celular. -->
+             2 por fila en computadora y tablet (md+), 1 en celular. Sin filtros
+             se muestran $ofertasVisibles; el resto con "Ver más" (buscador-cards.js). -->
         <?php if ($errorOfertas): ?>
           <div class="public-room-card p-4 p-md-5 text-center">
             <i class="bi bi-exclamation-triangle fs-1 text-warning d-block mb-2"></i>
@@ -102,20 +113,27 @@
             <p class="text-secondary mb-0">Aún no existen ofertas de tutoría. Podés realizar publicaciones en tu módulo de tutor.</p>
           </div>
         <?php else: ?>
-          <div class="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4" id="salasPublicasGrid">
-            <?php foreach ($ofertas as $oferta): ?>
+          <div class="row row-cols-1 row-cols-md-2 g-4" id="salasPublicasGrid">
+            <?php foreach ($ofertas as $posicion => $oferta): ?>
               <?php require APP_PATH . '/views/partials/oferta-tutoria-card.php'; ?>
             <?php endforeach; ?>
           </div>
 
-          <?php if ($hayMasOfertas): ?>
-            <div class="text-center mt-4">
-              <!-- Botón estático: la funcionalidad se agregará más adelante -->
-              <button type="button" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">
-                Ver más <i class="bi bi-chevron-down ms-1"></i>
-              </button>
-            </div>
-          <?php endif; ?>
+          <!-- Ningún filtro coincide -->
+          <div id="buscadorSinResultados" class="text-center py-5 d-none">
+            <i class="bi bi-search fs-1 text-secondary d-block mb-2"></i>
+            <h2 class="h5 fw-bold text-dark">No se encontraron tutorías con esos criterios</h2>
+            <p class="text-secondary small mb-3">Probá con otra palabra o elegí "Todas las materias".</p>
+            <button type="button" class="btn btn-outline-primary rounded-pill px-4 btn-sm" id="buscadorRestablecer">
+              Restablecer filtros
+            </button>
+          </div>
+
+          <div class="text-center mt-4">
+            <button type="button" id="buscadorVerMas" class="btn btn-outline-primary rounded-pill px-4 fw-semibold<?= count($ofertas) > $ofertasVisibles ? '' : ' d-none' ?>">
+              Ver más <i class="bi bi-chevron-down ms-1"></i>
+            </button>
+          </div>
         <?php endif; ?>
       </section>
 
@@ -271,45 +289,7 @@
 
     // 3-5. Perfil, foto y toast: ver public/js/perfil.js
 
-    // ==========================================
-    // 6. Buscador y Filtros de Tutores en Tiempo Real
-    // ==========================================
-    const searchInput = document.getElementById('mainSearchInput');
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const tutorCards = document.querySelectorAll('.tutor-card');
-    let currentFilter = 'todos';
-
-    function filtrarTutores() {
-      const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
-
-      tutorCards.forEach(card => {
-        const parentCol = card.closest('.col-md-6') || card;
-        const text = card.textContent.toLowerCase();
-        const matchesQuery = !query || text.includes(query);
-        const matchesFilter = currentFilter === 'todos' || text.includes(currentFilter);
-
-        if (matchesQuery && matchesFilter) {
-          parentCol.classList.remove('d-none');
-        } else {
-          parentCol.classList.add('d-none');
-        }
-      });
-    }
-
-    if (searchInput) searchInput.addEventListener('input', filtrarTutores);
-
-    filterButtons.forEach(btn => {
-      btn.addEventListener('click', function() {
-        filterButtons.forEach(b => {
-          b.classList.remove('btn-primary', 'active');
-          b.classList.add('btn-outline-secondary', 'bg-white');
-        });
-        this.classList.remove('btn-outline-secondary', 'bg-white');
-        this.classList.add('btn-primary', 'active');
-        currentFilter = this.textContent.toLowerCase().trim();
-        filtrarTutores();
-      });
-    });
+    // 6. Buscador de tutorías: ver public/js/buscador-cards.js
 
     // Carga de datos del usuario de la sesión: ver public/js/perfil.js
   </script>
@@ -317,7 +297,8 @@
   <!-- Bootstrap 5.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="public/js/perfil.js"></script>
-  <script src="public/js/solicitud-tutoria.js"></script>
+  <script src="public/js/solicitud-tutoria.js?v=20261103_descripcion"></script>
+  <script src="public/js/buscador-cards.js?v=20261103"></script>
   <script src="public/js/sidebar.js"></script>
   <script src="public/js/main.js"></script>
 </body>

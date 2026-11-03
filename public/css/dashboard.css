@@ -577,22 +577,19 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
-[data-bs-theme="dark"] body.dashboard-body #btnToggleSidebar,
-[data-bs-theme="dark"] body.dashboard-body #btnCollapseSidebar {
+[data-bs-theme="dark"] body.dashboard-body #btnToggleSidebar {
   background-color: #26364a !important;
   border: 1px solid rgba(148, 163, 184, 0.35) !important;
   color: #bfdbfe !important;
 }
 
-[data-bs-theme="dark"] body.dashboard-body #btnToggleSidebar:hover,
-[data-bs-theme="dark"] body.dashboard-body #btnCollapseSidebar:hover {
+[data-bs-theme="dark"] body.dashboard-body #btnToggleSidebar:hover {
   background-color: #3b4b60 !important;
   border-color: rgba(191, 219, 254, 0.55) !important;
   color: #ffffff !important;
 }
 
-[data-bs-theme="dark"] body.dashboard-body #btnToggleSidebar:focus-visible,
-[data-bs-theme="dark"] body.dashboard-body #btnCollapseSidebar:focus-visible {
+[data-bs-theme="dark"] body.dashboard-body #btnToggleSidebar:focus-visible {
   outline: 2px solid #60a5fa;
   outline-offset: 2px;
 }
@@ -799,7 +796,7 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
 .search-hybrid-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 1.25rem;
+  border-radius: 0.9rem;
   box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06);
 }
 
@@ -814,15 +811,26 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
 }
 
 .search-hybrid-card .input-group {
-  height: 40px;
+  height: 38px;
 }
 
 .search-hybrid-card .input-group > .form-control,
 .search-hybrid-card .input-group > .input-group-text,
 .search-hybrid-card .form-select,
 .search-hybrid-card .btn {
-  height: 40px;
-  font-size: 1rem;
+  height: 38px;
+  font-size: 0.95rem;
+}
+
+.search-hybrid-card .search-hybrid-reset {
+  width: 38px;
+  padding: 0;
+}
+
+@media (min-width: 1200px) {
+  .search-hybrid-card .col-xl-auto > .form-select {
+    width: 175px;
+  }
 }
 
 .search-hybrid-card .input-group > .form-control,
@@ -846,17 +854,6 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
 .search-hybrid-card .form-select {
   min-width: 0;
   font-size: 0.9rem;
-}
-
-.search-hybrid-actions .btn {
-  min-width: 132px;
-}
-
-@media (max-width: 575.98px) {
-  .search-hybrid-actions .btn {
-    flex: 1 1 0;
-    min-width: 0;
-  }
 }
 
 .badge-filter-pill {
@@ -955,6 +952,13 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
 }
 
 /* 6. Espaciado Generoso entre Encabezados de Sección y Tarjetas */
+/* Título principal (h1) de cada página del área privada: 26px en celular, 32px en computadora */
+.page-title {
+  font-size: clamp(1.625rem, 1.3rem + 0.9vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
 .section-heading-spacing {
   margin-bottom: 2rem !important;
 }
@@ -968,13 +972,131 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 
-/* Card de oferta de tutoría: la descripción se corta a 4 líneas
-   para que las cards de una misma fila no queden desparejas. */
+/* Card de oferta de tutoría (dashboard del alumno): tres bloques separados
+   (tutor / oferta / solicitud) con el mismo relleno en todas las cards. */
+.oferta-card {
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+/* Permite que el texto con .text-truncate se corte dentro de un contenedor flex */
+.min-w-0 {
+  min-width: 0;
+}
+
+.oferta-card-tutor,
+.oferta-card-oferta,
+.oferta-card-solicitud {
+  padding: 1.25rem 1.5rem;
+}
+
+.oferta-card-tutor {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.oferta-card-solicitud {
+  min-height: 76px;
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.avatar-oferta {
+  width: 64px;
+  height: 64px;
+  font-size: 1.25rem;
+  box-shadow: 0 0 0 3px #ffffff, 0 0 0 5px rgba(22, 119, 200, 0.35);
+}
+
+.oferta-card-label {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+/* La descripción siempre ocupa 2 líneas (las cards de una fila quedan parejas);
+   si no entra, termina en "…". El texto completo se ve en el modal de solicitud. */
 .oferta-card .oferta-descripcion {
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: calc(2 * 1.5em);
+}
+
+/* Modalidad / Disponibilidad / Precio: 3 columnas si la card es ancha, apiladas si no */
+.oferta-card-datos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.oferta-card-accion {
+  min-width: 190px;
+}
+
+@container (min-width: 480px) {
+  .oferta-card-datos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Card angosta (celular o tablet con menú abierto): menos relleno y botón a lo ancho */
+@container (max-width: 419.98px) {
+  .oferta-card-tutor,
+  .oferta-card-oferta,
+  .oferta-card-solicitud {
+    padding: 1rem 1.15rem;
+  }
+
+  .oferta-card-accion {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+}
+
+html[data-bs-theme="dark"] body.dashboard-body .oferta-card-tutor,
+html[data-bs-theme="dark"] body.dashboard-body .oferta-card-datos {
+  border-color: rgba(148, 163, 184, 0.24);
+}
+
+html[data-bs-theme="dark"] body.dashboard-body .oferta-card-solicitud {
+  background-color: rgba(15, 23, 42, 0.35);
+  border-top-color: rgba(148, 163, 184, 0.24);
+}
+
+html[data-bs-theme="dark"] body.dashboard-body .avatar-oferta {
+  box-shadow: 0 0 0 3px #334155, 0 0 0 5px rgba(96, 165, 250, 0.45);
+}
+
+html[data-bs-theme="dark"] body.dashboard-body .oferta-card-label {
+  color: #94a3b8;
+}
+
+/* Descripción completa en el modal "Solicitar tutoría" */
+.solicitud-descripcion {
+  background-color: #f8fafc;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.solicitud-descripcion p {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  line-height: 1.55;
+}
+
+html[data-bs-theme="dark"] body.dashboard-body .solicitud-descripcion {
+  background-color: rgba(15, 23, 42, 0.35);
+  border-color: rgba(148, 163, 184, 0.24) !important;
 }
 
 .public-room-card:hover {

@@ -14,6 +14,8 @@
   var contador = document.getElementById('solicitudMensajeContador');
   var materia = document.getElementById('solicitudMateria');
   var tutor = document.getElementById('solicitudTutor');
+  var descripcion = document.getElementById('solicitudDescripcion');
+  var descripcionBloque = document.getElementById('solicitudDescripcionBloque');
   var btnEnviar = document.getElementById('btnEnviarSolicitud');
 
   function actualizarContador() {
@@ -27,6 +29,8 @@
     inputOferta.value = origen.getAttribute('data-id-oferta') || '';
     materia.textContent = origen.getAttribute('data-materia') || '';
     tutor.textContent = origen.getAttribute('data-tutor') || '';
+    descripcion.textContent = origen.getAttribute('data-descripcion') || '';
+    descripcionBloque.classList.toggle('d-none', descripcion.textContent === '');
     mensaje.value = '';
     btnEnviar.disabled = false;
     actualizarContador();

@@ -5,22 +5,27 @@
  */
 final class DashboardController extends Controller
 {
-    /** Cantidad de tutorías que se muestran en el dashboard del alumno. */
+    /** Tutorías visibles en el dashboard del alumno sin filtros (y por cada "Ver más"). */
     private const OFERTAS_VISIBLES = 8;
 
+    /** Máximo de tutorías que se cargan para buscar (el filtrado es en el navegador). */
+    private const OFERTAS_BUSQUEDA = 120;
+
+    /**
+     * Dashboard del alumno: tutorías visibles para buscar y filtrar en el
+     * navegador, y las materias presentes en ellas para el filtro.
+     */
     public function alumno()
     {
         $ofertas = [];
-        $hayMasOfertas = false;
+        $materias = [];
         $errorOfertas = false;
 
         try {
-            // Se pide una fila extra solo para saber si hay más de las que se muestran.
             $ofertas = (new OfertaTutoria(Database::getConnection()))
-                ->listarParaAlumno(Session::userId(), self::OFERTAS_VISIBLES + 1);
+                ->listarParaAlumno(Session::userId(), self::OFERTAS_BUSQUEDA);
 
-            $hayMasOfertas = count($ofertas) > self::OFERTAS_VISIBLES;
-            $ofertas = array_slice($ofertas, 0, self::OFERTAS_VISIBLES);
+            $materias = $this->materiasDeOfertas($ofertas);
         } catch (PDOException $exception) {
             error_log('Error al cargar las ofertas de tutoría: ' . $exception->getMessage());
             $errorOfertas = true;
@@ -28,9 +33,24 @@ final class DashboardController extends Controller
 
         $this->render('dashboard/dashboard', [
             'ofertas' => $ofertas,
-            'hayMasOfertas' => $hayMasOfertas,
+            'materias' => $materias,
+            'ofertasVisibles' => self::OFERTAS_VISIBLES,
             'errorOfertas' => $errorOfertas,
         ]);
+    }
+
+    /**
+     * Materias presentes en un listado de ofertas: [id_materia => nombre], ordenadas.
+     */
+    private function materiasDeOfertas(array $ofertas)
+    {
+        $materias = [];
+        foreach ($ofertas as $oferta) {
+            $materias[(int) $oferta['id_materia']] = $oferta['materia'];
+        }
+        asort($materias, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $materias;
     }
 
     /** Cantidad de solicitudes pendientes que se muestran en el Panel Tutor. */
@@ -70,8 +90,54 @@ final class DashboardController extends Controller
         ]);
     }
 
+    /**
+     * Buscar Tutor: una card por tutor (no por tutoría). Las ofertas visibles
+     * para el alumno se agrupan por tutor; el orden es el de su publicación más
+     * reciente. También devuelve las materias presentes para el filtro.
+     */
     public function buscarTutor()
     {
-        $this->render('dashboard/buscar-tutor');
+        $tutores = [];
+        $materias = [];
+        $errorOfertas = false;
+
+        try {
+            $ofertas = (new OfertaTutoria(Database::getConnection()))
+                ->listarParaAlumno(Session::userId(), self::OFERTAS_BUSQUEDA);
+
+            // Las ofertas llegan de la más reciente a la más antigua, así que la
+            // primera de cada tutor fija su posición en la lista.
+            foreach ($ofertas as $oferta) {
+                $idTutor = (int) $oferta['id_tutor'];
+                $idMateria = (int) $oferta['id_materia'];
+
+                if (!isset($tutores[$idTutor])) {
+                    $tutores[$idTutor] = [
+                        'nombre' => $oferta['tutor'],
+                        'foto' => $oferta['tutor_foto'],
+                        'carrera' => $oferta['tutor_carrera'],
+                        'anio' => $oferta['tutor_anio'],
+                        'tutorias_dadas' => (int) $oferta['tutorias_dadas'],
+                        'materias' => [],
+                        'modalidades' => [],
+                        'precios' => [],
+                    ];
+                }
+
+                $tutores[$idTutor]['materias'][$idMateria] = $oferta['materia'];
+                $tutores[$idTutor]['modalidades'][$oferta['modalidad']] = true;
+                $tutores[$idTutor]['precios'][] = (float) $oferta['precio'];
+            }
+            $materias = $this->materiasDeOfertas($ofertas);
+        } catch (PDOException $exception) {
+            error_log('Error al cargar la búsqueda de tutores: ' . $exception->getMessage());
+            $errorOfertas = true;
+        }
+
+        $this->render('dashboard/buscar-tutor', [
+            'tutores' => array_values($tutores),
+            'materias' => $materias,
+            'errorOfertas' => $errorOfertas,
+        ]);
     }
 }

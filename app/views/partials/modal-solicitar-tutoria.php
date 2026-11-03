@@ -21,6 +21,13 @@
 
           <div class="modal-body p-4">
             <input type="hidden" name="id_oferta" id="solicitudIdOferta" value="">
+
+            <!-- Descripción completa de la tutoría (en la card se ve recortada) -->
+            <div class="solicitud-descripcion rounded-3 border p-3 mb-3" id="solicitudDescripcionBloque">
+              <span class="oferta-card-label">Sobre esta tutoría</span>
+              <p class="small text-dark mb-0" id="solicitudDescripcion"></p>
+            </div>
+
             <label for="solicitudMensaje" class="form-label small fw-semibold text-dark">Mensaje para el tutor <span class="text-secondary fw-normal">(opcional)</span></label>
             <textarea class="form-control" id="solicitudMensaje" name="mensaje" rows="4" maxlength="500"
                       placeholder="Contale qué tema necesitás repasar y cuándo te vendría bien." style="resize: none;"></textarea>

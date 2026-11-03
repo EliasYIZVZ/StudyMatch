@@ -146,18 +146,6 @@ body.dashboard-body {
   font-weight: 700;
 }
 
-/* Botón colapsar en modo claro */
-.sidebar-admin #btnCollapseSidebar {
-  background-color: #ffffff;
-  border-color: var(--admin-border-sidebar-light);
-  color: #64748b;
-}
-
-.sidebar-admin #btnCollapseSidebar:hover {
-  background-color: #f1f5f9;
-  color: #0f172a;
-}
-
 /* SIDEBAR EN MODO OSCURO */
 [data-bs-theme="dark"] .sidebar.sidebar-admin {
   background-color: var(--admin-bg-sidebar-dark) !important;
@@ -194,12 +182,6 @@ body.dashboard-body {
 
 [data-bs-theme="dark"] .sidebar-admin .user-sidebar-card .text-white {
   color: #ffffff !important;
-}
-
-[data-bs-theme="dark"] .sidebar-admin #btnCollapseSidebar {
-  background-color: #1e293b;
-  border-color: #334155;
-  color: #94a3b8;
 }
 
 /* ==========================================================================

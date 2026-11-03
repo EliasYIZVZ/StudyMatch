@@ -203,7 +203,6 @@
                 <div class="mb-2 text-start">
                   <div class="d-flex justify-content-between align-items-center mb-1">
                     <label for="loginPassword" class="form-label small fw-semibold text-secondary mb-0">Contraseña</label>
-                    <a href="public/recuperar.html" class="auth-link text-xs text-primary text-decoration-none">¿Olvidaste tu contraseña?</a>
                   </div>
                   <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-lock"></i></span>

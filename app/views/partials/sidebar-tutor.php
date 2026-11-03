@@ -10,7 +10,7 @@ $activo = function ($item) use ($sidebarActivo) {
 ?>
   <aside id="mainSidebar" class="sidebar d-flex flex-column justify-content-between p-3">
     <div>
-      <!-- Header con Logo Study Match y Botón de Colapso -->
+      <!-- Header con Logo Study Match -->
       <div class="d-flex align-items-center justify-content-between mb-4 px-2 logo-container">
         <a href="index.php?r=dashboard-tutor" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
           <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -24,11 +24,6 @@ $activo = function ($item) use ($sidebarActivo) {
           </svg>
           <span class="fw-bold fs-5 text-dark logo-text">Study <span style="color: var(--brand-blue);">Match</span></span>
         </a>
-
-        <!-- Botón para contraer sidebar -->
-        <button id="btnCollapseSidebar" class="btn btn-sm btn-light border-0 text-secondary p-1 rounded-2 sidebar-hide-collapsed" title="Contraer menú lateral">
-          <i class="bi bi-chevron-left"></i>
-        </button>
       </div>
 
       <!-- Menú de Navegación: MODO TUTOR (Acento Verde) -->
