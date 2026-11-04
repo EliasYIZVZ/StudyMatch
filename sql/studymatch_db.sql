@@ -246,14 +246,14 @@ CREATE TABLE salas_publicas (
 
 SET FOREIGN_KEY_CHECKS = 1;
 -- --------------------------------------------------------------------------
--- 11. Datos base 
+-- 12. Datos base
 -- --------------------------------------------------------------------------
 INSERT INTO carreras (nombre_carrera, codigo_carrera)
 VALUES ('Tecnicatura Universitaria en Programación', 'TUP');
 
-----------------------------------------------------------------------------
--- 12. Datos de prueba: materias
-----------------------------------------------------------------------------
+-- --------------------------------------------------------------------------
+-- 13. Datos de prueba: materias
+-- --------------------------------------------------------------------------
 INSERT IGNORE INTO materia (id_carrera, nombre, descripcion)
 SELECT c.id_carrera, x.nombre, x.descripcion
 FROM carreras c
@@ -268,11 +268,11 @@ CROSS JOIN (
     UNION ALL SELECT 'Probabilidad y Estadística', 'Conceptos de inferencia estadística y modelado de datos'
     UNION ALL SELECT 'Base de Datos II', 'Gestión de triggers, transacciones y lenguajes de consulta'
     UNION ALL SELECT 'Gestión de Desarrollo de Software', 'Metodologías de desarrollo y gestión de proyectos'
-    UNION ALL SELECT 'Ingles II', 'Inglés técnico orientado a la programación'
+    UNION ALL SELECT 'Inglés II', 'Inglés técnico orientado a la programación'
     UNION ALL SELECT 'Introducción al Análisis de Datos', 'Conceptos de visualización y tratamiento de datos'
-    UNION ALL SELECT 'Legislación', 'fundamentos del derecho y responsabilidad legal'
+    UNION ALL SELECT 'Legislación', 'Fundamentos del derecho y responsabilidad legal'
     UNION ALL SELECT 'Metodología de Sistemas I', 'Conceptos de análisis y diseño de sistemas'
-    UNION ALL SELECT 'Metodología de Sistemas II', 'Conceptos de buen codigo y buenas practicas'
+    UNION ALL SELECT 'Metodología de Sistemas II', 'Conceptos de buen código y buenas prácticas'
     UNION ALL SELECT 'Programación III', 'Programación orientada a objetos, diseño web y entornos de desarrollo'
     UNION ALL SELECT 'Programación IV', 'Conceptos de full-stack development, UX/UI y deployment'
     UNION ALL SELECT 'Trabajo Final Integrador', 'Aplicación práctica de los conocimientos adquiridos en la carrera'
