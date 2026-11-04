@@ -45,7 +45,7 @@ $textoBusqueda = mb_strtolower(implode(' ', array_merge(
       <!-- Tutor: avatar, nombre, carrera y año -->
       <div class="d-flex align-items-center gap-3 mb-3">
         <?= Vista::avatar($tutor['nombre'], $tutor['foto']) ?>
-        <div class="min-w-0">
+        <div class="min-w-0 flex-grow-1">
           <h3 class="h6 fw-bold mb-0 text-dark text-truncate"><?= Vista::e($tutor['nombre']) ?></h3>
           <?php if (!empty($perfilTutor)): ?>
             <small class="text-secondary d-block"><?= Vista::e(implode(' • ', $perfilTutor)) ?></small>
@@ -94,10 +94,21 @@ $textoBusqueda = mb_strtolower(implode(' ', array_merge(
       </div>
 
       <!-- El perfil público del tutor todavía no existe -->
-      <button type="button" class="btn btn-outline-primary w-100 rounded-pill fw-bold py-2 d-flex align-items-center justify-content-center gap-2" disabled
+      <button type="button" class="btn btn-outline-primary w-100 rounded-pill fw-bold py-2 d-flex align-items-center justify-content-center gap-2 mb-2" disabled
               title="El perfil del tutor estará disponible próximamente">
         <i class="bi bi-person-badge"></i> Ver perfil <span class="fw-normal small">(próximamente)</span>
       </button>
+
+      <?php if (!empty($tutor['id_usuario'])): ?>
+        <div class="text-center">
+          <button type="button" 
+                  class="btn btn-link text-muted p-0 text-decoration-none small d-inline-flex align-items-center gap-1" 
+                  style="font-size: 0.72rem;"
+                  onclick="abrirModalReporte('usuario', <?= (int) $tutor['id_usuario'] ?>, '<?= Vista::e(addslashes($tutor['nombre'])) ?>')">
+            <i class="bi bi-flag"></i> Reportar perfil
+          </button>
+        </div>
+      <?php endif; ?>
     </div>
   </article>
 </div>

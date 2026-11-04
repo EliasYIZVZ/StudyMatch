@@ -93,10 +93,18 @@ $textoBusqueda = mb_strtolower(implode(' ', [
         <?php [$etiquetaEstado, $claseEstado] = Vista::estadoSolicitud($oferta['mi_solicitud_estado']); ?>
         <div class="d-flex flex-column gap-1">
           <span class="badge rounded-pill align-self-start <?= Vista::e($claseEstado) ?>">Solicitud <?= Vista::e(mb_strtolower($etiquetaEstado, 'UTF-8')) ?></span>
-          <form method="POST" action="index.php?r=cancelar-solicitud">
-            <input type="hidden" name="id_solicitud" value="<?= (int) $oferta['mi_solicitud_id'] ?>">
-            <button type="submit" class="btn btn-link btn-sm text-danger text-decoration-none p-0">Cancelar solicitud</button>
-          </form>
+          <div class="d-flex align-items-center gap-3">
+            <form method="POST" action="index.php?r=cancelar-solicitud">
+              <input type="hidden" name="id_solicitud" value="<?= (int) $oferta['mi_solicitud_id'] ?>">
+              <button type="submit" class="btn btn-link btn-sm text-danger text-decoration-none p-0">Cancelar solicitud</button>
+            </form>
+            <button type="button" 
+                    class="btn btn-link text-muted p-0 text-decoration-none small" 
+                    style="font-size: 0.72rem;"
+                    onclick="abrirModalReporte('usuario', <?= (int) $oferta['id_tutor'] ?>, '<?= Vista::e(addslashes($oferta['tutor'])) ?>')">
+              <i class="bi bi-flag"></i> Reportar
+            </button>
+          </div>
         </div>
         <?php if ($oferta['mi_solicitud_estado'] === 'aceptada'): ?>
           <a href="index.php?r=tutoria&amp;id=<?= (int) $oferta['mi_solicitud_id'] ?>" class="btn btn-success rounded-pill fw-bold px-4 d-inline-flex align-items-center gap-2 oferta-card-accion">
@@ -106,7 +114,15 @@ $textoBusqueda = mb_strtolower(implode(' ', [
           <span class="small text-secondary oferta-card-accion text-sm-end">Esperando respuesta del tutor</span>
         <?php endif; ?>
       <?php else: ?>
-        <span class="small text-secondary">¿Te sirve esta tutoría?</span>
+        <div class="d-flex flex-column">
+          <span class="small text-secondary">¿Te sirve esta tutoría?</span>
+          <button type="button" 
+                  class="btn btn-link text-muted p-0 text-decoration-none text-start small mt-0.5" 
+                  style="font-size: 0.72rem;"
+                  onclick="abrirModalReporte('usuario', <?= (int) $oferta['id_tutor'] ?>, '<?= Vista::e(addslashes($oferta['tutor'])) ?>')">
+            <i class="bi bi-flag"></i> Reportar publicación
+          </button>
+        </div>
         <button type="button" class="btn btn-discord rounded-pill fw-bold px-4 d-inline-flex align-items-center justify-content-center gap-2 oferta-card-accion"
                 data-bs-toggle="modal" data-bs-target="#modalSolicitarTutoria"
                 data-id-oferta="<?= (int) $oferta['id_tutoria'] ?>"

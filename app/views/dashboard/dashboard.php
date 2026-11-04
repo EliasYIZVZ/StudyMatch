@@ -138,6 +138,54 @@
       </section>
 
       <!-- ====================================================================
+           2.1 SECCIÓN: SALAS PÚBLICAS DE ESTUDIO EN DISCORD
+           ==================================================================== -->
+      <?php if (!empty($salasPublicas)): ?>
+      <section id="salas-comunitarias-discord" class="mb-5 pb-2">
+        <div class="d-flex justify-content-between align-items-end mb-3 flex-wrap gap-3">
+          <div>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 small fw-semibold mb-2 d-inline-flex align-items-center gap-1">
+              <i class="bi bi-discord"></i> Canales Comunitarios
+            </span>
+            <h2 class="h4 fw-bold text-dark mb-1">Salas Públicas de Estudio en Discord</h2>
+            <p class="text-secondary small mb-0">Espacios abiertos de consulta y estudio colaborativo entre alumnos de la UTN.</p>
+          </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+          <?php foreach ($salasPublicas as $sala): ?>
+            <div class="col" id="sala-card-<?= (int) $sala['id_sala'] ?>">
+              <article class="public-room-card h-100 d-flex flex-column p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-discord"></i> Sala de Discord
+                  </span>
+                </div>
+                <h3 class="h6 fw-bold text-dark mb-2"><?= Vista::e($sala['titulo']) ?></h3>
+                <p class="text-secondary small lh-base mb-3 flex-grow-1"><?= Vista::e($sala['descripcion'] ?: 'Espacio de estudio libre para consultas.') ?></p>
+                <div class="d-flex align-items-center justify-content-between pt-3 border-top mt-auto">
+                  <div class="d-flex flex-column">
+                    <small class="text-muted"><i class="bi bi-person me-1"></i><?= Vista::e($sala['creador_nombre']) ?></small>
+                    <button type="button" 
+                            class="btn btn-link text-muted p-0 text-decoration-none text-start small mt-0.5" 
+                            style="font-size: 0.72rem;"
+                            onclick="abrirModalReporte('sala', <?= (int) $sala['id_sala'] ?>, '<?= Vista::e(addslashes($sala['titulo'])) ?>')">
+                      <i class="bi bi-flag"></i> Reportar sala
+                    </button>
+                  </div>
+                  <a href="<?= Vista::e($sala['enlace_discord']) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-discord btn-sm rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow-sm">
+                    <i class="bi bi-discord"></i>
+                    <span>Unirse a Discord</span>
+                  </a>
+                </div>
+              </article>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      </section>
+      <?php endif; ?>
+
+      <!-- ====================================================================
            3. SECCIÓN: TUTORES RECOMENDADOS O MEJOR CALIFICADOS
            ==================================================================== -->
       <section id="tutores-destacados">
@@ -255,6 +303,7 @@
 
   <?php require APP_PATH . '/views/partials/perfil-alumno-modales.php'; ?>
   <?php require APP_PATH . '/views/partials/modal-solicitar-tutoria.php'; ?>
+  <?php require APP_PATH . '/views/partials/modal-reportar.php'; ?>
 
   <!-- OVERLAY DE TRANSICIÓN SUAVE ENTRE ROLES -->
   <div id="roleTransitionOverlay" class="role-transition-overlay">

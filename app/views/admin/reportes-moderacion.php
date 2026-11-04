@@ -265,9 +265,10 @@
                         class="form-select form-select-sm rounded-pill bg-light border px-3 py-1.5 fw-semibold text-secondary shadow-none" 
                         style="min-width: 155px; font-size: 0.82rem;" 
                         onchange="cambiarFiltroSelect(this.value)">
-                  <option value="nuevos" selected>Más nuevos</option>
-                  <option value="pendientes">Pendientes</option>
-                  <option value="resueltos">Resueltos</option>
+                  <option value="nuevos" selected>Más nuevos (Todos)</option>
+                  <option value="pendiente">🟡 Pendientes</option>
+                  <option value="finalizado">🟢 Finalizados</option>
+                  <option value="rechazado">⚪ Rechazados</option>
                 </select>
               </div>
 
@@ -344,17 +345,22 @@
                     </div>
                   </td>
 
-                  <!-- 5. Columna: Estado (Pendiente / Resuelto) -->
+                  <!-- 5. Columna: Estado (Pendiente / Finalizado / Rechazado) -->
                   <td class="estado-badge-slot">
-                    <?php if ($esPendiente): ?>
+                    <?php if ($rep['estado'] === 'pendiente'): ?>
                       <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1.5">
                         <span class="live-dot pulse-warning"></span>
                         <span>Pendiente</span>
                       </span>
-                    <?php else: ?>
+                    <?php elseif ($rep['estado'] === 'finalizado'): ?>
                       <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
                         <i class="bi bi-check-circle-fill"></i>
-                        <span>Resuelto</span>
+                        <span>Finalizado</span>
+                      </span>
+                    <?php else: ?>
+                      <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-x-circle"></i>
+                        <span>Rechazado</span>
                       </span>
                     <?php endif; ?>
                   </td>
@@ -500,7 +506,7 @@
                     id="btnDescartarModal"
                     onclick="descartarDesdeModal()">
               <i class="bi bi-trash"></i>
-              <span>Descartar Alerta</span>
+              <span>Rechazar Reporte</span>
             </button>
 
             <!-- Botón Dinámico: Desactivar Sala de Discord O Desactivar Cuenta de Alumno -->
@@ -602,12 +608,14 @@
         // Filtro 1: Discord o Alumnos
         let coincideTipo = (filtroTipoActual === 'todos') || (tipo === filtroTipoActual);
 
-        // Filtro 2: Desplegable (Más nuevos, Pendientes, Resueltos)
+        // Filtro 2: Desplegable (Más nuevos, Pendientes, Finalizados, Rechazados)
         let coincideEstado = true;
-        if (filtroOrdenEstado === 'pendientes') {
+        if (filtroOrdenEstado === 'pendiente') {
           coincideEstado = (estado === 'pendiente');
-        } else if (filtroOrdenEstado === 'resueltos') {
-          coincideEstado = (estado === 'resuelto');
+        } else if (filtroOrdenEstado === 'finalizado') {
+          coincideEstado = (estado === 'finalizado');
+        } else if (filtroOrdenEstado === 'rechazado') {
+          coincideEstado = (estado === 'rechazado');
         }
 
         return coincideTipo && coincideEstado;
@@ -743,11 +751,11 @@
       const textoDesactivar = document.getElementById('textoAccionDesactivar');
       const btnDescartarModal = document.getElementById('btnDescartarModal');
 
-      if (rep.estado === 'resuelto') {
+      if (rep.estado === 'finalizado' || rep.estado === 'rechazado') {
         btnDesactivar.disabled = true;
         btnDesactivar.className = 'btn btn-secondary rounded-pill px-4 disabled';
         iconoDesactivar.className = 'bi bi-check-circle-fill me-1';
-        textoDesactivar.textContent = 'Caso ya Resuelto';
+        textoDesactivar.textContent = (rep.estado === 'finalizado') ? 'Caso Finalizado' : 'Caso Rechazado';
         if (btnDescartarModal) btnDescartarModal.style.display = 'none';
       } else {
         btnDesactivar.disabled = false;
@@ -756,10 +764,10 @@
         
         if (rep.tipo === 'sala') {
           iconoDesactivar.className = 'bi bi-slash-circle me-1';
-          textoDesactivar.textContent = 'Desactivar Sala de Discord';
+          textoDesactivar.textContent = 'Desactivar Sala y Finalizar';
         } else {
           iconoDesactivar.className = 'bi bi-person-slash me-1';
-          textoDesactivar.textContent = 'Desactivar Cuenta de Alumno';
+          textoDesactivar.textContent = 'Suspender Alumno y Finalizar';
         }
       }
 
@@ -781,59 +789,104 @@
       if (!reporteActivoEnModal) return;
 
       const id = reporteActivoEnModal.id_reporte;
-      const esSala = (reporteActivoEnModal.tipo === 'sala');
-      const row = document.getElementById(`row-reporte-${id}`);
+      const btn = document.getElementById('btnAccionDesactivarModal');
+      if (btn) btn.disabled = true;
 
-      if (row) {
-        row.setAttribute('data-estado', 'resuelto');
-        row.classList.add('fila-resuelta');
+      const formData = new FormData();
+      formData.append('id_reporte', id);
+      formData.append('accion', 'finalizar');
 
-        // Actualizar badge de estado a Resuelto
-        const badgeSlot = row.querySelector('.estado-badge-slot');
-        if (badgeSlot) {
-          badgeSlot.innerHTML = `
-            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
-              <i class="bi bi-check-circle-fill"></i>
-              <span>Resuelto</span>
-            </span>
-          `;
+      fetch('index.php?r=admin-resolver-reporte', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          const row = document.getElementById(`row-reporte-${id}`);
+          if (row) {
+            row.setAttribute('data-estado', 'finalizado');
+            row.classList.add('fila-resuelta');
+
+            const badgeSlot = row.querySelector('.estado-badge-slot');
+            if (badgeSlot) {
+              badgeSlot.innerHTML = `
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-check-circle-fill"></i>
+                  <span>Finalizado</span>
+                </span>
+              `;
+            }
+          }
+
+          reporteActivoEnModal.estado = 'finalizado';
+          const modalEl = document.getElementById('modalDetalleReporte');
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) modal.hide();
+
+          actualizarContadorPendientes();
+          actualizarPaginacionRep();
+          mostrarToast(data.mensaje || 'Reporte finalizado y sanción aplicada.');
+        } else {
+          alert(data.error || 'No se pudo resolver el reporte.');
+          if (btn) btn.disabled = false;
         }
-      }
-
-      reporteActivoEnModal.estado = 'resuelto';
-
-      // Cerrar modal
-      const modalEl = document.getElementById('modalDetalleReporte');
-      const modal = bootstrap.Modal.getInstance(modalEl);
-      if (modal) modal.hide();
-
-      // Recalcular contador de pendientes
-      actualizarContadorPendientes();
-      actualizarPaginacionRep();
-
-      const mensaje = esSala ? 
-        `Sala de Discord desactivada y reporte #${id} marcado como resuelto.` : 
-        `Cuenta de alumno suspendida y reporte #${id} marcado como resuelto.`;
-
-      mostrarToast(mensaje);
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error al comunicar con el servidor.');
+        if (btn) btn.disabled = false;
+      });
     }
 
     // ==========================================
     // 5. [Descartar Alerta]
     // ==========================================
     function descartarAlerta(id) {
-      const row = document.getElementById(`row-reporte-${id}`);
-      if (row) {
-        row.style.transition = 'all 0.25s ease';
-        row.style.opacity = '0';
-        row.style.transform = 'scale(0.96)';
-        setTimeout(() => {
-          row.remove();
+      if (!confirm('¿Deseas rechazar y desestimar este reporte?')) return;
+
+      const formData = new FormData();
+      formData.append('id_reporte', id);
+      formData.append('accion', 'rechazar');
+
+      fetch('index.php?r=admin-resolver-reporte', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          const row = document.getElementById(`row-reporte-${id}`);
+          if (row) {
+            row.setAttribute('data-estado', 'rechazado');
+            row.classList.add('fila-resuelta');
+
+            const badgeSlot = row.querySelector('.estado-badge-slot');
+            if (badgeSlot) {
+              badgeSlot.innerHTML = `
+                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-x-circle"></i>
+                  <span>Rechazado</span>
+                </span>
+              `;
+            }
+          }
+
+          if (reporteActivoEnModal && reporteActivoEnModal.id_reporte == id) {
+            reporteActivoEnModal.estado = 'rechazado';
+          }
+
           actualizarContadorPendientes();
           actualizarPaginacionRep();
-          mostrarToast(`Alerta #${id} descartada por falta de mérito.`);
-        }, 250);
-      }
+          mostrarToast(data.mensaje || `Reporte #${id} rechazado.`);
+        } else {
+          alert(data.error || 'No se pudo rechazar el reporte.');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error al procesar el rechazo del reporte.');
+      });
     }
 
     function actualizarContadorPendientes() {

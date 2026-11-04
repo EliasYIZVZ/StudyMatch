@@ -27,12 +27,164 @@ final class AdminController extends Controller
 
     public function salas()
     {
-        $this->renderAdmin('admin/salas', $this->datosSalas());
+        try {
+            $db = Database::getConnection();
+            $salasModel = new SalaPublica($db);
+            $salas = $salasModel->listarParaAdmin();
+        } catch (Exception $e) {
+            error_log('Error al cargar salas: ' . $e->getMessage());
+            $salas = $this->datosSalas()['salas'];
+        }
+
+        $this->renderAdmin('admin/salas', ['salas' => $salas]);
     }
 
     public function reportes()
     {
-        $this->renderAdmin('admin/reportes-moderacion', $this->datosReportes());
+        try {
+            $db = Database::getConnection();
+            $reporteModel = new Reporte($db);
+            $reportes = $reporteModel->listarParaAdmin();
+            $metricas = $reporteModel->metricas();
+
+            $data = [
+                'reportes'            => $reportes,
+                'totalReportes'       => $metricas['total'],
+                'reportesPendientes'  => $metricas['pendientes'],
+                'reportesFinalizados' => $metricas['finalizados'],
+                'reportesRechazados'  => $metricas['rechazados'],
+                'salasReportadas'     => $metricas['salas'],
+                'usuariosReportados'  => $metricas['usuarios'],
+            ];
+        } catch (Exception $e) {
+            error_log('Error al cargar reportes: ' . $e->getMessage());
+            $data = $this->datosReportes();
+        }
+
+        $this->renderAdmin('admin/reportes-moderacion', $data);
+    }
+
+    /**
+     * Resuelve o rechaza una alerta de reporte desde el panel de administración.
+     */
+    /**
+     * Suspende o reactiva una sala de Discord desde el panel de administración.
+     */
+    public function moderarSala()
+    {
+        if (!$this->isPost()) {
+            $this->redirect('index.php?r=admin-salas');
+            return;
+        }
+
+        $idSala = (int) ($_POST['id_sala'] ?? 0);
+        $accion = trim($_POST['accion'] ?? '');
+        $motivo = trim($_POST['motivo'] ?? 'Medida de moderación');
+
+        if ($idSala <= 0 || !in_array($accion, ['suspender', 'reactivar'], true)) {
+            $this->json(['ok' => false, 'error' => 'Parámetros inválidos.']);
+            return;
+        }
+
+        try {
+            $db = Database::getConnection();
+            $salaModel = new SalaPublica($db);
+
+            if ($accion === 'suspender') {
+                $salaModel->suspender($idSala, $motivo);
+                $desc = "Sala #{$idSala} suspendida por el administrador. Motivo: {$motivo}";
+            } else {
+                $salaModel->reactivar($idSala);
+                $desc = "Sala #{$idSala} reactivada por el administrador.";
+            }
+
+            // Registrar en auditoría
+            $adminId = Session::userId() ?: 1;
+            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $stmtAud = $db->prepare(
+                "INSERT INTO auditoria (id_usuario, accion, descripcion, ip) VALUES (:admin, 'modificar', :desc, :ip)"
+            );
+            $stmtAud->execute([
+                'admin' => $adminId,
+                'desc'  => $desc,
+                'ip'    => $ip,
+            ]);
+
+            $this->json([
+                'ok' => true,
+                'mensaje' => ($accion === 'suspender') 
+                    ? "Sala #{$idSala} suspendida correctamente." 
+                    : "Sala #{$idSala} reactivada con éxito."
+            ]);
+        } catch (Exception $e) {
+            error_log('Error al moderar sala: ' . $e->getMessage());
+            $this->json(['ok' => false, 'error' => 'Error en la base de datos.']);
+        }
+    }
+
+    public function resolverReporte()
+    {
+        if (!$this->isPost()) {
+            $this->redirect('index.php?r=admin-reportes');
+            return;
+        }
+
+        $idReporte = (int) ($_POST['id_reporte'] ?? 0);
+        $accion = trim($_POST['accion'] ?? '');
+
+        if ($idReporte <= 0 || !in_array($accion, ['finalizar', 'rechazar'], true)) {
+            $this->json(['ok' => false, 'error' => 'Parámetros inválidos.']);
+            return;
+        }
+
+        try {
+            $db = Database::getConnection();
+            $reporteModel = new Reporte($db);
+            $reporte = $reporteModel->obtenerPorId($idReporte);
+
+            if (!$reporte) {
+                $this->json(['ok' => false, 'error' => 'Reporte no encontrado.']);
+                return;
+            }
+
+            $nuevoEstado = ($accion === 'finalizar') ? 'finalizado' : 'rechazado';
+            $reporteModel->cambiarEstado($idReporte, $nuevoEstado);
+
+            $detalleAuditoria = "Reporte #{$idReporte} marcado como '{$nuevoEstado}'";
+
+            if ($accion === 'finalizar' && $reporte['tipo_entidad'] === 'usuario') {
+                $stmt = $db->prepare("UPDATE usuarios SET estado_usuario = 'inactivo' WHERE id_usuario = :id");
+                $stmt->execute(['id' => (int) $reporte['id_referencia']]);
+                $detalleAuditoria .= " y se suspendió al usuario #{$reporte['id_referencia']}";
+            }
+
+            if ($accion === 'finalizar' && $reporte['tipo_entidad'] === 'sala') {
+                (new SalaPublica($db))->suspender($reporte['id_referencia'], "Suspendida por resolución de reporte #{$idReporte}");
+                $detalleAuditoria .= " y se suspendió la sala de Discord #{$reporte['id_referencia']}";
+            }
+
+            $adminId = Session::userId() ?: 1;
+            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $stmtAud = $db->prepare(
+                "INSERT INTO auditoria (id_usuario, accion, descripcion, ip) VALUES (:admin, 'modificar', :desc, :ip)"
+            );
+            $stmtAud->execute([
+                'admin' => $adminId,
+                'desc'  => $detalleAuditoria,
+                'ip'    => $ip,
+            ]);
+
+            $this->json([
+                'ok' => true,
+                'nuevoEstado' => $nuevoEstado,
+                'mensaje' => ($accion === 'finalizar') 
+                    ? 'Reporte finalizado y sanción aplicada con éxito.' 
+                    : 'Reporte rechazado y desestimado correctamente.'
+            ]);
+        } catch (Exception $e) {
+            error_log('Error al resolver reporte: ' . $e->getMessage());
+            $this->json(['ok' => false, 'error' => 'Error en la base de datos.']);
+        }
     }
 
     /**

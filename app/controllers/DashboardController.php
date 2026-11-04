@@ -19,21 +19,25 @@ final class DashboardController extends Controller
     {
         $ofertas = [];
         $materias = [];
+        $salasPublicas = [];
         $errorOfertas = false;
 
         try {
-            $ofertas = (new OfertaTutoria(Database::getConnection()))
+            $db = Database::getConnection();
+            $ofertas = (new OfertaTutoria($db))
                 ->listarParaAlumno(Session::userId(), self::OFERTAS_BUSQUEDA);
 
             $materias = $this->materiasDeOfertas($ofertas);
+            $salasPublicas = (new SalaPublica($db))->listarActivas();
         } catch (PDOException $exception) {
-            error_log('Error al cargar las ofertas de tutoría: ' . $exception->getMessage());
+            error_log('Error al cargar las ofertas de tutoría o salas: ' . $exception->getMessage());
             $errorOfertas = true;
         }
 
         $this->render('dashboard/dashboard', [
             'ofertas' => $ofertas,
             'materias' => $materias,
+            'salasPublicas' => $salasPublicas,
             'ofertasVisibles' => self::OFERTAS_VISIBLES,
             'errorOfertas' => $errorOfertas,
         ]);
@@ -113,6 +117,7 @@ final class DashboardController extends Controller
 
                 if (!isset($tutores[$idTutor])) {
                     $tutores[$idTutor] = [
+                        'id_usuario' => $idTutor,
                         'nombre' => $oferta['tutor'],
                         'foto' => $oferta['tutor_foto'],
                         'carrera' => $oferta['tutor_carrera'],

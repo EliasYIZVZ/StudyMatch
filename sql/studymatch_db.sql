@@ -28,6 +28,7 @@ DROP TABLE IF EXISTS consultausuarios;
 DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS auditoria;
 DROP TABLE IF EXISTS reportes;
+DROP TABLE IF EXISTS salas_publicas;
 
 
 -- --------------------------------------------------------------------------
@@ -179,7 +180,7 @@ CREATE TABLE auditoria (
     id_usuario INT UNSIGNED NOT NULL,
     accion ENUM('crear', 'modificar', 'eliminar', 'login', 'logout') NOT NULL,
     descripcion VARCHAR(255) NOT NULL,
-    detalle_previo TEXT NOT NULL,
+    detalle_previo TEXT NULL,
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ip VARCHAR(45) NOT NULL,
     PRIMARY KEY (id_auditoria),
@@ -194,16 +195,34 @@ CREATE TABLE auditoria (
 -- --------------------------------------------------------------------------
 CREATE TABLE reportes (
     id_reporte INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    id_usuario INT UNSIGNED NOT NULL,
-    entidad VARCHAR(100) NOT NULL, 
+    id_denunciante INT UNSIGNED NOT NULL,
+    tipo_entidad ENUM('sala', 'usuario') NOT NULL,
+    id_referencia INT UNSIGNED NOT NULL,
+    motivo VARCHAR(100) NOT NULL,
     descripcion TEXT NOT NULL,
-    estado ENUM('pendiente', 'en revision', 'resuelto', 'rechazado') NOT NULL DEFAULT 'pendiente',
+    estado ENUM('pendiente', 'finalizado', 'rechazado') NOT NULL DEFAULT 'pendiente',
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_resolucion DATETIME NULL,
     PRIMARY KEY (id_reporte),
-    CONSTRAINT fk_reportes_usuario FOREIGN KEY (id_usuario) 
-        REFERENCES usuarios(id_usuario) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT fk_reportes_denunciante FOREIGN KEY (id_denunciante) 
+        REFERENCES usuarios (id_usuario) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------------------------
+-- 11. Salas Públicas de Estudio (Discord)
+-- --------------------------------------------------------------------------
+CREATE TABLE salas_publicas (
+    id_sala INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    titulo VARCHAR(150) NOT NULL,
+    descripcion TEXT NULL,
+    enlace_discord VARCHAR(255) NOT NULL,
+    id_creador INT UNSIGNED NOT NULL,
+    estado ENUM('activa', 'suspendida') NOT NULL DEFAULT 'activa',
+    motivo_suspension VARCHAR(255) NULL,
+    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_sala),
+    CONSTRAINT fk_salas_creador FOREIGN KEY (id_creador)
+        REFERENCES usuarios (id_usuario) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
