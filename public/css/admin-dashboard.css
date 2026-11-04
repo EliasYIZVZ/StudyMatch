@@ -28,6 +28,79 @@
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
+/* Métricas del resumen: mismo estilo que las del Panel Tutor (dashboard.css),
+   con el ícono de Bootstrap Icons como marca de agua de fondo (::after). */
+.metric-card--alumnos,
+.metric-card--tutores,
+.metric-card--salas,
+.metric-card--materias {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.metric-card--alumnos  { --metric-glifo: "\f4cf"; --metric-color: var(--bs-primary); }
+.metric-card--tutores  { --metric-glifo: "\f4b5"; --metric-color: var(--bs-success); }
+.metric-card--salas    { --metric-glifo: "\f1d6"; --metric-color: var(--bs-danger); }
+.metric-card--materias { --metric-glifo: "\f43c"; --metric-color: #FFDF00; }
+
+.metric-card--alumnos::after,
+.metric-card--tutores::after,
+.metric-card--salas::after,
+.metric-card--materias::after {
+  content: var(--metric-glifo);
+  content: var(--metric-glifo) / "";
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  bottom: 0;
+  z-index: -1;
+  display: flex;
+  align-items: center;
+  font-family: "bootstrap-icons";
+  font-size: 5.5rem;
+  line-height: 1;
+  color: var(--metric-color);
+  opacity: 0.26;
+  pointer-events: none;
+  transition: transform 0.3s ease;
+}
+
+.metric-card--alumnos:hover::after,
+.metric-card--tutores:hover::after,
+.metric-card--salas:hover::after,
+.metric-card--materias:hover::after {
+  transform: translateX(0.75rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metric-card--alumnos::after,
+  .metric-card--tutores::after,
+  .metric-card--salas::after,
+  .metric-card--materias::after {
+    transition: none;
+  }
+}
+
+/* Tarjetas de los gráficos de torta */
+.chart-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-wrap {
+  position: relative;
+  min-height: 260px;
+}
+
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 /* Pulso indicador para salas públicas en vivo */
 .live-indicator-dot {
   width: 10px;
@@ -43,19 +116,6 @@
   to {
     box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
   }
-}
-
-/* Elementos de la lista de tutores a verificar */
-.tutor-verify-item {
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.tutor-verify-item:hover {
-  background-color: #f8fafc !important;
-}
-
-[data-bs-theme="dark"] .tutor-verify-item:hover {
-  background-color: rgba(255, 255, 255, 0.04) !important;
 }
 
 /* Tablas y filas del dashboard */

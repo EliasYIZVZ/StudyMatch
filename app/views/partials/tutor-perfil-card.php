@@ -85,7 +85,7 @@ $textoBusqueda = mb_strtolower(implode(' ', array_merge(
           <?php endif; ?>
         </span>
         <?php if (empty($preciosPagos)): ?>
-          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill"><i class="bi bi-gift me-1"></i>Gratuita</span>
+          <span class="badge badge-gratuita rounded-pill"><i class="bi bi-gift me-1"></i>Gratuita</span>
         <?php else: ?>
           <span class="text-nowrap" title="Precio por clase<?= $tieneGratuitas ? ' (también tiene tutorías gratuitas)' : '' ?>">
             <?= $tieneGratuitas ? 'Gratis o desde' : 'Desde' ?> <strong class="text-dark"><?= Vista::e($montoTexto) ?></strong>

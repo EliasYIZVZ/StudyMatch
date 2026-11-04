@@ -4,8 +4,8 @@
  * Panel de administración (solo usuarios con rol_usuario = 'admin').
  * El Router ya verificó el rol antes de llegar aquí.
  *
- * Usuarios, salas y reportes leen y escriben en la base de datos. El resumen
- * (dashboard) y las materias siguen con datos SIMULADOS: están en los métodos
+ * Usuarios, salas, reportes y el resumen (dashboard) leen y escriben en la base
+ * de datos. Solo las materias siguen con datos SIMULADOS: están en los métodos
  * datos*() de abajo, hasta que se los reemplace por llamadas a su modelo.
  */
 final class AdminController extends Controller
@@ -318,47 +318,29 @@ final class AdminController extends Controller
     }
 
     // ------------------------------------------------------------------
-    // Datos simulados: dashboard
+    // Dashboard: métricas reales (cards y gráficos de torta)
     // ------------------------------------------------------------------
     private function datosDashboard()
     {
-        /* ==========================================================================
-         * GUÍA DE INTEGRACIÓN BACKEND (PHP PDO + MySQL):
-         * ==========================================================================
-         * Tu compañero de backend podrá conectar esta vista ejecutando:
-         * 
-         * $db = Database::getConnection();
-         * 
-         * 1. Métricas del Dashboard:
-         *    $totalAlumnos      = (int) $db->query("SELECT COUNT(*) FROM usuarios WHERE rol = 'Alumno'")->fetchColumn();
-         *    $totalTutores      = (int) $db->query("SELECT COUNT(*) FROM usuarios WHERE rol = 'Tutor' AND estado_verificacion = 'verificado'")->fetchColumn();
-         *    $totalSalas        = (int) $db->query("SELECT COUNT(*) FROM salas_publicas WHERE estado = 'activa'")->fetchColumn();
-         *    $totalMaterias     = (int) $db->query("SELECT COUNT(*) FROM materias")->fetchColumn();
-         *    $tutoresPendientes = (int) $db->query("SELECT COUNT(*) FROM usuarios WHERE rol = 'Tutor' AND estado_verificacion = 'pendiente'")->fetchColumn();
-         *    $totalReportes     = (int) $db->query("SELECT COUNT(*) FROM reportes_moderacion WHERE estado = 'pendiente'")->fetchColumn();
-         * 
-         * 2. Postulaciones de tutores pendientes:
-         *    $stmt = $db->query("SELECT id_usuario, nombre, apellido, legajo, carrera, materia_postula, analitico_url 
-         *                        FROM postulaciones_tutores WHERE estado = 'pendiente' ORDER BY fecha DESC LIMIT 5");
-         *    $postulaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
-         * ========================================================================== */
+        $metricas = [
+            'alumnos'  => ['total' => 0, 'activos' => 0, 'inactivos' => 0, 'tutores' => 0, 'solo_alumnos' => 0],
+            'tutores'  => ['activos' => 0, 'inactivos' => 0, 'total' => 0],
+            'salas'    => ['activas' => 0, 'suspendidas' => 0, 'total' => 0],
+            'materias' => ['total' => 0, 'carreras' => 0, 'codigos_carreras' => [], 'por_anio' => []],
+        ];
+        $totalReportes = 0;
+        $errorMetricas = false;
 
-        // Contadores simulados de métricas principales
-        $totalAlumnos      = 1280;
-        $totalTutores      = 94;
-        $totalSalas        = 6;
-        $totalMaterias     = 42;
-        $tutoresPendientes = 3;
-        $totalReportes     = 3; // Cantidad de reportes pendientes
+        try {
+            $db = Database::getConnection();
+            $metricas = (new MetricasAdmin($db))->resumen();
+            $totalReportes = (int) (new Reporte($db))->metricas()['pendientes'];
+        } catch (PDOException $e) {
+            error_log('Error al cargar las métricas del panel: ' . $e->getMessage());
+            $errorMetricas = true;
+        }
 
-        return compact(
-            'totalAlumnos',
-            'totalTutores',
-            'totalSalas',
-            'totalMaterias',
-            'tutoresPendientes',
-            'totalReportes'
-        );
+        return compact('metricas', 'totalReportes', 'errorMetricas');
     }
 
     // ------------------------------------------------------------------

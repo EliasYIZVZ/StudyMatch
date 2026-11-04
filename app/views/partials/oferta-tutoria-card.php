@@ -76,7 +76,7 @@ $textoBusqueda = mb_strtolower(implode(' ', [
           <dt class="oferta-card-label">Precio por clase</dt>
           <dd class="mb-0">
             <?php if ($esGratuita): ?>
-              <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fw-semibold"><i class="bi bi-gift me-1"></i>Gratuita</span>
+              <span class="badge badge-gratuita rounded-pill fw-semibold"><i class="bi bi-gift me-1"></i>Gratuita</span>
             <?php else: ?>
               <span class="fw-bold text-dark"><?= Vista::e($montoTexto) ?></span>
               <?php if (!empty($medios)): ?>

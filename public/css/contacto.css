@@ -27,6 +27,30 @@ body.page-contacto {
   box-shadow: 0 12px 32px rgba(32, 91, 128, 0.09);
 }
 
+/* Mapa: ocupa todo el alto libre de la columna; el iframe se superpone al contenedor */
+.contact-map-card {
+  position: relative;
+  min-height: 280px;
+  overflow: hidden;
+  border: 1px solid #d6e8f5;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(32, 91, 128, 0.07);
+  background: #eaf6fc;
+}
+
+.contact-map-card iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+[data-bs-theme="dark"] .contact-map-card {
+  border-color: #31516a;
+  background: #1b2b3d;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
 .contact-heading-icon {
   width: 42px;
   height: 42px;

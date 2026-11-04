@@ -26,13 +26,13 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Estilos base compartidos de Dashboards -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_reportes">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_iconos">
 
   <!-- Estilos globales de Administración (sidebar claro gris azulado / oscuro grafito) -->
   <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
 
   <!-- Estilos específicos del Dashboard -->
-  <link rel="stylesheet" href="public/css/admin-dashboard.css?v=20261029_v3">
+  <link rel="stylesheet" href="public/css/admin-dashboard.css?v=20261106_kpi4">
 </head>
 <body class="dashboard-body" data-role="admin">
 
@@ -76,21 +76,21 @@
         <a href="index.php?r=admin-usuarios" class="sidebar-link" title="Gestión de Usuarios">
           <i class="bi bi-people fs-5"></i>
           <span class="sidebar-text">Gestión de Usuarios</span>
-          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;"><?= number_format($totalAlumnos); ?></span>
+          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;"><?= (int) $metricas['alumnos']['total']; ?></span>
         </a>
 
         <!-- 3. Gestión de Materias -->
         <a href="index.php?r=admin-materias" class="sidebar-link" title="Gestión de Materias">
           <i class="bi bi-journal-bookmark fs-5"></i>
           <span class="sidebar-text">Gestión de Materias</span>
-          <span class="badge bg-secondary-subtle text-light ms-auto sidebar-text" style="font-size: 0.68rem;"><?= $totalMaterias; ?></span>
+          <span class="badge bg-secondary-subtle text-light ms-auto sidebar-text" style="font-size: 0.68rem;"><?= (int) $metricas['materias']['total']; ?></span>
         </a>
 
         <!-- 4. Salas Públicas -->
         <a href="index.php?r=admin-salas" class="sidebar-link" title="Salas Públicas">
           <i class="bi bi-broadcast fs-5 text-danger"></i>
           <span class="sidebar-text">Salas Públicas</span>
-          <span class="badge bg-danger text-white rounded-pill ms-auto sidebar-text" style="font-size: 0.65rem;"><?= $totalSalas; ?> en vivo</span>
+          <span class="badge bg-danger text-white rounded-pill ms-auto sidebar-text" style="font-size: 0.65rem;"><?= (int) $metricas['salas']['activas']; ?> en vivo</span>
         </a>
 
         <!-- 5. Reportes -->
@@ -142,7 +142,7 @@
 
           <!-- Título y Breadcrumb -->
           <div class="d-none d-sm-block me-2">
-            <h1 class="h6 fw-bold mb-0 text-dark">Panel de Administración</h1>
+            <h1 class="h6 fw-bold mb-0 text-dark" style="text-shadow: none;">Panel de Administración</h1>
             <span class="text-muted small" style="font-size: 0.72rem;">StudyMatch • Resumen General</span>
           </div>
 
@@ -207,7 +207,7 @@
             <span class="badge bg-primary text-white rounded-pill px-3 py-1 small fw-semibold mb-2 d-inline-block">
               <i class="bi bi-shield-check me-1"></i> Control General
             </span>
-            <h1 class="page-title fw-bold mb-1 text-white">
+            <h1 class="h3 fw-bold mb-1 text-white" style="text-shadow: none;">
               Panel de Administración y Métricas
             </h1>
             <p class="text-white text-opacity-75 small mb-0">
@@ -223,93 +223,65 @@
       </div>
 
       <!-- ====================================================================
-           1. LAS 4 TARJETAS DE RESUMEN HORIZONTAL (KPIS ENLAZABLES)
+           1. TARJETAS DE RESUMEN (KPIS ENLAZABLES) • datos reales de la BD
            ==================================================================== -->
+      <?php
+        $mAlumnos  = $metricas['alumnos'];
+        $mTutores  = $metricas['tutores'];
+        $mSalas    = $metricas['salas'];
+        $mMaterias = $metricas['materias'];
+      ?>
+      <?php if (!empty($errorMetricas)): ?>
+        <div class="alert alert-warning small rounded-3 mb-4 d-flex align-items-center gap-2" role="alert">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          No se pudieron cargar las métricas desde la base de datos. Intentá recargar la página.
+        </div>
+      <?php endif; ?>
+
       <section class="mb-4">
         <div class="row g-3 g-xl-4">
-          
-          <!-- KPI 1: Cantidad de Alumnos Activos -->
+
+          <!-- KPI 1: Alumnos registrados -->
           <div class="col-sm-6 col-xl-3">
-            <a href="index.php?r=admin-usuarios&amp;filtro=alumnos" class="card metric-card metric-card-link p-3 p-xl-4 h-100 border rounded-4 shadow-sm" title="Ir a Gestión de Usuarios (Alumnos)">
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <div class="bg-primary-subtle text-primary p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                  <i class="bi bi-people-fill fs-5"></i>
-                </div>
-                <div class="d-flex align-items-center gap-1">
-                  <span class="badge bg-primary-subtle text-primary small" style="font-size: 0.72rem;">+12% mes</span>
-                  <i class="bi bi-arrow-up-right metric-shortcut-icon text-muted fs-6"></i>
-                </div>
-              </div>
-              <h2 class="h3 fw-bold text-dark mb-1"><?= number_format($totalAlumnos); ?></h2>
-              <span class="text-secondary small fw-semibold d-block mb-2">Alumnos Registrados</span>
-              <div class="pt-2 border-top d-flex align-items-center justify-content-between text-muted" style="font-size: 0.74rem;">
-                <span>Gestión de Usuarios</span>
-                <span class="text-primary fw-semibold">Ver todos →</span>
-              </div>
+            <a href="index.php?r=admin-usuarios&amp;filtro=alumnos" class="metric-card metric-card--alumnos metric-card-link p-3 p-xl-4 h-100 d-block text-decoration-none" title="Ir a Gestión de Usuarios (Alumnos)">
+              <span class="d-block text-secondary small fw-semibold mb-2">Alumnos registrados</span>
+              <h3 class="fw-bold text-dark mb-1"><?= number_format($mAlumnos['total'], 0, ',', '.'); ?></h3>
+              <span class="text-secondary small" style="font-size: 0.72rem;">
+                <?= (int) $mAlumnos['activos']; ?> activo<?= (int) $mAlumnos['activos'] === 1 ? '' : 's'; ?> · <?= (int) $mAlumnos['inactivos']; ?> suspendido<?= (int) $mAlumnos['inactivos'] === 1 ? '' : 's'; ?>
+              </span>
             </a>
           </div>
 
-          <!-- KPI 2: Cantidad de Tutores Activos -->
+          <!-- KPI 2: Tutores activos -->
           <div class="col-sm-6 col-xl-3">
-            <a href="index.php?r=admin-usuarios&amp;filtro=tutores" class="card metric-card metric-card-link p-3 p-xl-4 h-100 border rounded-4 shadow-sm" title="Ir a Gestión de Usuarios (Tutores)">
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <div class="bg-success-subtle text-success p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                  <i class="bi bi-patch-check-fill fs-5"></i>
-                </div>
-                <div class="d-flex align-items-center gap-1">
-                  <span class="badge bg-success-subtle text-success small" style="font-size: 0.72rem;">Habilitados</span>
-                  <i class="bi bi-arrow-up-right metric-shortcut-icon text-muted fs-6"></i>
-                </div>
-              </div>
-              <h2 class="h3 fw-bold text-dark mb-1"><?= $totalTutores; ?></h2>
-              <span class="text-secondary small fw-semibold d-block mb-2">Tutores Activos</span>
-              <div class="pt-2 border-top d-flex align-items-center justify-content-between text-muted" style="font-size: 0.74rem;">
-                <span><?= $tutoresPendientes; ?> por verificar</span>
-                <span class="text-success fw-semibold">Revisar →</span>
-              </div>
+            <a href="index.php?r=admin-usuarios&amp;filtro=tutores" class="metric-card metric-card--tutores metric-card-link p-3 p-xl-4 h-100 d-block text-decoration-none" title="Ir a Gestión de Usuarios (Tutores)">
+              <span class="d-block text-secondary small fw-semibold mb-2">Tutores activos</span>
+              <h3 class="fw-bold text-dark mb-1"><?= number_format($mTutores['activos'], 0, ',', '.'); ?></h3>
+              <span class="text-secondary small" style="font-size: 0.72rem;">
+                <?= (int) $mTutores['inactivos']; ?> suspendido<?= (int) $mTutores['inactivos'] === 1 ? '' : 's'; ?> · <?= (int) $mTutores['total']; ?> con tutorías publicadas
+              </span>
             </a>
           </div>
 
-          <!-- KPI 3: Salas Públicas Activas -->
+          <!-- KPI 3: Salas públicas activas -->
           <div class="col-sm-6 col-xl-3">
-            <a href="index.php?r=admin-salas" class="card metric-card metric-card-link p-3 p-xl-4 h-100 border rounded-4 shadow-sm" title="Ir a Salas Públicas">
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <div class="bg-danger-subtle text-danger p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                  <i class="bi bi-broadcast fs-5"></i>
-                </div>
-                <div class="d-flex align-items-center gap-1.5">
-                  <span class="live-indicator-dot me-1"></span>
-                  <span class="badge bg-danger text-white small" style="font-size: 0.72rem;">En Vivo</span>
-                  <i class="bi bi-arrow-up-right metric-shortcut-icon text-muted fs-6 ms-1"></i>
-                </div>
-              </div>
-              <h2 class="h3 fw-bold text-dark mb-1"><?= $totalSalas; ?></h2>
-              <span class="text-secondary small fw-semibold d-block mb-2">Salas Públicas Activas</span>
-              <div class="pt-2 border-top d-flex align-items-center justify-content-between text-muted" style="font-size: 0.74rem;">
-                <span>Discord UTN</span>
-                <span class="text-danger fw-semibold">Monitorear →</span>
-              </div>
+            <a href="index.php?r=admin-salas" class="metric-card metric-card--salas metric-card-link p-3 p-xl-4 h-100 d-block text-decoration-none" title="Ir a Salas Públicas">
+              <span class="d-block text-secondary small fw-semibold mb-2">Salas públicas activas</span>
+              <h3 class="fw-bold text-dark mb-1"><?= number_format($mSalas['activas'], 0, ',', '.'); ?></h3>
+              <span class="text-secondary small" style="font-size: 0.72rem;">
+                <?= (int) $mSalas['suspendidas']; ?> suspendida<?= (int) $mSalas['suspendidas'] === 1 ? '' : 's'; ?> · <?= (int) $mSalas['total']; ?> en total
+              </span>
             </a>
           </div>
 
-          <!-- KPI 4: Materias Cargadas -->
+          <!-- KPI 4: Materias en catálogo -->
           <div class="col-sm-6 col-xl-3">
-            <a href="index.php?r=admin-materias" class="card metric-card metric-card-link p-3 p-xl-4 h-100 border rounded-4 shadow-sm" title="Ir a Gestión de Materias">
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <div class="bg-warning-subtle text-warning p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                  <i class="bi bi-journal-bookmark-fill fs-5"></i>
-                </div>
-                <div class="d-flex align-items-center gap-1">
-                  <span class="badge bg-warning-subtle text-dark small" style="font-size: 0.72rem;">2 Carreras</span>
-                  <i class="bi bi-arrow-up-right metric-shortcut-icon text-muted fs-6"></i>
-                </div>
-              </div>
-              <h2 class="h3 fw-bold text-dark mb-1"><?= $totalMaterias; ?></h2>
-              <span class="text-secondary small fw-semibold d-block mb-2">Materias en Catálogo</span>
-              <div class="pt-2 border-top d-flex align-items-center justify-content-between text-muted" style="font-size: 0.74rem;">
-                <span>TUP e Ing. Sistemas</span>
-                <span class="text-primary fw-semibold">Administrar →</span>
-              </div>
+            <a href="index.php?r=admin-materias" class="metric-card metric-card--materias metric-card-link p-3 p-xl-4 h-100 d-block text-decoration-none" title="Ir a Gestión de Materias">
+              <span class="d-block text-secondary small fw-semibold mb-2">Materias en catálogo</span>
+              <h3 class="fw-bold text-dark mb-1"><?= number_format($mMaterias['total'], 0, ',', '.'); ?></h3>
+              <span class="text-secondary small" style="font-size: 0.72rem;">
+                <?= $mMaterias['codigos_carreras'] ? Vista::e(implode(' · ', $mMaterias['codigos_carreras'])) : 'Sin carreras cargadas'; ?>
+              </span>
             </a>
           </div>
 
@@ -317,173 +289,70 @@
       </section>
 
       <!-- ====================================================================
-           2. SECCIÓN INFERIOR: TUTORES A VERIFICAR + INDICADOR DE REPORTES
+           2. GRÁFICOS DE TORTA: misma información que las tarjetas
            ==================================================================== -->
-      <div class="row g-4">
-        
-        <!-- COLUMNA PRINCIPAL (8 COLS): TARJETA DE TUTORES A VERIFICAR -->
-        <div class="col-lg-8">
-          <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
-            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-              <div>
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <h5 class="fw-bold text-dark mb-0">
-                    <i class="bi bi-person-check-fill text-success me-1"></i> Tutores a Verificar
-                  </h5>
-                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold" id="badgePostulacionesCount">
-                    <?= $tutoresPendientes; ?> pendientes
-                  </span>
-                </div>
-                <p class="text-secondary small mb-0">
-                  Estudiantes postulados para dictar tutorías que requieren validación de materias aprobadas.
-                </p>
-              </div>
-
-              <a href="index.php?r=admin-usuarios&amp;filtro=tutores" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-semibold">
-                Ver todos
-              </a>
-            </div>
-
-            <!-- Lista de postulantes a tutor (3 ejemplos representativos reducidos) -->
-            <div class="d-flex flex-column gap-3" id="listaTutoresVerificar">
-              
-              <!-- Postulante 1 -->
-              <div class="p-3 rounded-3 border bg-light d-flex align-items-center justify-content-between flex-wrap gap-3 tutor-verify-item">
-                <div class="d-flex align-items-center gap-3">
-                  <div class="avatar-circle bg-primary-subtle text-primary fw-bold rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-                    EM
-                  </div>
-                  <div>
-                    <div class="d-flex align-items-center gap-2">
-                      <h6 class="fw-bold text-dark mb-0">Esteban Morales</h6>
-                      <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">Legajo: 52140</span>
-                    </div>
-                    <span class="text-secondary small d-block">
-                      Postula para: <strong class="text-dark">Análisis Matemático II</strong> • Sistemas (3° año)
-                    </span>
-                    <span class="text-muted" style="font-size: 0.72rem;">
-                      <i class="bi bi-paperclip me-1"></i>Analítico adjunto: <code>analitico_morales_2026.pdf</code>
-                    </span>
-                  </div>
-                </div>
-                <div class="d-flex align-items-center gap-2 ms-auto">
-                  <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="rechazarTutor(this, 'Esteban Morales')">
-                    Rechazar
-                  </button>
-                  <button class="btn btn-sm btn-success rounded-pill px-3 fw-semibold shadow-sm" onclick="aprobarTutor(this, 'Esteban Morales')">
-                    <i class="bi bi-check-lg me-1"></i> Aprobar Tutor
-                  </button>
-                </div>
-              </div>
-
-              <!-- Postulante 2 -->
-              <div class="p-3 rounded-3 border bg-light d-flex align-items-center justify-content-between flex-wrap gap-3 tutor-verify-item">
-                <div class="d-flex align-items-center gap-3">
-                  <div class="avatar-circle bg-success-subtle text-success fw-bold rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-                    CL
-                  </div>
-                  <div>
-                    <div class="d-flex align-items-center gap-2">
-                      <h6 class="fw-bold text-dark mb-0">Camila López</h6>
-                      <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">Legajo: 49301</span>
-                    </div>
-                    <span class="text-secondary small d-block">
-                      Postula para: <strong class="text-dark">Programación I (C++)</strong> • TUP (2° año)
-                    </span>
-                    <span class="text-muted" style="font-size: 0.72rem;">
-                      <i class="bi bi-paperclip me-1"></i>Analítico adjunto: <code>certificado_cursada_tup.pdf</code>
-                    </span>
-                  </div>
-                </div>
-                <div class="d-flex align-items-center gap-2 ms-auto">
-                  <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="rechazarTutor(this, 'Camila López')">
-                    Rechazar
-                  </button>
-                  <button class="btn btn-sm btn-success rounded-pill px-3 fw-semibold shadow-sm" onclick="aprobarTutor(this, 'Camila López')">
-                    <i class="bi bi-check-lg me-1"></i> Aprobar Tutor
-                  </button>
-                </div>
-              </div>
-
-              <!-- Postulante 3 -->
-              <div class="p-3 rounded-3 border bg-light d-flex align-items-center justify-content-between flex-wrap gap-3 tutor-verify-item">
-                <div class="d-flex align-items-center gap-3">
-                  <div class="avatar-circle bg-warning-subtle text-warning-emphasis fw-bold rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-                    FR
-                  </div>
-                  <div>
-                    <div class="d-flex align-items-center gap-2">
-                      <h6 class="fw-bold text-dark mb-0">Franco Rossi</h6>
-                      <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">Legajo: 50882</span>
-                    </div>
-                    <span class="text-secondary small d-block">
-                      Postula para: <strong class="text-dark">Bases de Datos</strong> • Sistemas (4° año)
-                    </span>
-                    <span class="text-muted" style="font-size: 0.72rem;">
-                      <i class="bi bi-paperclip me-1"></i>Analítico adjunto: <code>acta_examen_bd.pdf</code>
-                    </span>
-                  </div>
-                </div>
-                <div class="d-flex align-items-center gap-2 ms-auto">
-                  <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="rechazarTutor(this, 'Franco Rossi')">
-                    Rechazar
-                  </button>
-                  <button class="btn btn-sm btn-success rounded-pill px-3 fw-semibold shadow-sm" onclick="aprobarTutor(this, 'Franco Rossi')">
-                    <i class="bi bi-check-lg me-1"></i> Aprobar Tutor
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
+      <?php
+        $graficos = [
+            [
+                'id'       => 'chartAlumnos',
+                'titulo'   => 'Alumnos registrados',
+                'subtitulo'=> 'Quiénes también publican tutorías',
+                'etiquetas'=> ['Tutores', 'Solo alumnos'],
+                'valores'  => [(int) $mAlumnos['tutores'], (int) $mAlumnos['solo_alumnos']],
+                'colores'  => ['#bdecb6', '#A7C7E7'],
+            ],
+            [
+                'id'       => 'chartTutores',
+                'titulo'   => 'Tutores',
+                'subtitulo'=> 'Cuentas habilitadas vs. suspendidas',
+                'etiquetas'=> ['Activos', 'Suspendidos'],
+                'valores'  => [(int) $mTutores['activos'], (int) $mTutores['inactivos']],
+                'colores'  => ['#bdecb6', '#ff746c'],
+            ],
+            [
+                'id'       => 'chartSalas',
+                'titulo'   => 'Salas públicas',
+                'subtitulo'=> 'Salas activas vs. suspendidas',
+                'etiquetas'=> ['Activas', 'Suspendidas'],
+                'valores'  => [(int) $mSalas['activas'], (int) $mSalas['suspendidas']],
+                'colores'  => ['#bdecb6', '#ff746c'],
+            ],
+            [
+                'id'       => 'chartMaterias',
+                'titulo'   => 'Materias en catálogo',
+                'subtitulo'=> 'Distribución por año del plan',
+                'etiquetas'=> array_keys($mMaterias['por_anio']),
+                'valores'  => array_values($mMaterias['por_anio']),
+                'colores'  => ['#FFDF00', '#A7C7E7', '#bdecb6', '#8b5cf6', '#ec4899', '#06b6d4', '#94a3b8'],
+            ],
+        ];
+      ?>
+      <section class="mb-2" aria-label="Distribución general">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class="bi bi-pie-chart-fill text-primary fs-5"></i>
+          <h2 class="h5 fw-bold text-dark mb-0">Distribución general</h2>
         </div>
-
-        <!-- COLUMNA LATERAL (4 COLS): TARJETA DE REPORTES (SOLO CANTIDAD) -->
-        <div class="col-lg-4">
-          <div class="card border-0 shadow-sm rounded-4 p-4 h-100 d-flex flex-column justify-content-between">
-            <div>
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="text-secondary small fw-semibold text-uppercase" style="letter-spacing: 0.05em;">
-                  Moderación del Sistema
-                </span>
-                <div class="bg-warning-subtle text-warning p-2 rounded-3">
-                  <i class="bi bi-exclamation-triangle-fill fs-5"></i>
-                </div>
-              </div>
-
-              <!-- Indicador de cantidad de reportes -->
-              <h5 class="fw-bold text-dark mb-1">Reportes Pendientes</h5>
-              <p class="text-secondary small mb-3">
-                Casos reportados por estudiantes o tutores en salas y publicaciones.
-              </p>
-
-              <!-- Número destacado de Reportes -->
-              <div class="d-flex align-items-baseline gap-2 my-4">
-                <span class="display-4 fw-bold text-dark lh-1" id="contadorReportesNumero"><?= $totalReportes; ?></span>
-                <span class="text-danger fw-semibold small">
-                  <i class="bi bi-arrow-up-circle-fill me-1"></i>Requieren atención
-                </span>
-              </div>
-
-              <div class="p-3 rounded-3 bg-light border mb-3">
-                <div class="d-flex align-items-center justify-content-between text-secondary small">
-                  <span>Estado general:</span>
-                  <span class="badge bg-warning text-dark rounded-pill fw-bold">Pendientes de revisión</span>
-                </div>
+        <div class="row g-3 g-xl-4">
+          <?php foreach ($graficos as $g): ?>
+            <div class="col-sm-6 col-xl-3">
+              <div class="card border rounded-4 shadow-sm p-3 p-xl-4 h-100 chart-card">
+                <h3 class="h6 fw-bold text-dark mb-0"><?= Vista::e($g['titulo']); ?></h3>
+                <span class="text-secondary small mb-3"><?= Vista::e($g['subtitulo']); ?></span>
+                <?php if (array_sum($g['valores']) > 0): ?>
+                  <div class="chart-wrap flex-grow-1">
+                    <canvas id="<?= Vista::e($g['id']); ?>" role="img" aria-label="Gráfico de torta: <?= Vista::e($g['titulo']); ?>"></canvas>
+                  </div>
+                <?php else: ?>
+                  <div class="chart-wrap chart-empty flex-grow-1 text-secondary small">
+                    <i class="bi bi-inbox fs-3 mb-1"></i>
+                    Todavía no hay datos
+                  </div>
+                <?php endif; ?>
               </div>
             </div>
-
-            <!-- Botón de acceso directo hacia Reportes -->
-            <div>
-              <a href="index.php?r=admin-reportes" class="btn btn-outline-danger w-100 rounded-pill py-2.5 fw-semibold d-flex align-items-center justify-content-center gap-2">
-                <i class="bi bi-shield-exclamation"></i>
-                <span>Gestionar <?= $totalReportes; ?> Reportes</span>
-              </a>
-            </div>
-          </div>
+          <?php endforeach; ?>
         </div>
-
-      </div>
+      </section>
 
     </main>
   </div>
@@ -559,6 +428,8 @@
        ========================================================================== -->
   <!-- Bootstrap 5.3.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Chart.js 4.4.3 (gráficos de torta) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
   <script>
     // ==========================================
@@ -575,6 +446,7 @@
           icon.className = 'bi bi-moon-stars text-secondary';
         }
       }
+      actualizarColoresGraficos();
     }
 
     function toggleTemaModo() {
@@ -618,56 +490,82 @@
     }
 
     // ==========================================
-    // 4. Verificación de Tutores (Aprobar / Rechazar)
+    // 4. Gráficos de torta (datos reales calculados en PHP)
     // ==========================================
-    let pendientesCount = <?= $tutoresPendientes; ?>;
+    const GRAFICOS = <?= json_encode($graficos, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+    const graficosCreados = [];
 
-    function actualizarContadorPendientes() {
-      const badge = document.getElementById('badgePostulacionesCount');
-      if (badge) {
-        badge.textContent = `${pendientesCount} pendientes`;
-      }
-      if (pendientesCount <= 0) {
-        const lista = document.getElementById('listaTutoresVerificar');
-        if (lista) {
-          lista.innerHTML = `
-            <div class="text-center py-4 text-muted">
-              <i class="bi bi-check2-all text-success fs-2 d-block mb-2"></i>
-              <span class="small">No hay postulaciones de tutores pendientes por verificar.</span>
-            </div>
-          `;
-        }
-      }
+    function esModoOscuro() {
+      return document.documentElement.getAttribute('data-bs-theme') === 'dark';
     }
 
-    function aprobarTutor(btn, nombre) {
-      const item = btn.closest('.tutor-verify-item');
-      if (item) {
-        item.style.transition = 'all 0.3s ease';
-        item.style.opacity = '0';
-        item.style.transform = 'scale(0.96)';
-        setTimeout(() => {
-          item.remove();
-          pendientesCount--;
-          actualizarContadorPendientes();
-          mostrarToast(`¡Tutor ${nombre} aprobado exitosamente!`);
-        }, 300);
-      }
+    // Leyendas: negro puro en modo claro
+    function colorTextoGrafico() {
+      return esModoOscuro() ? '#cbd5e1' : '#000000';
     }
 
-    function rechazarTutor(btn, nombre) {
-      const item = btn.closest('.tutor-verify-item');
-      if (item) {
-        item.style.transition = 'all 0.3s ease';
-        item.style.opacity = '0';
-        item.style.transform = 'scale(0.96)';
-        setTimeout(() => {
-          item.remove();
-          pendientesCount--;
-          actualizarContadorPendientes();
-          mostrarToast(`Postulación de ${nombre} desestimada.`);
-        }, 300);
-      }
+    // Oscurece un color #rrggbb (factor 0-1: menor = más oscuro)
+    function oscurecer(hex, factor) {
+      const n = parseInt(hex.slice(1), 16);
+      const c = function (v) { return Math.round(v * factor); };
+      return 'rgb(' + c(n >> 16) + ', ' + c((n >> 8) & 255) + ', ' + c(n & 255) + ')';
+    }
+
+    // Bordes: en modo claro, el contorno de cada porción en una versión más oscura de su
+    // color (se despega del fondo blanco); en oscuro, el color de la tarjeta separa las porciones.
+    function bordesGrafico(colores) {
+      return esModoOscuro() ? '#1e293b' : colores.map(function (c) { return oscurecer(c, 0.6); });
+    }
+
+    function actualizarColoresGraficos() {
+      graficosCreados.forEach(function (chart) {
+        chart.options.plugins.legend.labels.color = colorTextoGrafico();
+        chart.data.datasets[0].borderColor = bordesGrafico(chart.$colores);
+        chart.update('none');
+      });
+    }
+
+    function crearGraficos() {
+      if (typeof Chart === 'undefined') return;   // CDN no disponible: quedan las tarjetas
+      GRAFICOS.forEach(function (g) {
+        const canvas = document.getElementById(g.id);
+        if (!canvas) return;                      // sin datos: se muestra el aviso vacío
+        const total = g.valores.reduce(function (a, b) { return a + b; }, 0);
+        const colores = g.colores.slice(0, g.valores.length);
+        const chart = new Chart(canvas, {
+          type: 'pie',
+          data: {
+            labels: g.etiquetas,
+            datasets: [{
+              data: g.valores,
+              backgroundColor: colores,
+              borderColor: bordesGrafico(colores),
+              borderWidth: 2,
+              hoverOffset: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: colorTextoGrafico(), usePointStyle: true, pointStyle: 'circle', boxWidth: 8, padding: 14, font: { family: 'Inter', size: 12 } }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (ctx) {
+                    const pct = total ? Math.round(ctx.parsed * 100 / total) : 0;
+                    return ' ' + ctx.label + ': ' + ctx.parsed + ' (' + pct + '%)';
+                  }
+                }
+              }
+            }
+          }
+        });
+        chart.$colores = colores;   // para recalcular los bordes al cambiar de tema
+        graficosCreados.push(chart);
+      });
     }
 
     // ==========================================
@@ -688,6 +586,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const temaGuardado = localStorage.getItem('study-match-theme') || 'light';
       aplicarTema(temaGuardado);
+      crearGraficos();
     });
   </script>
 </body>

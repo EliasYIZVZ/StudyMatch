@@ -22,7 +22,7 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Estilos del Dashboard y Perfil (100% Independiente de Landing) -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_reportes">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_iconos">
 </head>
 <body class="dashboard-body" data-role="alumno">
 
@@ -184,119 +184,6 @@
         </div>
       </section>
       <?php endif; ?>
-
-      <!-- ====================================================================
-           3. SECCIÓN: TUTORES RECOMENDADOS O MEJOR CALIFICADOS
-           ==================================================================== -->
-      <section id="tutores-destacados">
-        <div class="d-flex justify-content-between align-items-end section-heading-spacing flex-wrap gap-3">
-          <div>
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 small fw-semibold mb-2 d-inline-flex align-items-center gap-1">
-              <i class="bi bi-award-fill"></i> Excelencia Académica
-            </span>
-            <h2 class="h4 fw-bold text-dark mb-0">Tutores Recomendados y Mejor Calificados</h2>
-          </div>
-          <a href="index.php?r=buscar-tutor" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1">
-            <span>Ver todos los tutores</span>
-            <i class="bi bi-arrow-right"></i>
-          </a>
-        </div>
-
-        <!-- Grilla Responsiva de Tutores Recomendados -->
-        <div class="row g-4" id="tutorCardsGrid">
-          
-          <!-- Tutor 1 -->
-          <div class="col-md-6 col-xl-4">
-            <div class="tutor-card p-4 h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                  <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-with-status">
-                      <div class="avatar-circle">MF</div>
-                      <span class="status-online-dot"></span>
-                    </div>
-                    <div>
-                      <h6 class="fw-bold mb-0 text-dark">Matías Fuentes</h6>
-                      <small class="text-secondary">TUP • UTN Haedo (2° Año)</small>
-                    </div>
-                  </div>
-                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small">Online</span>
-                </div>
-                <span class="badge bg-primary-subtle text-primary mb-2">Programación II</span>
-                <h6 class="fw-bold text-dark">C++ y POO: de punteros a herencia</h6>
-                <p class="text-secondary small mb-3">
-                  Resolución de guías prácticas de la UTN, preparación para parciales y ayuda con los laboratorios.
-                </p>
-              </div>
-              <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                <span class="small fw-semibold text-secondary"><i class="bi bi-star-fill text-warning me-1"></i>5.0 (48 reseñas)</span>
-                <a href="index.php?r=buscar-tutor" class="btn btn-sm btn-role-action px-3 rounded-pill fw-semibold shadow-sm">Ver Perfil</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tutor 2 -->
-          <div class="col-md-6 col-xl-4">
-            <div class="tutor-card p-4 h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                  <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-with-status">
-                      <img src="public/img/juli.jpeg" alt="Julieta Abbiati" class="rounded-circle border" style="width: 44px; height: 44px; object-fit: cover;">
-                      <span class="status-online-dot"></span>
-                    </div>
-                    <div>
-                      <h6 class="fw-bold mb-0 text-dark">Julieta Abbiati</h6>
-                      <small class="text-secondary">TUP • Backend Developer</small>
-                    </div>
-                  </div>
-                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small">Online</span>
-                </div>
-                <span class="badge bg-primary-subtle text-primary mb-2">Desarrollo Backend</span>
-                <h6 class="fw-bold text-dark">APIs REST, Autenticación y PHP</h6>
-                <p class="text-secondary small mb-3">
-                  Desarrollo de servicios, autenticación con sesiones y estructuración de proyectos web para la facultad.
-                </p>
-              </div>
-              <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                <span class="small fw-semibold text-secondary"><i class="bi bi-star-fill text-warning me-1"></i>5.0 (52 reseñas)</span>
-                <a href="index.php?r=buscar-tutor" class="btn btn-sm btn-role-action px-3 rounded-pill fw-semibold shadow-sm">Ver Perfil</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tutor 3 -->
-          <div class="col-md-6 col-xl-4">
-            <div class="tutor-card p-4 h-100 d-flex flex-column justify-content-between">
-              <div>
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                  <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-with-status">
-                      <div class="avatar-circle" style="background: linear-gradient(135deg, #0284c7, #38bdf8);">VR</div>
-                      <span class="status-away-dot"></span>
-                    </div>
-                    <div>
-                      <h6 class="fw-bold mb-0 text-dark">Valentina Rojas</h6>
-                      <small class="text-secondary">Sistemas • 4° Año</small>
-                    </div>
-                  </div>
-                  <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill small">18:30 hs</span>
-                </div>
-                <span class="badge bg-success-subtle text-success mb-2">Bases de Datos</span>
-                <h6 class="fw-bold text-dark">SQL Server, MySQL y Normalización</h6>
-                <p class="text-secondary small mb-3">
-                  Consultas complejas, JOINS, triggers y diseño de modelos relacionales sin errores para parciales.
-                </p>
-              </div>
-              <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                <span class="small fw-semibold text-secondary"><i class="bi bi-star-fill text-warning me-1"></i>4.9 (35 reseñas)</span>
-                <a href="index.php?r=buscar-tutor" class="btn btn-sm btn-role-action px-3 rounded-pill fw-semibold shadow-sm">Ver Perfil</a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
 
     </main>
   </div>

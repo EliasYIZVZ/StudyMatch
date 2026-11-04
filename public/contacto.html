@@ -28,7 +28,7 @@
   <!-- Estilos Personalizados Study Match (Carga directa + Modular) -->
   <link rel="stylesheet" href="css/global.css?v=20261105_velo4">
   <link rel="stylesheet" href="css/forms.css?v=20261105_velo4">
-  <link rel="stylesheet" href="css/contacto.css">
+  <link rel="stylesheet" href="css/contacto.css?v=20261106_mapa">
 </head>
 <body class="page-contacto d-flex flex-column min-vh-100 justify-content-between">
 
@@ -101,13 +101,50 @@
      ========================================================================== -->
   <main class="flex-grow-1 d-flex align-items-center py-4 py-lg-5 contact-main">
     <div class="container-xl">
-      <div class="row justify-content-center">
-        
+      <div class="row g-4 align-items-stretch">
+
         <!-- ====================================================================
-           FORMULARIO DE CONTACTO
+           COLUMNA DERECHA: MAPA + CORREO INSTITUCIONAL
+           (el mapa absorbe el alto sobrante para igualar la altura del formulario)
            ==================================================================== -->
-        <div class="col-12 col-lg-11 col-xl-10">
-          <div class="card border-0 contact-form-card p-4 p-md-4 position-relative">
+        <div class="col-12 col-lg-5 order-2 d-flex flex-column gap-3">
+          <div class="contact-map-card flex-grow-1">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2739.740119041184!2d-58.6046059248829!3d-34.64057945944466!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bc951c0fe2d9f5%3A0x9f1c540898efecbe!2sUTN%20HAEDO!5e1!3m2!1ses!2sar!4v1793765110429!5m2!1ses!2sar"
+              title="Ubicación de la UTN Facultad Regional Haedo"
+              style="border:0;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          </div>
+
+          <section class="card institutional-contact p-4 p-md-4">
+            <div class="d-flex align-items-start gap-3">
+              <span class="contact-heading-icon flex-shrink-0">
+                <i class="bi bi-envelope-at"></i>
+              </span>
+              <div class="flex-grow-1">
+                <h3 class="h6 fw-semibold text-dark mb-1">Correo electrónico institucional</h3>
+                <p class="small text-secondary mb-3">También podés escribirnos directamente por correo.</p>
+                <div class="institutional-email d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <a href="mailto:contacto@studymatch.utn.edu.ar" class="text-decoration-none fw-semibold small" id="directEmailText">
+                    contacto@studymatch.utn.edu.ar
+                  </a>
+                  <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1" id="btnCopyEmail" title="Copiar correo al portapapeles">
+                    <i class="bi bi-clipboard" id="copyIcon"></i>
+                    <span id="copyLabel">Copiar</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- ====================================================================
+           COLUMNA IZQUIERDA: FORMULARIO DE CONTACTO
+           ==================================================================== -->
+        <div class="col-12 col-lg-7 order-1">
+          <div class="card border-0 contact-form-card h-100 p-4 p-md-4 position-relative">
             
             <div>
               <!-- Cabecera de la tarjeta del formulario -->
@@ -181,7 +218,7 @@
             </div>
 
             <!-- Pie pequeño informativo dentro de la tarjeta -->
-            <div class="pt-3 mt-3 border-top text-secondary small d-flex align-items-center justify-content-between flex-wrap gap-2" style="font-size: 0.78rem;">
+            <div class="pt-3 mt-auto border-top text-secondary small d-flex align-items-center justify-content-between flex-wrap gap-2" style="font-size: 0.78rem;">
               <span class="d-inline-flex align-items-center gap-2">
                 <i class="bi bi-clock-history"></i> Respuesta estimada: 24 a 48 hs hábiles.
               </span>
@@ -189,27 +226,6 @@
             </div>
 
           </div>
-
-          <section class="card institutional-contact mt-3 p-4 p-md-4">
-            <div class="d-flex align-items-start gap-3">
-              <span class="contact-heading-icon flex-shrink-0">
-                <i class="bi bi-envelope-at"></i>
-              </span>
-              <div class="flex-grow-1">
-                <h3 class="h6 fw-semibold text-dark mb-1">Correo electrónico institucional</h3>
-                <p class="small text-secondary mb-3">También podés escribirnos directamente por correo.</p>
-                <div class="institutional-email d-flex align-items-center justify-content-between flex-wrap gap-2">
-                  <a href="mailto:contacto@studymatch.utn.edu.ar" class="text-decoration-none fw-semibold small" id="directEmailText">
-                    contacto@studymatch.utn.edu.ar
-                  </a>
-                  <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1" id="btnCopyEmail" title="Copiar correo al portapapeles">
-                    <i class="bi bi-clipboard" id="copyIcon"></i>
-                    <span id="copyLabel">Copiar</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
 
       </div>

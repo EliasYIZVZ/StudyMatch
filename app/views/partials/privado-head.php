@@ -23,5 +23,5 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Estilos del Dashboard -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_reportes">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_iconos">
 </head>

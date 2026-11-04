@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Estilos base compartidos de Dashboards -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_reportes">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_iconos">
 
   <!-- Estilos globales de Administración (sidebar claro gris azulado / oscuro grafito) -->
   <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
@@ -148,7 +148,7 @@
                 <li class="breadcrumb-item active text-danger fw-semibold" aria-current="page">Moderación y Alertas</li>
               </ol>
             </nav>
-            <h1 class="h6 fw-bold mb-0 text-dark">Panel de Moderación y Alertas</h1>
+            <h1 class="h6 fw-bold mb-0 text-dark" style="text-shadow: none;">Panel de Moderación y Alertas</h1>
           </div>
         </div>
 
@@ -210,7 +210,7 @@
                   style="background-color: rgba(239, 68, 68, 0.25); color: #fecaca; border: 1px solid rgba(239, 68, 68, 0.4);">
               <i class="bi bi-shield-lock-fill"></i> Seguridad & Convivencia
             </span>
-            <h1 class="page-title fw-bold mb-1 text-white">
+            <h1 class="h3 fw-bold mb-1 text-white" style="text-shadow: none;">
               Centro de Moderación y Alertas
             </h1>
             <p class="text-white text-opacity-75 small mb-0">

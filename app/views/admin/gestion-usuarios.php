@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Estilos base compartidos de Dashboards -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_reportes">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_iconos">
 
   <!-- Estilos globales de Administración (sidebar claro gris azulado / oscuro grafito) -->
   <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
@@ -148,7 +148,7 @@
                 <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Usuarios</li>
               </ol>
             </nav>
-            <h1 class="h6 fw-bold mb-0 text-dark">Gestión de Usuarios</h1>
+            <h1 class="h6 fw-bold mb-0 text-dark" style="text-shadow: none;">Gestión de Usuarios</h1>
           </div>
         </div>
 
@@ -206,7 +206,7 @@
             <span class="badge bg-primary text-white rounded-pill px-3 py-1 small fw-semibold mb-2 d-inline-block">
               <i class="bi bi-people-fill me-1"></i> Padrón de Usuarios
             </span>
-            <h1 class="page-title fw-bold mb-1 text-white">
+            <h1 class="h3 fw-bold mb-1 text-white" style="text-shadow: none;">
               Gestión de Alumnos y Tutores
             </h1>
             <p class="text-white text-opacity-75 small mb-0">

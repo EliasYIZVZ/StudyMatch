@@ -434,18 +434,12 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
 }
 
 /* Tarjetas */
-.tutor-card, .metric-card {
+.metric-card {
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 1.25rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, border-color 0.22s ease;
-}
-
-[data-role="alumno"] .tutor-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 24px -6px rgba(15, 23, 42, 0.08), 0 0 16px var(--role-alumno-glow);
-  border-color: rgba(37, 99, 235, 0.35);
 }
 
 [data-role="tutor"] .metric-card:hover {
@@ -488,7 +482,7 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   font-size: 5.5rem;
   line-height: 1;
   color: var(--metric-color);
-  opacity: 0.14;
+  opacity: 0.26;
   pointer-events: none;
   transition: transform 0.3s ease;
 }
@@ -698,7 +692,6 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   color: #6ee7b7 !important;
 }
 
-[data-bs-theme="dark"] .tutor-card,
 [data-bs-theme="dark"] .metric-card {
   background-color: #1e293b;
   border-color: rgba(255, 255, 255, 0.08);
@@ -986,33 +979,6 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   box-shadow: 0 16px 32px -8px rgba(37, 99, 235, 0.18);
 }
 
-.avatar-with-status {
-  position: relative;
-  display: inline-block;
-}
-
-.status-online-dot {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 13px;
-  height: 13px;
-  background-color: #10b981;
-  border: 2px solid #ffffff;
-  border-radius: 50%;
-}
-
-.status-away-dot {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 13px;
-  height: 13px;
-  background-color: #f59e0b;
-  border: 2px solid #ffffff;
-  border-radius: 50%;
-}
-
 /* 5. Banner de Bienvenida Simple y Prolijo */
 .welcome-banner-card {
   position: relative;
@@ -1036,8 +1002,17 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   letter-spacing: -0.015em;
 }
 
-.section-heading-spacing {
-  margin-bottom: 2rem !important;
+/* Insignia "Gratuita": azul del dashboard (#2563eb) en modo claro, blanco translúcido en oscuro */
+.badge-gratuita {
+  background-color: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.35);
+}
+
+[data-bs-theme="dark"] .badge-gratuita {
+  background-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 /* 7. Tarjetas de Salas Públicas (Diseño Limpio) */
@@ -1232,7 +1207,6 @@ html[data-bs-theme="dark"] body.dashboard-body .text-muted {
   color: #cbd5e1 !important;
 }
 
-html[data-bs-theme="dark"] body.dashboard-body .tutor-card,
 html[data-bs-theme="dark"] body.dashboard-body .metric-card,
 html[data-bs-theme="dark"] body.dashboard-body .public-room-card,
 html[data-bs-theme="dark"] body.dashboard-body .search-hybrid-card,
@@ -1249,7 +1223,6 @@ html[data-bs-theme="dark"] body.dashboard-body .user-sidebar-card {
 }
 
 html[data-bs-theme="dark"] body.dashboard-body .public-room-card,
-html[data-bs-theme="dark"] body.dashboard-body .tutor-card,
 html[data-bs-theme="dark"] body.dashboard-body .metric-card,
 html[data-bs-theme="dark"] body.dashboard-body .search-hybrid-card,
 html[data-bs-theme="dark"] body.dashboard-body .tutor-result-card,
