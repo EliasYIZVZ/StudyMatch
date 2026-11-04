@@ -32,7 +32,7 @@
   <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
 
   <!-- Estilos específicos y optimizados de Gestión de Materias -->
-  <link rel="stylesheet" href="public/css/admin-materias.css?v=20261029_v3">
+  <link rel="stylesheet" href="public/css/admin-materias.css?v=20261104_crud">
 </head>
 <body class="dashboard-body" data-role="admin">
 
@@ -76,28 +76,28 @@
         <a href="index.php?r=admin-usuarios" class="sidebar-link" title="Gestión de Usuarios">
           <i class="bi bi-people fs-5"></i>
           <span class="sidebar-text">Gestión de Usuarios</span>
-          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;">1,280</span>
+          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;"><?= (int) $metricas['alumnos']['total']; ?></span>
         </a>
 
         <!-- 3. Gestión de Materias (ACTIVO) -->
         <a href="index.php?r=admin-materias" class="sidebar-link active" title="Gestión de Materias y Carreras">
           <i class="bi bi-journal-bookmark fs-5"></i>
           <span class="sidebar-text">Gestión de Materias</span>
-          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;"><?= $cantTotal; ?></span>
+          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;"><?= (int) $cantTotal; ?></span>
         </a>
 
         <!-- 4. Salas Públicas -->
         <a href="index.php?r=admin-salas" class="sidebar-link" title="Salas Públicas">
           <i class="bi bi-broadcast fs-5 text-danger"></i>
           <span class="sidebar-text">Salas Públicas</span>
-          <span class="badge bg-danger text-white rounded-pill ms-auto sidebar-text" style="font-size: 0.65rem;">6 en vivo</span>
+          <span class="badge bg-danger text-white rounded-pill ms-auto sidebar-text" style="font-size: 0.65rem;"><?= (int) $metricas['salas']['activas']; ?> en vivo</span>
         </a>
 
         <!-- 5. Reportes -->
         <a href="index.php?r=admin-reportes" class="sidebar-link" title="Reportes del Sistema">
           <i class="bi bi-exclamation-triangle fs-5 text-warning"></i>
           <span class="sidebar-text">Reportes</span>
-          <span class="badge bg-warning text-dark rounded-pill ms-auto sidebar-text fw-bold" style="font-size: 0.65rem;">3</span>
+          <span class="badge bg-warning text-dark rounded-pill ms-auto sidebar-text fw-bold" style="font-size: 0.65rem;"><?= (int) $totalReportes; ?></span>
         </a>
       </nav>
     </div>
@@ -195,483 +195,296 @@
       </div>
     </header>
 
-    <!-- ÁREA DE CONTENIDO PRINCIPAL: container-fluid p-4 -->
+    <!-- ÁREA DE CONTENIDO PRINCIPAL -->
     <main class="container-fluid p-4 view-fade">
 
+      <?php
+        $e = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
+
+        // Años del plan que existen en el catálogo (las materias sin año se agrupan aparte)
+        $aniosDisponibles = [];
+        foreach ($materias as $m) {
+            $aniosDisponibles[$m['anio'] === null ? 'sin' : (string) $m['anio']] = true;
+        }
+        uksort($aniosDisponibles, function ($a, $b) {
+            if ($a === 'sin') return 1;
+            if ($b === 'sin') return -1;
+            return (int) $a - (int) $b;
+        });
+
+        $conTutorias = count(array_filter($materias, function ($m) { return $m['tutorias'] > 0; }));
+      ?>
+
       <!-- ====================================================================
-           1. BANNER DE GESTIÓN DE MATERIAS Y CARRERAS
+           1. BANNER
            ==================================================================== -->
-      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 text-white" 
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 text-white"
            style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 65%, #1e3a8a 100%);">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
           <div>
             <span class="badge bg-primary text-white rounded-pill px-3 py-1 small fw-semibold mb-2 d-inline-block">
               <i class="bi bi-journal-bookmark-fill me-1"></i> Catálogo Académico
             </span>
-            <h1 class="h3 fw-bold mb-1 text-white" style="text-shadow: none;">
-              Gestión de Materias y Carreras
-            </h1>
+            <h1 class="h3 fw-bold mb-1 text-white" style="text-shadow: none;">Gestión de Materias y Carreras</h1>
             <p class="text-white text-opacity-75 small mb-0">
-              Registrá nuevas carreras y materias para el apoyo académico de la UTN.
+              Materias y carreras registradas en StudyMatch, con la cantidad de tutorías publicadas sobre cada una.
             </p>
           </div>
+          <button type="button"
+                  class="btn btn-outline-light rounded-pill btn-sm px-3 fw-semibold shadow-sm d-inline-flex align-items-center gap-2"
+                  data-bs-toggle="modal" data-bs-target="#modalResumenCarreras">
+            <i class="bi bi-mortarboard"></i><span>Ver carreras</span>
+          </button>
+        </div>
+      </div>
 
-          <!-- Badges de métricas y acceso al resumen flotante -->
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <span class="badge bg-white bg-opacity-10 text-white rounded-pill px-3 py-2 small border border-white border-opacity-15">
-              <i class="bi bi-mortarboard me-1"></i> <strong><?= $cantCarreras; ?></strong> Carreras
-            </span>
-            <span class="badge bg-white bg-opacity-10 text-white rounded-pill px-3 py-2 small border border-white border-opacity-15">
-              <i class="bi bi-book me-1"></i> <strong><?= $cantTotal; ?></strong> Materias
-            </span>
+      <?php if ($errorMaterias): ?>
+        <div class="alert alert-warning rounded-4 d-flex align-items-center gap-2" role="alert">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          No se pudo cargar el catálogo. Intentá nuevamente más tarde.
+        </div>
+      <?php else: ?>
 
-            <!-- Botón flotante para ver resumen de carreras (máximo 5 informaciones) -->
-            <button type="button" 
-                    class="btn btn-outline-light rounded-pill btn-sm px-3 fw-semibold shadow-sm ms-lg-2 d-inline-flex align-items-center gap-1.5"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#modalResumenCarreras"
-                    title="Ver resumen rápido del catálogo">
-              <i class="bi bi-eye"></i>
-              <span>Ver Carreras</span>
-            </button>
+      <!-- ====================================================================
+           2. RESUMEN (datos reales)
+           ==================================================================== -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100 stat-card">
+            <div class="card-body d-flex align-items-center gap-3">
+              <span class="stat-icon stat-icon--blue"><i class="bi bi-mortarboard-fill"></i></span>
+              <div>
+                <div class="stat-value"><?= (int) $cantCarreras ?></div>
+                <div class="stat-label">Carreras</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100 stat-card">
+            <div class="card-body d-flex align-items-center gap-3">
+              <span class="stat-icon stat-icon--violet"><i class="bi bi-book-fill"></i></span>
+              <div>
+                <div class="stat-value"><?= (int) $cantTotal ?></div>
+                <div class="stat-label">Materias</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100 stat-card">
+            <div class="card-body d-flex align-items-center gap-3">
+              <span class="stat-icon stat-icon--green"><i class="bi bi-patch-check-fill"></i></span>
+              <div>
+                <div class="stat-value"><?= (int) $conTutorias ?></div>
+                <div class="stat-label">Con tutorías publicadas</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100 stat-card">
+            <div class="card-body d-flex align-items-center gap-3">
+              <span class="stat-icon stat-icon--amber"><i class="bi bi-hourglass-split"></i></span>
+              <div>
+                <div class="stat-value"><?= (int) ($cantTotal - $conTutorias) ?></div>
+                <div class="stat-label">Sin tutorías todavía</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- ====================================================================
-           2. TARJETA HORIZONTAL SIMPLIFICADA: REGISTRO DE MATERIA Y CARRERA
+           3. CATÁLOGO DE MATERIAS
            ==================================================================== -->
-      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-        
-        <!-- Pestañas horizontales -->
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pb-2 border-bottom">
-          <ul class="nav nav-pills nav-pills-horizontal gap-2" id="pillsRegistro" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active d-inline-flex align-items-center gap-1.5" 
-                      id="tab-materia-btn" 
-                      data-bs-toggle="pill" 
-                      data-bs-target="#tab-materia-pane" 
-                      type="button" 
-                      role="tab" 
-                      aria-controls="tab-materia-pane" 
-                      aria-selected="true">
-                <i class="bi bi-journal-plus"></i>
-                <span>Registrar Materia</span>
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link d-inline-flex align-items-center gap-1.5" 
-                      id="tab-carrera-btn" 
-                      data-bs-toggle="pill" 
-                      data-bs-target="#tab-carrera-pane" 
-                      type="button" 
-                      role="tab" 
-                      aria-controls="tab-carrera-pane" 
-                      aria-selected="false">
-                <i class="bi bi-mortarboard"></i>
-                <span>Registrar Carrera</span>
-              </button>
-            </li>
-          </ul>
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
 
-          <span class="text-secondary small d-none d-md-inline" style="font-size: 0.76rem;">
-            <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Carga ágil al catálogo académico
-          </span>
-        </div>
-
-        <div class="tab-content" id="pillsRegistroContent">
-          
-          <!-- PESTAÑA A: REGISTRAR MATERIA (HORIZONTAL) -->
-          <div class="tab-pane fade show active" id="tab-materia-pane" role="tabpanel" aria-labelledby="tab-materia-btn">
-            <form id="formCargaMateria" onsubmit="simularGuardadoMateria(event)">
-              <div class="row g-3 align-items-end">
-                
-                <!-- 1. Input: Nombre de la Materia -->
-                <div class="col-12 col-md-5 col-lg-4">
-                  <label for="nombreMateria" class="form-label small fw-semibold text-secondary mb-1">
-                    Nombre de la Materia <span class="text-danger">*</span>
-                  </label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light text-muted border-end-0">
-                      <i class="bi bi-book"></i>
-                    </span>
-                    <input type="text" 
-                           name="nombre_materia" 
-                           id="nombreMateria" 
-                           class="form-control border-start-0 ps-1" 
-                           placeholder="Ej. Paradigmas de Programación" 
-                           required>
-                  </div>
-                </div>
-
-                <!-- 2. Input: Código interno -->
-                <div class="col-12 col-md-3 col-lg-2">
-                  <label for="codigoMateria" class="form-label small fw-semibold text-secondary mb-1">
-                    Código <span class="text-danger">*</span>
-                  </label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light text-muted border-end-0">
-                      <i class="bi bi-upc-scan"></i>
-                    </span>
-                    <input type="text" 
-                           name="codigo_materia" 
-                           id="codigoMateria" 
-                           class="form-control border-start-0 ps-1" 
-                           placeholder="Ej. TUP-05" 
-                           style="text-transform: uppercase;" 
-                           required>
-                  </div>
-                </div>
-
-                <!-- 3. Selector: Carrera con atajo para agregar carrera -->
-                <div class="col-12 col-md-4 col-lg-4">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <label for="carreraMateria" class="form-label small fw-semibold text-secondary mb-0">
-                      Asociar a Carrera
-                    </label>
-                    <button type="button" 
-                            class="btn btn-link btn-sm p-0 text-decoration-none text-primary fw-semibold" 
-                            style="font-size: 0.74rem;" 
-                            onclick="irARegistrarCarrera()"
-                            title="Ir a registrar una nueva carrera">
-                      <i class="bi bi-plus-circle"></i> + Agregar Carrera
-                    </button>
-                  </div>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light text-muted border-end-0">
-                      <i class="bi bi-mortarboard"></i>
-                    </span>
-                    <select name="carrera_materia" id="carreraMateria" class="form-select border-start-0 ps-1">
-                      <option value="" selected>General / Libre en catálogo</option>
-                      <?php foreach ($carreras as $car): ?>
-                        <option value="<?= htmlspecialchars($car['codigo']); ?>">
-                          <?= htmlspecialchars($car['nombre']); ?> (<?= htmlspecialchars($car['codigo']); ?>)
-                        </option>
-                      <?php endforeach; ?>
-                    </select>
-                  </div>
-                </div>
-
-                <!-- 4. Botón Guardar Materia -->
-                <div class="col-12 col-lg-2">
-                  <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-sm">
-                    <i class="bi bi-plus-lg"></i>
-                    <span>Guardar</span>
-                  </button>
-                </div>
-
-              </div>
-            </form>
-          </div>
-
-          <!-- PESTAÑA B: REGISTRAR CARRERA (HORIZONTAL - SIN FACULTAD/SEDE) -->
-          <div class="tab-pane fade" id="tab-carrera-pane" role="tabpanel" aria-labelledby="tab-carrera-btn">
-            <form id="formCargaCarrera" onsubmit="crearNuevaCarreraHorizontal(event)">
-              <div class="row g-3 align-items-end">
-                
-                <!-- 1. Input: Nombre de la Carrera -->
-                <div class="col-12 col-md-7 col-lg-7">
-                  <label for="nuevaCarreraNombre" class="form-label small fw-semibold text-secondary mb-1">
-                    Nombre de la Carrera <span class="text-danger">*</span>
-                  </label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light text-muted border-end-0">
-                      <i class="bi bi-mortarboard-fill"></i>
-                    </span>
-                    <input type="text" 
-                           id="nuevaCarreraNombre" 
-                           class="form-control border-start-0 ps-1" 
-                           placeholder="Ej. Tecnicatura Universitaria en Telecomunicaciones" 
-                           required>
-                  </div>
-                </div>
-
-                <!-- 2. Input: Sigla o Código -->
-                <div class="col-12 col-md-3 col-lg-3">
-                  <label for="nuevaCarreraCodigo" class="form-label small fw-semibold text-secondary mb-1">
-                    Sigla / Código <span class="text-danger">*</span>
-                  </label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light text-muted border-end-0">
-                      <i class="bi bi-tag"></i>
-                    </span>
-                    <input type="text" 
-                           id="nuevaCarreraCodigo" 
-                           class="form-control border-start-0 ps-1" 
-                           placeholder="Ej. TUT" 
-                           style="text-transform: uppercase;" 
-                           required>
-                  </div>
-                </div>
-
-                <!-- 3. Botón Guardar Carrera -->
-                <div class="col-12 col-md-2 col-lg-2">
-                  <button type="submit" class="btn btn-success w-100 rounded-pill py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 shadow-sm text-white">
-                    <i class="bi bi-check-lg"></i>
-                    <span>Crear Carrera</span>
-                  </button>
-                </div>
-
-              </div>
-            </form>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- ====================================================================
-           3. CATÁLOGO GENERAL DE MATERIAS (LIMPIO, MAX 5 POR VISTA, PAGINACIÓN)
-           ==================================================================== -->
-      <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
-        
-        <!-- Cabecera de la tabla con Buscador y Filtros Rápidos -->
         <div class="p-4 border-bottom">
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
             <div>
-              <h5 class="fw-bold text-dark mb-0">Catálogo General de Materias</h5>
-              <span class="text-secondary small">Listado de contenidos del plan académico de StudyMatch</span>
+              <h5 class="fw-bold mb-0">Catálogo de materias</h5>
+              <span class="text-secondary small">Listado completo del plan académico cargado en el sistema</span>
             </div>
-
-            <!-- Filtros rápidos -->
-            <div class="btn-group btn-group-sm rounded-pill p-1 bg-light border flex-wrap" role="group" aria-label="Filtro por carrera">
-              <button type="button" class="btn btn-sm btn-white active rounded-pill fw-semibold px-3 shadow-sm filter-btn-carrera" onclick="filtrarMaterias('todas', this)">
-                Todas <span class="badge bg-secondary-subtle text-dark ms-1"><?= $cantTotal; ?></span>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-outline-primary rounded-pill btn-sm px-3 fw-semibold d-inline-flex align-items-center gap-2" onclick="abrirModalCarrera(0)">
+                <i class="bi bi-mortarboard"></i><span>Nueva carrera</span>
               </button>
-              <button type="button" class="btn btn-sm text-secondary rounded-pill fw-semibold px-2.5 filter-btn-carrera" onclick="filtrarMaterias('TUP', this)">
-                TUP (<?= $cantTUP; ?>)
-              </button>
-              <button type="button" class="btn btn-sm text-secondary rounded-pill fw-semibold px-2.5 filter-btn-carrera" onclick="filtrarMaterias('TGE', this)">
-                Gestión (<?= $cantTGE; ?>)
-              </button>
-              <button type="button" class="btn btn-sm text-secondary rounded-pill fw-semibold px-2.5 filter-btn-carrera" onclick="filtrarMaterias('ISI', this)">
-                ISI (<?= $cantISI; ?>)
-              </button>
-              <button type="button" class="btn btn-sm text-secondary rounded-pill fw-semibold px-2.5 filter-btn-carrera" onclick="filtrarMaterias('libre', this)">
-                Libres (<?= $cantLibres; ?>)
+              <button type="button" class="btn btn-primary rounded-pill btn-sm px-3 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm" onclick="abrirModalMateria(0)" <?= empty($carreras) ? 'disabled title="Primero creá una carrera"' : '' ?>>
+                <i class="bi bi-plus-lg"></i><span>Nueva materia</span>
               </button>
             </div>
           </div>
 
-          <!-- Input de búsqueda amplia -->
-          <div class="position-relative w-100">
-            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3.5 text-secondary"></i>
-            <input type="text" 
-                   id="materiaSearchInput" 
-                   class="form-control rounded-pill ps-5 py-2 bg-light border shadow-none" 
-                   style="font-size: 0.9rem;" 
-                   placeholder="Buscar por código de materia, nombre o carrera (ej. Programación, TUP, Inglés)...">
+          <div class="row g-2 align-items-center">
+            <div class="col-12 col-lg">
+              <div class="position-relative">
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                <input type="text" id="materiaSearchInput" class="form-control rounded-pill ps-5 py-2 search-input-wide shadow-none"
+                       style="font-size: 0.9rem;" placeholder="Buscar por materia o carrera...">
+              </div>
+            </div>
+            <div class="col-6 col-lg-auto">
+              <select id="filtroCarrera" class="form-select rounded-pill filtro-select shadow-none" aria-label="Filtrar por carrera">
+                <option value="">Todas las carreras</option>
+                <?php foreach ($carreras as $car): ?>
+                  <option value="<?= $e($car['codigo']) ?>"><?= $e($car['codigo']) ?> · <?= $e($car['nombre']) ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <div class="col-6 col-lg-auto">
+              <select id="filtroAnio" class="form-select rounded-pill filtro-select shadow-none" aria-label="Filtrar por año">
+                <option value="">Todos los años</option>
+                <?php foreach (array_keys($aniosDisponibles) as $clave): ?>
+                  <option value="<?= $e($clave) ?>"><?= $clave === 'sin' ? 'Sin año cargado' : $e($clave) . '° año' ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
           </div>
         </div>
 
-        <!-- Tabla de materias limpia (Máximo 5 elementos por vista) -->
         <div class="table-responsive">
           <table class="table table-materias align-middle mb-0" id="tablaMateriasAdmin">
             <thead>
               <tr>
-                <th scope="col" style="width: 120px;">Código</th>
-                <th scope="col">Nombre de la Materia</th>
+                <th scope="col">Materia</th>
                 <th scope="col">Carrera</th>
-                <th scope="col" class="text-end" style="width: 220px;">Acciones</th>
+                <th scope="col" style="width: 130px;">Año</th>
+                <th scope="col" class="text-end" style="width: 160px;">Tutorías</th>
+                <th scope="col" class="text-end" style="width: 190px;">Acciones</th>
               </tr>
             </thead>
             <tbody id="tablaMateriasBody">
-              
-              <!-- Filas del catálogo -->
-              <?php foreach ($materias as $index => $mat): ?>
-                <?php
-                  $colorBadge = match ($mat['carrera']) {
-                      'TUP' => 'primary',
-                      'TGE' => 'info',
-                      'ISI' => 'success',
-                      'LAR' => 'warning',
-                      default => 'secondary'
-                  };
-                ?>
-                <tr data-carrera="<?= htmlspecialchars($mat['carrera']); ?>" 
-                    data-tipo="<?= $mat['tipo']; ?>" 
-                    id="row-materia-<?= $mat['id_materia']; ?>"
-                    class="materia-row">
-                  
-                  <!-- Columna: Código Interno -->
+              <?php foreach ($materias as $mat): ?>
+                <tr class="materia-row"
+                    data-carrera="<?= $e($mat['carrera']) ?>"
+                    data-anio="<?= $mat['anio'] === null ? 'sin' : (int) $mat['anio'] ?>"
+                    id="row-materia-<?= (int) $mat['id_materia'] ?>">
                   <td>
-                    <span class="materia-code-badge bg-light text-dark border">
-                      <?= htmlspecialchars($mat['codigo']); ?>
+                    <div class="d-flex align-items-center gap-3">
+                      <span class="materia-icon"><i class="bi bi-journal-text"></i></span>
+                      <span class="fw-semibold"><?= $e($mat['nombre']) ?></span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge rounded-pill badge-carrera" title="<?= $e($mat['carrera_nombre']) ?>">
+                      <?= $e($mat['carrera']) ?>
                     </span>
                   </td>
-
-                  <!-- Columna: Nombre de la Materia -->
                   <td>
-                    <div class="d-flex align-items-center gap-2">
-                      <i class="bi bi-journal-text text-primary"></i>
-                      <span class="fw-bold text-dark materia-nombre-slot">
-                        <?= htmlspecialchars($mat['nombre']); ?>
-                      </span>
-                    </div>
-                  </td>
-
-                  <!-- Columna: Carrera (Badge limpio único) -->
-                  <td class="materia-carrera-slot">
-                    <?php if ($mat['carrera'] === 'General' || $mat['tipo'] === 'libre'): ?>
-                      <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 small fw-semibold">
-                        General
-                      </span>
+                    <?php if ($mat['anio'] === null): ?>
+                      <span class="text-secondary small">Sin año</span>
                     <?php else: ?>
-                      <span class="badge bg-<?= $colorBadge; ?>-subtle text-<?= $colorBadge; ?> border border-<?= $colorBadge; ?>-subtle rounded-pill px-2.5 py-1 small fw-semibold">
-                        <?= htmlspecialchars($mat['carrera']); ?>
-                      </span>
+                      <span class="small fw-semibold"><?= (int) $mat['anio'] ?>° año</span>
                     <?php endif; ?>
                   </td>
-
-                  <!-- Columna: Acciones [Editar] y [Eliminar] -->
                   <td class="text-end">
-                    <div class="d-inline-flex align-items-center gap-1.5">
-                      
-                      <!-- Botón [Editar] -->
-                      <button type="button" 
-                              class="btn btn-sm btn-light border text-secondary btn-action-pill d-inline-flex align-items-center gap-1 shadow-sm"
-                              onclick="abrirModalEditar(<?= htmlspecialchars(json_encode($mat)); ?>)"
-                              title="Editar materia">
-                        <i class="bi bi-pencil"></i>
-                        <span>Editar</span>
+                    <?php if ($mat['tutorias'] > 0): ?>
+                      <span class="badge rounded-pill badge-tutorias">
+                        <i class="bi bi-person-check-fill me-1"></i><?= (int) $mat['tutorias'] ?> <?= $mat['tutorias'] === 1 ? 'tutoría' : 'tutorías' ?>
+                      </span>
+                    <?php else: ?>
+                      <span class="badge rounded-pill badge-tutorias badge-tutorias--vacio">Sin tutorías</span>
+                    <?php endif; ?>
+                  </td>
+                  <td class="text-end">
+                    <div class="d-inline-flex align-items-center gap-2">
+                      <button type="button" class="btn btn-sm btn-action-pill btn-outline-secondary d-inline-flex align-items-center justify-content-center gap-1"
+                              onclick="abrirModalMateria(<?= (int) $mat['id_materia'] ?>)" title="Editar materia">
+                        <i class="bi bi-pencil"></i><span>Editar</span>
                       </button>
-
-                      <!-- Botón [Eliminar] -->
-                      <button type="button" 
-                              class="btn btn-sm btn-outline-danger btn-action-pill d-inline-flex align-items-center gap-1"
-                              onclick="confirmarEliminarMateria(<?= $mat['id_materia']; ?>, '<?= addslashes($mat['nombre']); ?>')"
-                              title="Eliminar materia">
-                        <i class="bi bi-trash"></i>
-                        <span class="d-none d-md-inline">Eliminar</span>
-                      </button>
-
+                      <?php if ($mat['tutorias'] > 0): ?>
+                        <span class="d-inline-block" tabindex="0" title="No se puede eliminar: tiene tutorías publicadas">
+                          <button type="button" class="btn btn-sm btn-action-pill btn-outline-danger d-inline-flex align-items-center justify-content-center gap-1" disabled>
+                            <i class="bi bi-trash"></i><span>Eliminar</span>
+                          </button>
+                        </span>
+                      <?php else: ?>
+                        <button type="button" class="btn btn-sm btn-action-pill btn-outline-danger d-inline-flex align-items-center justify-content-center gap-1"
+                                onclick="confirmarEliminarMateria(<?= (int) $mat['id_materia'] ?>)" title="Eliminar materia">
+                          <i class="bi bi-trash"></i><span>Eliminar</span>
+                        </button>
+                      <?php endif; ?>
                     </div>
                   </td>
-
                 </tr>
               <?php endforeach; ?>
-
             </tbody>
           </table>
+          <div id="sinResultados" class="text-center text-secondary py-5 d-none">
+            <i class="bi bi-search fs-3 d-block mb-2"></i>
+            <?= empty($materias) ? 'Todavía no hay materias cargadas.' : 'Ninguna materia coincide con los filtros.' ?>
+          </div>
         </div>
 
-        <!-- Footer con paginación resumida y correcta (5 elementos por página) -->
-        <div class="card-footer bg-white border-top px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
-          <div class="text-secondary small" id="paginacionInfoTexto">
-            Mostrando <strong>1 - 5</strong> de <strong><?= $cantTotal; ?></strong> materias registradas
-          </div>
-          
+        <div class="card-footer border-top px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+          <div class="text-secondary small" id="paginacionInfoTexto"></div>
           <nav aria-label="Navegación del catálogo">
-            <ul class="pagination pagination-sm mb-0" id="paginacionControles">
-              <li class="page-item disabled" id="btnPagAnterior">
-                <button class="page-link rounded-start-pill px-3" onclick="cambiarPagina('prev')">Anterior</button>
-              </li>
-              <li class="page-item active" id="btnPagItem1">
-                <button class="page-link" onclick="irAPagina(1)">1</button>
-              </li>
-              <li class="page-item" id="btnPagItem2">
-                <button class="page-link" onclick="irAPagina(2)">2</button>
-              </li>
-              <li class="page-item" id="btnPagSiguiente">
-                <button class="page-link rounded-end-pill px-3" onclick="cambiarPagina('next')">Siguiente</button>
-              </li>
-            </ul>
+            <ul class="pagination pagination-sm mb-0" id="paginacionControles"></ul>
           </nav>
         </div>
 
       </div>
 
+      <?php endif; ?>
+
     </main>
   </div>
 
   <!-- ==========================================================================
-       VENTANA FLOTANTE (MODAL): RESUMEN DE CARRERAS Y MATERIAS
-       (Máximo 5 informaciones resumidas para consulta rápida)
+       MODAL: CARRERAS (datos reales)
        ========================================================================== -->
   <div class="modal fade" id="modalResumenCarreras" tabindex="-1" aria-labelledby="modalResumenCarrerasLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content rounded-4 border-0 shadow-lg">
-        
+
         <div class="modal-header border-bottom px-4 pt-4 pb-3">
           <div class="d-flex align-items-center gap-2">
-            <div class="bg-primary-subtle text-primary p-2 rounded-3">
-              <i class="bi bi-mortarboard fs-5"></i>
-            </div>
+            <div class="bg-primary-subtle text-primary p-2 rounded-3"><i class="bi bi-mortarboard fs-5"></i></div>
             <div>
-              <h5 class="modal-title fw-bold text-dark" id="modalResumenCarrerasLabel">Resumen de Carreras</h5>
-              <p class="text-secondary small mb-0">Programas académicos activos en StudyMatch</p>
+              <h5 class="modal-title fw-bold" id="modalResumenCarrerasLabel">Carreras</h5>
+              <p class="text-secondary small mb-0">Programas académicos cargados en StudyMatch</p>
             </div>
           </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
 
         <div class="modal-body p-4">
-          <div class="list-group list-group-flush rounded-3 border">
-            
-            <!-- 1. TUP -->
-            <div class="list-group-item d-flex align-items-center justify-content-between p-3">
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-primary-subtle text-primary border rounded-pill px-2.5 py-1 fw-bold">TUP</span>
-                <div>
-                  <h6 class="fw-semibold text-dark mb-0 small">Tecnicatura Universitaria en Programación</h6>
-                  <span class="text-muted" style="font-size: 0.72rem;">Pregrado • 5 materias</span>
+          <?php if (empty($carreras)): ?>
+            <p class="text-secondary mb-0">Todavía no hay carreras cargadas.</p>
+          <?php else: ?>
+            <div class="list-group list-group-flush rounded-3 border">
+              <?php foreach ($carreras as $car): ?>
+                <div class="list-group-item d-flex align-items-center justify-content-between p-3 gap-3">
+                  <div class="d-flex align-items-center gap-3">
+                    <span class="badge rounded-pill badge-carrera fw-bold"><?= $e($car['codigo']) ?></span>
+                    <div>
+                      <h6 class="fw-semibold mb-0 small"><?= $e($car['nombre']) ?></h6>
+                      <span class="text-secondary" style="font-size: 0.74rem;">
+                        <?= (int) $car['materias'] ?> <?= $car['materias'] === 1 ? 'materia' : 'materias' ?>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <?php if ($car['activa']): ?>
+                      <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle rounded-pill">Activa</span>
+                    <?php else: ?>
+                      <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle rounded-pill">Inactiva</span>
+                    <?php endif; ?>
+                    <button type="button" class="btn btn-sm btn-outline-secondary btn-action-pill" onclick="abrirModalCarrera(<?= (int) $car['id_carrera'] ?>)" title="Editar carrera">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 small">Activa</span>
+              <?php endforeach; ?>
             </div>
-
-            <!-- 2. TGE -->
-            <div class="list-group-item d-flex align-items-center justify-content-between p-3">
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-info-subtle text-info-emphasis border rounded-pill px-2.5 py-1 fw-bold">TGE</span>
-                <div>
-                  <h6 class="fw-semibold text-dark mb-0 small">Tecnicatura en Gestión Empresarial</h6>
-                  <span class="text-muted" style="font-size: 0.72rem;">Pregrado • 4 materias</span>
-                </div>
-              </div>
-              <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 small">Activa</span>
-            </div>
-
-            <!-- 3. ISI -->
-            <div class="list-group-item d-flex align-items-center justify-content-between p-3">
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-success-subtle text-success border rounded-pill px-2.5 py-1 fw-bold">ISI</span>
-                <div>
-                  <h6 class="fw-semibold text-dark mb-0 small">Ingeniería en Sistemas de Información</h6>
-                  <span class="text-muted" style="font-size: 0.72rem;">Grado • 3 materias</span>
-                </div>
-              </div>
-              <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 small">Activa</span>
-            </div>
-
-            <!-- 4. LAR -->
-            <div class="list-group-item d-flex align-items-center justify-content-between p-3">
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-warning-subtle text-warning-emphasis border rounded-pill px-2.5 py-1 fw-bold">LAR</span>
-                <div>
-                  <h6 class="fw-semibold text-dark mb-0 small">Licenciatura en Administración Rural</h6>
-                  <span class="text-muted" style="font-size: 0.72rem;">Grado • 1 materia</span>
-                </div>
-              </div>
-              <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 small">Activa</span>
-            </div>
-
-            <!-- 5. Libres / Generales -->
-            <div class="list-group-item d-flex align-items-center justify-content-between p-3 bg-light bg-opacity-50">
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-secondary-subtle text-secondary border rounded-pill px-2.5 py-1 fw-bold">LIBRE</span>
-                <div>
-                  <h6 class="fw-semibold text-dark mb-0 small">Materias Libres en Catálogo</h6>
-                  <span class="text-muted" style="font-size: 0.72rem;">Transversales • 2 materias</span>
-                </div>
-              </div>
-              <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 small">General</span>
-            </div>
-
-          </div>
+          <?php endif; ?>
         </div>
 
-        <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
+        <div class="modal-footer border-top px-4 py-3 rounded-bottom-4">
+          <button type="button" class="btn btn-outline-primary rounded-pill px-3 me-auto" onclick="abrirModalCarrera(0)">
+            <i class="bi bi-plus-lg me-1"></i>Nueva carrera
+          </button>
           <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
         </div>
 
@@ -680,125 +493,140 @@
   </div>
 
   <!-- ==========================================================================
-       MODAL: EDITAR MATERIA
+       MODAL: ALTA / EDICIÓN DE MATERIA
        ========================================================================== -->
-  <div class="modal fade" id="modalEditarMateria" tabindex="-1" aria-labelledby="modalEditarMateriaLabel" aria-hidden="true">
+  <div class="modal fade" id="modalMateria" tabindex="-1" aria-labelledby="modalMateriaLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content rounded-4 border-0 shadow-lg">
-        
+      <form class="modal-content rounded-4 border-0 shadow-lg" id="formMateria" onsubmit="guardarMateria(event)" novalidate>
         <div class="modal-header border-bottom px-4 pt-4 pb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div class="bg-primary-subtle text-primary p-2 rounded-3">
-              <i class="bi bi-pencil-square fs-5"></i>
-            </div>
-            <div>
-              <h5 class="modal-title fw-bold text-dark" id="modalEditarMateriaLabel">Editar Materia</h5>
-              <p class="text-secondary small mb-0">Modificá los datos del catálogo académico</p>
-            </div>
+          <div>
+            <h5 class="modal-title fw-bold" id="modalMateriaLabel">Nueva materia</h5>
+            <p class="text-secondary small mb-0">Se muestra a alumnos y tutores al publicar o buscar tutorías</p>
           </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
+        <div class="modal-body p-4">
+          <input type="hidden" name="id_materia" id="materiaId">
+          <div class="alert alert-danger small py-2 d-none" id="materiaError" role="alert"></div>
 
-        <form id="formEditarMateriaModal" onsubmit="guardarEdicionMateria(event)">
-          <div class="modal-body p-4">
-            <input type="hidden" id="editMateriaId">
-
-            <div class="mb-3">
-              <label for="editNombreMateria" class="form-label small fw-semibold text-secondary">Nombre de la Materia</label>
-              <input type="text" class="form-control rounded-3" id="editNombreMateria" required>
-            </div>
-
-            <div class="mb-3">
-              <label for="editCodigoMateria" class="form-label small fw-semibold text-secondary">Código interno</label>
-              <input type="text" class="form-control rounded-3" id="editCodigoMateria" style="text-transform: uppercase;" required>
-            </div>
-
-            <div class="mb-3">
-              <label for="editCarreraMateria" class="form-label small fw-semibold text-secondary">Carrera Asociada</label>
-              <select class="form-select rounded-3" id="editCarreraMateria">
-                <option value="General">General / Libre en catálogo</option>
+          <div class="mb-3">
+            <label for="materiaNombre" class="form-label small fw-semibold text-secondary">Nombre <span class="text-danger">*</span></label>
+            <input type="text" class="form-control rounded-3" id="materiaNombre" name="nombre" maxlength="255" required placeholder="Ej. Programación III">
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-12 col-sm-8">
+              <label for="materiaCarrera" class="form-label small fw-semibold text-secondary">Carrera <span class="text-danger">*</span></label>
+              <select class="form-select rounded-3" id="materiaCarrera" name="id_carrera" required>
                 <?php foreach ($carreras as $car): ?>
-                  <option value="<?= htmlspecialchars($car['codigo']); ?>">
-                    <?= htmlspecialchars($car['nombre']); ?> (<?= htmlspecialchars($car['codigo']); ?>)
-                  </option>
+                  <option value="<?= (int) $car['id_carrera'] ?>"><?= $e($car['codigo']) ?> · <?= $e($car['nombre']) ?><?= $car['activa'] ? '' : ' (inactiva)' ?></option>
                 <?php endforeach; ?>
               </select>
             </div>
+            <div class="col-12 col-sm-4">
+              <label for="materiaAnio" class="form-label small fw-semibold text-secondary">Año del plan</label>
+              <select class="form-select rounded-3" id="materiaAnio" name="anio_carrera">
+                <option value="">Sin año</option>
+                <?php for ($a = 1; $a <= 6; $a++): ?>
+                  <option value="<?= $a ?>"><?= $a ?>° año</option>
+                <?php endfor; ?>
+              </select>
+            </div>
           </div>
-
-          <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
-            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold">Guardar Cambios</button>
+          <div>
+            <label for="materiaDescripcion" class="form-label small fw-semibold text-secondary">Descripción <span class="text-secondary fw-normal">(opcional)</span></label>
+            <textarea class="form-control rounded-3" id="materiaDescripcion" name="descripcion" rows="2" maxlength="1000"></textarea>
           </div>
-        </form>
-
-      </div>
+        </div>
+        <div class="modal-footer border-top px-4 py-3 rounded-bottom-4">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold" id="btnGuardarMateria">Guardar</button>
+        </div>
+      </form>
     </div>
   </div>
 
   <!-- ==========================================================================
-       MODAL: CONFIRMAR ELIMINAR MATERIA
+       MODAL: ALTA / EDICIÓN DE CARRERA
+       ========================================================================== -->
+  <div class="modal fade" id="modalCarrera" tabindex="-1" aria-labelledby="modalCarreraLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content rounded-4 border-0 shadow-lg" id="formCarrera" onsubmit="guardarCarrera(event)" novalidate>
+        <div class="modal-header border-bottom px-4 pt-4 pb-3">
+          <div>
+            <h5 class="modal-title fw-bold" id="modalCarreraLabel">Nueva carrera</h5>
+            <p class="text-secondary small mb-0">Las carreras inactivas no se ofrecen al publicar tutorías</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <input type="hidden" name="id_carrera" id="carreraId">
+          <div class="alert alert-danger small py-2 d-none" id="carreraError" role="alert"></div>
+
+          <div class="mb-3">
+            <label for="carreraNombre" class="form-label small fw-semibold text-secondary">Nombre <span class="text-danger">*</span></label>
+            <input type="text" class="form-control rounded-3" id="carreraNombre" name="nombre" maxlength="150" required placeholder="Ej. Ingeniería en Sistemas de Información">
+          </div>
+          <div class="mb-3">
+            <label for="carreraCodigo" class="form-label small fw-semibold text-secondary">Sigla <span class="text-danger">*</span></label>
+            <input type="text" class="form-control rounded-3 text-uppercase" id="carreraCodigo" name="codigo" maxlength="20" required placeholder="Ej. ISI">
+          </div>
+          <div class="form-check form-switch" id="carreraActivaWrap">
+            <input class="form-check-input" type="checkbox" role="switch" id="carreraActiva" checked>
+            <label class="form-check-label small" for="carreraActiva">Carrera activa</label>
+          </div>
+        </div>
+        <div class="modal-footer border-top px-4 py-3 rounded-bottom-4">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold" id="btnGuardarCarrera">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: CONFIRMAR ELIMINACIÓN DE MATERIA
        ========================================================================== -->
   <div class="modal fade" id="modalEliminarMateria" tabindex="-1" aria-labelledby="modalEliminarMateriaLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content rounded-4 border-0 shadow-lg">
-        
         <div class="modal-header border-bottom px-4 pt-4 pb-3">
           <div class="d-flex align-items-center gap-2">
-            <div class="bg-danger-subtle text-danger p-2 rounded-3">
-              <i class="bi bi-trash fs-5"></i>
-            </div>
-            <div>
-              <h5 class="modal-title fw-bold text-dark" id="modalEliminarMateriaLabel">Eliminar Materia</h5>
-              <p class="text-secondary small mb-0">Esta acción removerá la materia del catálogo</p>
-            </div>
+            <div class="bg-danger-subtle text-danger p-2 rounded-3"><i class="bi bi-trash fs-5"></i></div>
+            <h5 class="modal-title fw-bold" id="modalEliminarMateriaLabel">Eliminar materia</h5>
           </div>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
-
         <div class="modal-body p-4">
-          <p class="text-secondary mb-2">
-            ¿Estás seguro de que deseas eliminar la materia <strong class="text-dark" id="eliminarMateriaNombreDisplay">Programación I</strong>?
-          </p>
-          <div class="alert alert-warning small mb-0 rounded-3">
-            <i class="bi bi-exclamation-triangle-fill me-1"></i>
-            Esta acción quitará la materia de la vista de alumnos y tutores.
-          </div>
+          <p class="mb-2">¿Eliminar <strong id="eliminarMateriaNombre"></strong> del catálogo?</p>
+          <p class="text-secondary small mb-0">Esta acción no se puede deshacer. Solo se pueden eliminar materias sin tutorías publicadas.</p>
+          <div class="alert alert-danger small py-2 mt-3 mb-0 d-none" id="eliminarError" role="alert"></div>
         </div>
-
-        <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
+        <div class="modal-footer border-top px-4 py-3 rounded-bottom-4">
           <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger rounded-pill px-4 fw-semibold" onclick="ejecutarEliminarMateria()">
-            Confirmar Eliminación
-          </button>
+          <button type="button" class="btn btn-danger rounded-pill px-4 fw-semibold" id="btnConfirmarEliminar" onclick="eliminarMateria()">Eliminar</button>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- TOAST DE NOTIFICACIÓN DE ACCIONES -->
+  <!-- TOAST -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
     <div id="toastAdminMaterias" class="toast align-items-center text-bg-dark border-0 rounded-4 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="d-flex">
         <div class="toast-body d-flex align-items-center gap-2">
           <i class="bi bi-check-circle-fill text-success fs-5"></i>
-          <span id="toastAdminMateriasMsg">Acción procesada correctamente.</span>
+          <span id="toastAdminMateriasMsg"></span>
         </div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
       </div>
     </div>
   </div>
 
-  <!-- ==========================================================================
-       JAVASCRIPT: COMPORTAMIENTOS, BÚSQUEDA Y PAGINACIÓN DE 5 ELEMENTOS
-       ========================================================================== -->
-  <!-- Bootstrap 5.3.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     // ==========================================
-    // 1. Colapso / Expansión del Sidebar
+    // 1. Colapso / expansión del sidebar
     // ==========================================
     const sidebar = document.getElementById('mainSidebar');
     const btnToggleSidebar = document.getElementById('btnToggleSidebar');
@@ -818,402 +646,213 @@
     }
 
     // ==========================================
-    // 2. Control de Paginación (Máximo 5 por vista)
+    // 2. Búsqueda, filtros y paginación del catálogo
     // ==========================================
-    const ITEMS_POR_PAGINA = 5;
+    const ITEMS_POR_PAGINA = 10;
     let paginaActual = 1;
-    let filasFiltradas = [];
 
-    function actualizarPaginacion() {
-      const todasLasFilas = Array.from(document.querySelectorAll('#tablaMateriasBody .materia-row'));
-      const query = (document.getElementById('materiaSearchInput')?.value || '').toLowerCase().trim();
-
-      // Filtrar filas según búsqueda y categoría seleccionada
-      filasFiltradas = todasLasFilas.filter(row => {
-        const text = row.textContent.toLowerCase();
-        const carrera = row.getAttribute('data-carrera') || '';
-        const tipo = row.getAttribute('data-tipo') || '';
-
-        const coincideTexto = !query || text.includes(query);
-        let coincideCarrera = false;
-
-        if (filtroCarreraActual === 'todas') {
-          coincideCarrera = true;
-        } else if (filtroCarreraActual === 'libre') {
-          coincideCarrera = (tipo === 'libre' || carrera === 'General');
-        } else {
-          coincideCarrera = (carrera === filtroCarreraActual);
-        }
-
-        return coincideTexto && coincideCarrera;
-      });
-
-      const totalFiltradas = filasFiltradas.length;
-      const totalPaginas = Math.ceil(totalFiltradas / ITEMS_POR_PAGINA) || 1;
-
-      // Asegurar que la página actual esté en rango
-      if (paginaActual > totalPaginas) paginaActual = totalPaginas;
-      if (paginaActual < 1) paginaActual = 1;
-
-      // Ocultar todas las filas primero
-      todasLasFilas.forEach(row => row.style.display = 'none');
-
-      // Mostrar solo las del rango de la página actual
-      const inicio = (paginaActual - 1) * ITEMS_POR_PAGINA;
-      const fin = inicio + ITEMS_POR_PAGINA;
-      const visibles = filasFiltradas.slice(inicio, fin);
-      visibles.forEach(row => row.style.display = '');
-
-      // Actualizar texto de información
-      const infoTexto = document.getElementById('paginacionInfoTexto');
-      if (infoTexto) {
-        if (totalFiltradas === 0) {
-          infoTexto.innerHTML = 'No se encontraron materias que coincidan con la búsqueda.';
-        } else {
-          const primerNum = inicio + 1;
-          const ultimoNum = Math.min(fin, totalFiltradas);
-          infoTexto.innerHTML = `Mostrando <strong>${primerNum} - ${ultimoNum}</strong> de <strong>${totalFiltradas}</strong> materias registradas`;
-        }
-      }
-
-      // Actualizar botones de paginación
-      const btnAnt = document.getElementById('btnPagAnterior');
-      const btnSig = document.getElementById('btnPagSiguiente');
-      const item1 = document.getElementById('btnPagItem1');
-      const item2 = document.getElementById('btnPagItem2');
-
-      if (btnAnt) btnAnt.classList.toggle('disabled', paginaActual <= 1);
-      if (btnSig) btnSig.classList.toggle('disabled', paginaActual >= totalPaginas);
-
-      if (item1) {
-        item1.classList.toggle('active', paginaActual === 1);
-        item1.style.display = totalPaginas >= 1 ? '' : 'none';
-      }
-      if (item2) {
-        item2.classList.toggle('active', paginaActual === 2);
-        item2.style.display = totalPaginas >= 2 ? '' : 'none';
-      }
-    }
-
-    function irAPagina(num) {
-      paginaActual = num;
-      actualizarPaginacion();
-    }
-
-    function cambiarPagina(accion) {
-      if (accion === 'prev') {
-        irAPagina(paginaActual - 1);
-      } else if (accion === 'next') {
-        irAPagina(paginaActual + 1);
-      }
-    }
-
-    // ==========================================
-    // 3. Buscador en Tiempo Real
-    // ==========================================
     const searchInput = document.getElementById('materiaSearchInput');
-    let filtroCarreraActual = 'todas';
+    const filtroCarrera = document.getElementById('filtroCarrera');
+    const filtroAnio = document.getElementById('filtroAnio');
+    const filas = Array.from(document.querySelectorAll('#tablaMateriasBody .materia-row'));
 
-    if (searchInput) {
-      searchInput.addEventListener('input', () => {
-        paginaActual = 1;
-        actualizarPaginacion();
+    function actualizarCatalogo() {
+      if (!searchInput) return;
+      const query = searchInput.value.toLowerCase().trim();
+
+      const coincidentes = filas.filter(row => {
+        const texto = row.textContent.toLowerCase();
+        return (!query || texto.includes(query))
+          && (!filtroCarrera.value || row.dataset.carrera === filtroCarrera.value)
+          && (!filtroAnio.value || row.dataset.anio === filtroAnio.value);
       });
+
+      const total = coincidentes.length;
+      const totalPaginas = Math.max(1, Math.ceil(total / ITEMS_POR_PAGINA));
+      paginaActual = Math.min(Math.max(1, paginaActual), totalPaginas);
+
+      const inicio = (paginaActual - 1) * ITEMS_POR_PAGINA;
+      const visibles = new Set(coincidentes.slice(inicio, inicio + ITEMS_POR_PAGINA));
+      filas.forEach(row => { row.style.display = visibles.has(row) ? '' : 'none'; });
+
+      document.getElementById('sinResultados').classList.toggle('d-none', total > 0);
+      document.getElementById('paginacionInfoTexto').innerHTML = total === 0
+        ? ''
+        : `Mostrando <strong>${inicio + 1} - ${Math.min(inicio + ITEMS_POR_PAGINA, total)}</strong> de <strong>${total}</strong> materias`;
+
+      dibujarPaginacion(totalPaginas);
+    }
+
+    function dibujarPaginacion(totalPaginas) {
+      const ul = document.getElementById('paginacionControles');
+      ul.innerHTML = '';
+      if (totalPaginas <= 1) return;
+
+      const item = (texto, pagina, opciones) => {
+        const o = opciones || {};
+        const li = document.createElement('li');
+        li.className = 'page-item' + (o.activo ? ' active' : '') + (o.deshabilitado ? ' disabled' : '');
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'page-link ' + (o.clase || '');
+        b.textContent = texto;
+        b.addEventListener('click', () => { paginaActual = pagina; actualizarCatalogo(); });
+        li.appendChild(b);
+        ul.appendChild(li);
+      };
+
+      item('Anterior', paginaActual - 1, { deshabilitado: paginaActual <= 1, clase: 'rounded-start-pill px-3' });
+      for (let p = 1; p <= totalPaginas; p++) item(String(p), p, { activo: p === paginaActual });
+      item('Siguiente', paginaActual + 1, { deshabilitado: paginaActual >= totalPaginas, clase: 'rounded-end-pill px-3' });
+    }
+
+    [searchInput, filtroCarrera, filtroAnio].forEach(el => {
+      if (el) el.addEventListener(el === searchInput ? 'input' : 'change', () => { paginaActual = 1; actualizarCatalogo(); });
+    });
+
+    // ==========================================
+    // 3. Alta, edición y baja (datos reales; la página se recarga al terminar)
+    // ==========================================
+    const MATERIAS = <?= json_encode(array_column($materias, null, 'id_materia'), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+    const CARRERAS = <?= json_encode(array_column($carreras, null, 'id_carrera'), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+    const CLAVE_MENSAJE = 'study-match-admin-materias-msg';
+
+    function mostrarError(id, texto) {
+      const el = document.getElementById(id);
+      el.textContent = texto || '';
+      el.classList.toggle('d-none', !texto);
+    }
+
+    function abrirModal(id) {
+      bootstrap.Modal.getOrCreateInstance(document.getElementById(id)).show();
+    }
+
+    // Envía los datos y, si salió bien, recarga la página para mostrar el catálogo actualizado
+    function enviar(ruta, datos, boton, idError) {
+      mostrarError(idError, '');
+      boton.disabled = true;
+
+      return fetch('index.php?r=' + ruta, { method: 'POST', body: datos })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            sessionStorage.setItem(CLAVE_MENSAJE, data.mensaje);
+            window.location.reload();
+          } else {
+            mostrarError(idError, data.error || 'No se pudo completar la acción.');
+            boton.disabled = false;
+          }
+        })
+        .catch(() => {
+          mostrarError(idError, 'Error de conexión con el servidor.');
+          boton.disabled = false;
+        });
+    }
+
+    // --- Materia ---
+    function abrirModalMateria(id) {
+      const mat = id ? MATERIAS[id] : null;
+      document.getElementById('modalMateriaLabel').textContent = mat ? 'Editar materia' : 'Nueva materia';
+      document.getElementById('materiaId').value = mat ? mat.id_materia : '';
+      document.getElementById('materiaNombre').value = mat ? mat.nombre : '';
+      document.getElementById('materiaAnio').value = mat && mat.anio !== null ? mat.anio : '';
+      document.getElementById('materiaDescripcion').value = mat ? mat.descripcion : '';
+
+      const selCarrera = document.getElementById('materiaCarrera');
+      if (mat) {
+        selCarrera.value = mat.id_carrera;
+      } else if (filtroCarrera && filtroCarrera.value) {
+        // Si hay una carrera filtrada, la propone como carrera de la materia nueva
+        const propuesta = Object.values(CARRERAS).find(c => c.codigo === filtroCarrera.value);
+        if (propuesta) selCarrera.value = propuesta.id_carrera;
+      }
+
+      mostrarError('materiaError', '');
+      document.getElementById('btnGuardarMateria').disabled = false;
+      abrirModal('modalMateria');
+    }
+
+    function guardarMateria(e) {
+      e.preventDefault();
+      enviar('admin-materia-guardar', new FormData(e.target), document.getElementById('btnGuardarMateria'), 'materiaError');
+    }
+
+    // --- Carrera ---
+    function abrirModalCarrera(id) {
+      const car = id ? CARRERAS[id] : null;
+      document.getElementById('modalCarreraLabel').textContent = car ? 'Editar carrera' : 'Nueva carrera';
+      document.getElementById('carreraId').value = car ? car.id_carrera : '';
+      document.getElementById('carreraNombre').value = car ? car.nombre : '';
+      document.getElementById('carreraCodigo').value = car ? car.codigo : '';
+      document.getElementById('carreraActiva').checked = car ? car.activa : true;
+      document.getElementById('carreraActivaWrap').classList.toggle('d-none', !car); // una carrera nueva nace activa
+
+      mostrarError('carreraError', '');
+      document.getElementById('btnGuardarCarrera').disabled = false;
+
+      // Si se abre desde el modal de carreras, ese se cierra primero
+      const listado = bootstrap.Modal.getInstance(document.getElementById('modalResumenCarreras'));
+      if (listado) listado.hide();
+      abrirModal('modalCarrera');
+    }
+
+    function guardarCarrera(e) {
+      e.preventDefault();
+      const datos = new FormData(e.target);
+      datos.append('activa', document.getElementById('carreraActiva').checked ? '1' : '0');
+      enviar('admin-carrera-guardar', datos, document.getElementById('btnGuardarCarrera'), 'carreraError');
+    }
+
+    // --- Eliminar materia ---
+    let idMateriaAEliminar = null;
+
+    function confirmarEliminarMateria(id) {
+      idMateriaAEliminar = id;
+      document.getElementById('eliminarMateriaNombre').textContent = MATERIAS[id].nombre;
+      mostrarError('eliminarError', '');
+      document.getElementById('btnConfirmarEliminar').disabled = false;
+      abrirModal('modalEliminarMateria');
+    }
+
+    function eliminarMateria() {
+      if (!idMateriaAEliminar) return;
+      const datos = new FormData();
+      datos.append('id_materia', idMateriaAEliminar);
+      enviar('admin-materia-eliminar', datos, document.getElementById('btnConfirmarEliminar'), 'eliminarError');
     }
 
     // ==========================================
-    // 4. Filtro Rápido por Carrera
-    // ==========================================
-    function filtrarMaterias(codigoCarrera, btn) {
-      filtroCarreraActual = codigoCarrera;
-      paginaActual = 1;
-
-      document.querySelectorAll('.filter-btn-carrera').forEach(b => {
-        b.classList.remove('btn-white', 'active', 'shadow-sm');
-        b.classList.add('text-secondary');
-      });
-      btn.classList.remove('text-secondary');
-      btn.classList.add('btn-white', 'active', 'shadow-sm');
-
-      actualizarPaginacion();
-    }
-
-    // ==========================================
-    // 5. Toast de Feedback (Reutiliza instancia)
+    // 4. Toast y modo claro / oscuro
     // ==========================================
     function mostrarToast(mensaje) {
       const toastEl = document.getElementById('toastAdminMaterias');
-      const toastMsg = document.getElementById('toastAdminMateriasMsg');
-      if (toastEl && toastMsg) {
-        toastMsg.textContent = mensaje;
-        const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3000 });
-        toast.show();
-      }
+      document.getElementById('toastAdminMateriasMsg').textContent = mensaje;
+      bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3000 }).show();
     }
 
-    // ==========================================
-    // 6. Transición entre pestañas horizontales (Ágil y optimizada)
-    // ==========================================
-    function irARegistrarCarrera() {
-      const tabCarreraBtn = document.getElementById('tab-carrera-btn');
-      if (tabCarreraBtn) {
-        const tab = bootstrap.Tab.getOrCreateInstance(tabCarreraBtn);
-        tab.show();
-      }
-    }
-
-    function irARegistrarMateria() {
-      const tabMateriaBtn = document.getElementById('tab-materia-btn');
-      if (tabMateriaBtn) {
-        const tab = bootstrap.Tab.getOrCreateInstance(tabMateriaBtn);
-        tab.show();
-      }
-    }
-
-    // ==========================================
-    // 7. Guardar Carrera en la Tarjeta Horizontal (Sin Sede)
-    // ==========================================
-    function crearNuevaCarreraHorizontal(e) {
-      e.preventDefault();
-      const nombre = document.getElementById('nuevaCarreraNombre').value.trim();
-      const codigo = document.getElementById('nuevaCarreraCodigo').value.trim().toUpperCase();
-
-      if (!nombre || !codigo) return;
-
-      // 1. Agregar al select del formulario de materias
-      const selMateria = document.getElementById('carreraMateria');
-      if (selMateria) {
-        const opt = document.createElement('option');
-        opt.value = codigo;
-        opt.textContent = `${nombre} (${codigo})`;
-        selMateria.appendChild(opt);
-        selMateria.value = codigo; // Seleccionarla automáticamente
-      }
-
-      // 2. Agregar al select del modal de edición
-      const selEdit = document.getElementById('editCarreraMateria');
-      if (selEdit) {
-        const optEdit = document.createElement('option');
-        optEdit.value = codigo;
-        optEdit.textContent = `${nombre} (${codigo})`;
-        selEdit.appendChild(optEdit);
-      }
-
-      // 3. Limpiar formulario de carrera
-      document.getElementById('formCargaCarrera').reset();
-
-      // 4. Cambiar inmediatamente a la pestaña de Registrar Materia
-      irARegistrarMateria();
-
-      mostrarToast(`¡Carrera "${nombre}" (${codigo}) creada y seleccionada!`);
-    }
-
-    // ==========================================
-    // 8. Simulación de Guardado de Materia
-    // ==========================================
-    function simularGuardadoMateria(e) {
-      e.preventDefault();
-      const nombre = document.getElementById('nombreMateria').value.trim();
-      const codigo = document.getElementById('codigoMateria').value.trim().toUpperCase();
-      const selectCarrera = document.getElementById('carreraMateria');
-      const carreraCodigo = selectCarrera.value || 'General';
-      const esLibre = (carreraCodigo === 'General' || carreraCodigo === '');
-
-      const randomId = Math.floor(Math.random() * 9000) + 1000;
-      const tbody = document.getElementById('tablaMateriasBody');
-
-      if (tbody) {
-        const tr = document.createElement('tr');
-        tr.id = `row-materia-${randomId}`;
-        tr.className = 'materia-row';
-        tr.setAttribute('data-carrera', carreraCodigo);
-        tr.setAttribute('data-tipo', esLibre ? 'libre' : 'carrera');
-
-        // Badge limpio y único
-        let badgeHtml = '';
-        if (esLibre) {
-          badgeHtml = `
-            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 small fw-semibold">
-              General
-            </span>
-          `;
-        } else {
-          badgeHtml = `
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 small fw-semibold">
-              ${carreraCodigo}
-            </span>
-          `;
-        }
-
-        const matObj = {
-          id_materia: randomId,
-          codigo: codigo,
-          nombre: nombre,
-          carrera: carreraCodigo,
-          tipo: esLibre ? 'libre' : 'carrera'
-        };
-
-        tr.innerHTML = `
-          <td>
-            <span class="materia-code-badge bg-light text-dark border">
-              ${codigo}
-            </span>
-          </td>
-          <td>
-            <div class="d-flex align-items-center gap-2">
-              <i class="bi bi-journal-text text-primary"></i>
-              <span class="fw-bold text-dark materia-nombre-slot">${nombre}</span>
-            </div>
-          </td>
-          <td class="materia-carrera-slot">
-            ${badgeHtml}
-          </td>
-          <td class="text-end">
-            <div class="d-inline-flex align-items-center gap-1.5">
-              <button type="button" class="btn btn-sm btn-light border text-secondary btn-action-pill d-inline-flex align-items-center gap-1 shadow-sm" onclick='abrirModalEditar(${JSON.stringify(matObj)})'>
-                <i class="bi bi-pencil"></i>
-                <span>Editar</span>
-              </button>
-              <button type="button" class="btn btn-sm btn-outline-danger btn-action-pill d-inline-flex align-items-center gap-1" onclick="confirmarEliminarMateria(${randomId}, '${nombre.replace(/'/g, "\\'")}')">
-                <i class="bi bi-trash"></i>
-                <span class="d-none d-md-inline">Eliminar</span>
-              </button>
-            </div>
-          </td>
-        `;
-
-        tbody.insertBefore(tr, tbody.firstChild);
-      }
-
-      // Reiniciar a página 1 y refrescar vista de 5 elementos
-      paginaActual = 1;
-      actualizarPaginacion();
-
-      mostrarToast(`¡Materia "${nombre}" (${codigo}) guardada exitosamente!`);
-      document.getElementById('formCargaMateria').reset();
-    }
-
-    // ==========================================
-    // 9. Modal [Editar] (Reutiliza instancia)
-    // ==========================================
-    function abrirModalEditar(mat) {
-      document.getElementById('editMateriaId').value = mat.id_materia;
-      document.getElementById('editNombreMateria').value = mat.nombre;
-      document.getElementById('editCodigoMateria').value = mat.codigo;
-      
-      const selEdit = document.getElementById('editCarreraMateria');
-      if (selEdit) {
-        selEdit.value = mat.carrera || 'General';
-      }
-
-      const modalEl = document.getElementById('modalEditarMateria');
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-      modal.show();
-    }
-
-    function guardarEdicionMateria(e) {
-      e.preventDefault();
-      const id = document.getElementById('editMateriaId').value;
-      const nombre = document.getElementById('editNombreMateria').value;
-      const nuevaCarrera = document.getElementById('editCarreraMateria').value;
-
-      const row = document.getElementById(`row-materia-${id}`);
-      if (row) {
-        const nombreSlot = row.querySelector('.materia-nombre-slot');
-        if (nombreSlot) nombreSlot.textContent = nombre;
-
-        const carreraSlot = row.querySelector('.materia-carrera-slot');
-        row.setAttribute('data-carrera', nuevaCarrera);
-        row.setAttribute('data-tipo', (nuevaCarrera === 'General' ? 'libre' : 'carrera'));
-
-        if (carreraSlot) {
-          if (nuevaCarrera === 'General') {
-            carreraSlot.innerHTML = `
-              <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 small fw-semibold">
-                General
-              </span>
-            `;
-          } else {
-            carreraSlot.innerHTML = `
-              <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 small fw-semibold">
-                ${nuevaCarrera}
-              </span>
-            `;
-          }
-        }
-      }
-
-      const modalEl = document.getElementById('modalEditarMateria');
-      const modalInst = bootstrap.Modal.getInstance(modalEl);
-      if (modalInst) modalInst.hide();
-
-      actualizarPaginacion();
-      mostrarToast(`Materia actualizada correctamente.`);
-    }
-
-    // ==========================================
-    // 10. Modal [Eliminar] (Reutiliza instancia)
-    // ==========================================
-    let idMateriaAEliminar = null;
-
-    function confirmarEliminarMateria(id, nombre) {
-      idMateriaAEliminar = id;
-      document.getElementById('eliminarMateriaNombreDisplay').textContent = nombre;
-
-      const modalEl = document.getElementById('modalEliminarMateria');
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-      modal.show();
-    }
-
-    function ejecutarEliminarMateria() {
-      if (!idMateriaAEliminar) return;
-
-      const row = document.getElementById(`row-materia-${idMateriaAEliminar}`);
-      if (row) {
-        row.style.transition = 'all 0.2s ease';
-        row.style.opacity = '0';
-        row.style.transform = 'scale(0.96)';
-        setTimeout(() => {
-          row.remove();
-          actualizarPaginacion();
-        }, 200);
-      }
-
-      const modalEl = document.getElementById('modalEliminarMateria');
-      const modalInst = bootstrap.Modal.getInstance(modalEl);
-      if (modalInst) modalInst.hide();
-
-      mostrarToast(`Materia eliminada del catálogo.`);
-    }
-
-    // ==========================================
-    // 11. Modo Claro / Modo Oscuro
-    // ==========================================
     function aplicarTema(tema) {
       document.documentElement.setAttribute('data-bs-theme', tema);
       localStorage.setItem('study-match-theme', tema);
       const icon = document.getElementById('themeIcon');
-      if (icon) {
-        if (tema === 'dark') {
-          icon.className = 'bi bi-sun-fill text-warning';
-        } else {
-          icon.className = 'bi bi-moon-stars text-secondary';
-        }
-      }
+      if (icon) icon.className = tema === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars text-secondary';
     }
 
     function toggleTemaModo() {
-      const temaActual = document.documentElement.getAttribute('data-bs-theme') || 'light';
-      const nuevoTema = (temaActual === 'dark') ? 'light' : 'dark';
+      const nuevoTema = (document.documentElement.getAttribute('data-bs-theme') || 'light') === 'dark' ? 'light' : 'dark';
       aplicarTema(nuevoTema);
-      mostrarToast(`Modo ${nuevoTema === 'dark' ? 'oscuro' : 'claro'} activado`);
+      mostrarToast('Modo ' + (nuevoTema === 'dark' ? 'oscuro' : 'claro') + ' activado');
     }
 
-    // Inicializar paginación y tema al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
-      const temaGuardado = localStorage.getItem('study-match-theme') || 'light';
-      aplicarTema(temaGuardado);
-      actualizarPaginacion();
+      aplicarTema(localStorage.getItem('study-match-theme') || 'light');
+      actualizarCatalogo();
+
+      // Mensaje de la acción que originó la recarga (alta, edición o baja)
+      const pendiente = sessionStorage.getItem(CLAVE_MENSAJE);
+      if (pendiente) {
+        sessionStorage.removeItem(CLAVE_MENSAJE);
+        mostrarToast(pendiente);
+      }
     });
   </script>
 </body>

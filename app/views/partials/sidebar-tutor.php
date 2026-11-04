@@ -2,7 +2,7 @@
 <?php
 /**
  * Menú lateral del modo tutor.
- * Espera $sidebarActivo: 'panel' | 'publicaciones' | 'solicitudes' | 'tutorias' (marca "Mis tutorías"). Usa $contadores (lo agrega Controller::render).
+ * Espera $sidebarActivo: 'panel' | 'publicaciones' | 'tutorias' (marca "Mis tutorías"). Usa $contadores (lo agrega Controller::render).
  */
 $activo = function ($item) use ($sidebarActivo) {
     return isset($sidebarActivo) && $sidebarActivo === $item ? ' active' : '';
@@ -39,19 +39,24 @@ $activo = function ($item) use ($sidebarActivo) {
           <i class="bi bi-journal-bookmark"></i>
           <span class="sidebar-text">Mis publicaciones</span>
         </a>
-        <a href="index.php?r=mis-tutorias&amp;rol=tutor&amp;estado=pendientes" class="sidebar-link<?= $activo('solicitudes') ?>" title="Solicitudes">
-          <i class="bi bi-person-check"></i>
-          <span class="sidebar-text">Solicitudes</span>
-          <?php $cantSolicitudes = isset($contadores['solicitudes']) ? (int) $contadores['solicitudes'] : 0; ?>
-          <?php if ($cantSolicitudes > 0): ?>
-            <span id="badgeSolicitudesTutor" class="badge rounded-pill ms-auto sidebar-text bg-danger" style="font-size: 0.65rem;" title="Solicitudes pendientes"><?= $cantSolicitudes ?> <?= $cantSolicitudes === 1 ? 'nueva' : 'nuevas' ?></span>
-          <?php endif; ?>
-        </a>
+        <?php
+        // Pendientes de Mis tutorías: solicitudes por responder + mensajes sin leer.
+        $cantSolicitudes = isset($contadores['solicitudes']) ? (int) $contadores['solicitudes'] : 0;
+        $cantMensajes = isset($contadores['mensajes']) ? (int) $contadores['mensajes'] : 0;
+        $cantPendientesTutorias = $cantSolicitudes + $cantMensajes;
+        $detallePendientes = [];
+        if ($cantSolicitudes > 0) {
+            $detallePendientes[] = $cantSolicitudes . ' ' . ($cantSolicitudes === 1 ? 'solicitud pendiente' : 'solicitudes pendientes');
+        }
+        if ($cantMensajes > 0) {
+            $detallePendientes[] = $cantMensajes . ' ' . ($cantMensajes === 1 ? 'mensaje sin leer' : 'mensajes sin leer');
+        }
+        ?>
         <a href="index.php?r=mis-tutorias&amp;rol=tutor" class="sidebar-link<?= $activo('tutorias') ?>" title="Mis tutorías">
           <i class="bi bi-mortarboard"></i>
           <span class="sidebar-text">Mis tutorías</span>
-          <?php if (!empty($contadores['mensajes'])): ?>
-            <span class="badge rounded-pill ms-auto sidebar-text bg-danger" style="font-size: 0.65rem;" title="Mensajes sin leer"><?= (int) $contadores['mensajes'] ?> <?= (int) $contadores['mensajes'] === 1 ? 'nuevo' : 'nuevos' ?></span>
+          <?php if ($cantPendientesTutorias > 0): ?>
+            <span id="badgeTutoriasTutor" class="badge rounded-pill ms-auto sidebar-text bg-danger" style="font-size: 0.65rem;" title="<?= htmlspecialchars(implode(' · ', $detallePendientes), ENT_QUOTES, 'UTF-8') ?>"><?= $cantPendientesTutorias ?> <?= $cantPendientesTutorias === 1 ? 'nuevo' : 'nuevos' ?></span>
           <?php endif; ?>
         </a>
       </nav>

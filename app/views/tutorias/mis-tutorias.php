@@ -17,7 +17,7 @@ $sufijoFiltro = $filtro !== 'todas' ? '&amp;estado=' . Vista::e($filtro) : '';
 <?php require APP_PATH . '/views/partials/privado-head.php'; ?>
 <body class="dashboard-body" data-role="<?= $rol ?>">
 
-  <?php $sidebarActivo = ($rol === 'tutor' && $filtro === 'pendientes') ? 'solicitudes' : 'tutorias'; require APP_PATH . '/views/partials/sidebar-' . $rol . '.php'; ?>
+  <?php $sidebarActivo = 'tutorias'; require APP_PATH . '/views/partials/sidebar-' . $rol . '.php'; ?>
 
   <div class="dashboard-main-wrapper">
     <?php require APP_PATH . '/views/partials/topbar-privado.php'; ?>

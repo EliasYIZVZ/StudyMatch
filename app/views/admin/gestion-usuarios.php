@@ -32,7 +32,7 @@
   <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
 
   <!-- Estilos específicos de Gestión de Usuarios -->
-  <link rel="stylesheet" href="public/css/admin-usuarios.css?v=20261029_v3">
+  <link rel="stylesheet" href="public/css/admin-usuarios.css?v=20261104_fotos">
 </head>
 <body class="dashboard-body" data-role="admin">
 
@@ -207,10 +207,10 @@
               <i class="bi bi-people-fill me-1"></i> Padrón de Usuarios
             </span>
             <h1 class="h3 fw-bold mb-1 text-white" style="text-shadow: none;">
-              Gestión de Alumnos y Tutores
+              Gestión de Usuarios y Tutores
             </h1>
             <p class="text-white text-opacity-75 small mb-0">
-              Consulta de alumnos y tutores, y control de cuentas activas (suspender o reactivar).
+              Consulta de usuarios y tutores, y control de cuentas activas (suspender o reactivar).
             </p>
           </div>
           <div>
@@ -246,8 +246,8 @@
                 <button type="button" class="btn btn-sm btn-white active rounded-pill fw-semibold px-3 shadow-sm filter-btn-role" onclick="filtrarUsuarios('todos', this)">
                   Todos (<?= $cantTotal; ?>)
                 </button>
-                <button type="button" class="btn btn-sm text-secondary rounded-pill fw-semibold px-2.5 filter-btn-role" onclick="filtrarUsuarios('alumno', this)">
-                  <i class="bi bi-mortarboard me-1"></i>Alumnos (<?= $cantAlumnos; ?>)
+                <button type="button" class="btn btn-sm text-secondary rounded-pill fw-semibold px-2.5 filter-btn-role" onclick="filtrarUsuarios('usuario', this)">
+                  <i class="bi bi-person me-1"></i>Usuarios (<?= (int) $cantUsuarios; ?>)
                 </button>
                 <button type="button" class="btn btn-sm text-secondary rounded-pill fw-semibold px-2.5 filter-btn-role" onclick="filtrarUsuarios('tutor', this)">
                   <i class="bi bi-patch-check me-1 text-primary"></i>Tutores (<?= $cantTutores; ?>)
@@ -278,26 +278,19 @@
                   No se pudieron cargar los usuarios. Intentá nuevamente más tarde.
                 </td></tr>
               <?php elseif (empty($usuarios)): ?>
-                <tr><td colspan="4" class="text-center text-secondary py-5">Todavía no hay alumnos ni tutores registrados.</td></tr>
+                <tr><td colspan="4" class="text-center text-secondary py-5">Todavía no hay usuarios registrados.</td></tr>
               <?php endif; ?>
               <?php foreach ($usuarios as $usr): ?>
                 <?php 
                   $esTutor = $usr['es_tutor'];
-                  $rolType = $esTutor ? 'tutor' : 'alumno';
+                  $rolType = $esTutor ? 'tutor' : 'usuario';
                 ?>
                 <tr id="user-row-<?= $usr['id_usuario']; ?>" data-role-type="<?= $rolType; ?>">
                   
                   <!-- 1. Columna: Datos del Usuario (Avatar, Nombre y Correo) -->
                   <td>
                     <div class="d-flex align-items-center gap-3">
-                      <div class="avatar-user-badge <?= $usr['avatar_bg']; ?> fw-bold" style="width: 38px; height: 38px; font-size: 0.82rem;">
-                        <?php 
-                          $partes = explode(' ', $usr['nombre']);
-                          echo count($partes) >= 2 
-                            ? strtoupper(substr($partes[0], 0, 1) . substr($partes[1], 0, 1))
-                            : strtoupper(substr($usr['nombre'], 0, 2));
-                        ?>
-                      </div>
+                      <?= Vista::avatar($usr['nombre'], $usr['foto'], 'avatar-user-badge avatar-tabla fw-bold ' . $usr['avatar_bg']) ?>
                       <div class="d-flex flex-column lh-sm">
                         <span class="fw-bold text-dark user-name-slot"><?= htmlspecialchars($usr['nombre']); ?></span>
                         <span class="text-secondary small text-truncate" style="max-width: 220px; font-size: 0.78rem;"><?= htmlspecialchars($usr['correo']); ?></span>
@@ -326,11 +319,11 @@
 
                   <!-- 4. Columna: Botones de Acción [Ver Ficha] y [Suspender/Reactivar] -->
                   <td class="text-end">
-                    <div class="d-inline-flex align-items-center gap-1.5">
-                      
+                    <div class="d-inline-flex align-items-center gap-2 user-actions">
+
                       <!-- Botón Ver Ficha (Modal con rol completo y acreditaciones) -->
-                      <button type="button" 
-                              class="btn btn-sm btn-primary rounded-pill btn-action-user d-inline-flex align-items-center gap-1 shadow-sm px-3"
+                      <button type="button"
+                              class="btn btn-sm btn-primary btn-action-user d-inline-flex align-items-center justify-content-center gap-1"
                               onclick="abrirModalDetalles(<?= (int) $usr['id_usuario']; ?>)"
                               title="Ver ficha completa y rol del usuario">
                         <i class="bi bi-person-lines-fill"></i>
@@ -371,7 +364,7 @@
         <!-- RESUMEN INFERIOR -->
         <div class="card-footer border-top px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
           <div class="text-secondary small">
-            Mostrando <strong><?= (int) $cantTotal; ?></strong> usuarios (alumnos y tutores)
+            Mostrando <strong><?= (int) $cantTotal; ?></strong> usuarios (usuarios y tutores)
           </div>
         </div>
 
@@ -403,7 +396,7 @@
         <div class="modal-body p-4">
           <!-- Tarjeta de Identidad -->
           <div class="text-center pb-3 border-bottom mb-3">
-            <div id="modalAvatarDisplay" class="avatar-user-badge mx-auto mb-2 fw-bold" style="width: 58px; height: 58px; font-size: 1.25rem;">
+            <div id="modalAvatarDisplay" class="avatar-user-badge avatar-ficha mx-auto mb-2 fw-bold">
               --
             </div>
             <h5 class="fw-bold text-dark mb-0" id="modalNombreDisplay">Cargando...</h5>
@@ -593,7 +586,7 @@
     if (searchInput) searchInput.addEventListener('input', filtrarTabla);
 
     // ==========================================
-    // 4. Filtro Rápido por Rol (Todos, Alumnos, Tutores)
+    // 4. Filtro Rápido por Rol (Todos, Usuarios, Tutores)
     // ==========================================
     function filtrarUsuarios(tipo, btn) {
       filtroActual = tipo;
@@ -624,15 +617,12 @@
       document.getElementById('modalFechaDisplay').textContent = userData.fecha_registro;
       document.getElementById('modalBtnContactar').href = 'mailto:' + userData.correo;
 
-      const avatarBox = document.getElementById('modalAvatarDisplay');
-      avatarBox.className = 'avatar-user-badge mx-auto mb-2 fw-bold ' + userData.avatar_bg;
-      avatarBox.textContent = iniciales(userData.nombre);
+      pintarAvatar(document.getElementById('modalAvatarDisplay'), userData, 'avatar-user-badge avatar-ficha mx-auto mb-2 fw-bold');
 
-      // Todos son alumnos; es tutor quien publicó al menos una tutoría
-      let rolesHtml = '<span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 fw-semibold small"><i class="bi bi-mortarboard me-1"></i>Alumno</span>';
-      if (userData.es_tutor) {
-        rolesHtml += ' <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-semibold small"><i class="bi bi-patch-check-fill me-1"></i>Tutor</span>';
-      }
+      // Solo dos tipos: Tutor (publicó al menos una tutoría) o Usuario (el resto)
+      const rolesHtml = userData.es_tutor
+        ? '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-semibold small"><i class="bi bi-patch-check-fill me-1"></i>Tutor</span>'
+        : '<span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 fw-semibold small"><i class="bi bi-person me-1"></i>Usuario</span>';
       document.getElementById('modalRolesContainer').innerHTML = rolesHtml;
 
       document.getElementById('modalEstadoBadge').innerHTML = userData.estado === 'activo'
@@ -640,6 +630,14 @@
         : '<span class="badge bg-danger-subtle text-danger border border-danger-subtle">Suspendido</span>';
 
       bootstrap.Modal.getOrCreateInstance(document.getElementById('modalDetallesUsuario')).show();
+    }
+
+    // Círculo de avatar: la foto real si el usuario tiene una, si no sus iniciales
+    function pintarAvatar(el, usr, clasesBase) {
+      if (!el) return;
+      el.className = clasesBase + ' flex-shrink-0 ' + usr.avatar_bg + (usr.foto ? ' avatar-con-foto' : '');
+      el.style.backgroundImage = usr.foto ? `url('${usr.foto}')` : '';
+      el.textContent = usr.foto ? '' : iniciales(usr.nombre);
     }
 
     function iniciales(nombre) {
@@ -707,8 +705,7 @@
           : '<i class="bi bi-x-circle-fill me-1"></i>Suspendido';
       }
 
-      const avatar = row.querySelector('.avatar-user-badge');
-      if (avatar) avatar.className = 'avatar-user-badge fw-bold ' + usr.avatar_bg;
+      pintarAvatar(row.querySelector('.avatar-user-badge'), usr, 'avatar-user-badge avatar-tabla fw-bold');
 
       const slot = row.querySelector('.slot-boton-estado');
       if (slot) slot.innerHTML = htmlBotonEstado(id, estado);

@@ -62,7 +62,7 @@ final class User
     {
         $statement = $this->database->prepare(
             "SELECT u.id_usuario, u.nombre_usuario, u.correo_usuario, u.estado_usuario,
-                    u.carrera_usuario, u.anio_cursada_usuario, u.fecha_registro,
+                    u.carrera_usuario, u.anio_cursada_usuario, u.fecha_registro, u.foto_usuario,
                     (SELECT COUNT(*) FROM oferta_tutoria t WHERE t.id_tutor = u.id_usuario) AS publicadas
              FROM usuarios u
              WHERE u.rol_usuario = 'usuario'

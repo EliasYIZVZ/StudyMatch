@@ -39,6 +39,7 @@ final class AdminController extends Controller
                     'publicadas'     => (int) $fila['publicadas'],
                     'estado'         => $estado,
                     'fecha_registro' => Vista::fecha($fila['fecha_registro']),
+                    'foto'           => Vista::urlFoto($fila['foto_usuario']),
                     'avatar_bg'      => $estado === 'suspendido'
                         ? 'bg-danger-subtle text-danger'
                         : ($esTutor ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary'),
@@ -49,12 +50,15 @@ final class AdminController extends Controller
             $errorUsuarios = true;
         }
 
+        // Solo dos tipos: tutor (publicó al menos una tutoría) o usuario (el resto).
+        $cantTutores = count(array_filter($usuarios, function ($u) { return $u['es_tutor']; }));
+
         $this->renderAdmin('admin/gestion-usuarios', [
             'usuarios'      => $usuarios,
             'errorUsuarios' => $errorUsuarios,
             'cantTotal'     => count($usuarios),
-            'cantTutores'   => count(array_filter($usuarios, function ($u) { return $u['es_tutor']; })),
-            'cantAlumnos'   => count($usuarios),
+            'cantTutores'   => $cantTutores,
+            'cantUsuarios'  => count($usuarios) - $cantTutores,
         ]);
     }
 
@@ -108,6 +112,162 @@ final class AdminController extends Controller
     public function materias()
     {
         $this->renderAdmin('admin/gestion-materias', $this->datosMaterias());
+    }
+
+    /**
+     * Alta o edición de una materia (id_materia vacío = alta). Responde JSON.
+     */
+    public function guardarMateria()
+    {
+        if (!$this->isPost()) {
+            $this->redirect('index.php?r=admin-materias');
+            return;
+        }
+
+        $id = (int) $this->postTexto('id_materia');
+        $idCarrera = (int) $this->postTexto('id_carrera');
+        $nombre = $this->postTexto('nombre');
+        $anioTexto = $this->postTexto('anio_carrera');
+        $descripcion = $this->postTexto('descripcion');
+
+        if ($nombre === '' || mb_strlen($nombre, 'UTF-8') > 255) {
+            $this->json(['ok' => false, 'error' => 'Ingresá el nombre de la materia (hasta 255 caracteres).']);
+            return;
+        }
+        if ($anioTexto !== '' && !preg_match('/^[1-6]$/', $anioTexto)) {
+            $this->json(['ok' => false, 'error' => 'El año debe estar entre 1 y 6.']);
+            return;
+        }
+        $anio = $anioTexto === '' ? null : (int) $anioTexto;
+        $descripcion = $descripcion === '' ? null : mb_substr($descripcion, 0, 1000, 'UTF-8');
+
+        try {
+            $db = Database::getConnection();
+            $materias = new Materia($db);
+
+            if (!$materias->existeCarrera($idCarrera)) {
+                $this->json(['ok' => false, 'error' => 'Elegí una carrera válida.']);
+                return;
+            }
+
+            if ($id > 0) {
+                if (!$materias->actualizar($id, $idCarrera, $nombre, $anio, $descripcion)) {
+                    $this->json(['ok' => false, 'error' => 'La materia no existe.']);
+                    return;
+                }
+                $this->registrarAuditoria($db, "Materia \"{$nombre}\" (#{$id}) editada por el administrador.");
+                $mensaje = 'Materia actualizada correctamente.';
+            } else {
+                $id = $materias->crear($idCarrera, $nombre, $anio, $descripcion);
+                $this->registrarAuditoria($db, "Materia \"{$nombre}\" (#{$id}) creada por el administrador.", 'crear');
+                $mensaje = 'Materia creada correctamente.';
+            }
+
+            $this->json(['ok' => true, 'mensaje' => $mensaje]);
+        } catch (PDOException $e) {
+            if (isset($e->errorInfo[1]) && (int) $e->errorInfo[1] === 1062) {
+                $this->json(['ok' => false, 'error' => 'Esa carrera ya tiene una materia con ese nombre.']);
+                return;
+            }
+            error_log('Error al guardar la materia: ' . $e->getMessage());
+            $this->json(['ok' => false, 'error' => 'Error en la base de datos.']);
+        }
+    }
+
+    /**
+     * Elimina una materia sin tutorías publicadas. Responde JSON.
+     */
+    public function eliminarMateria()
+    {
+        if (!$this->isPost()) {
+            $this->redirect('index.php?r=admin-materias');
+            return;
+        }
+
+        $id = (int) $this->postTexto('id_materia');
+        if ($id <= 0) {
+            $this->json(['ok' => false, 'error' => 'Parámetros inválidos.']);
+            return;
+        }
+
+        try {
+            $db = Database::getConnection();
+            $resultado = (new Materia($db))->eliminar($id);
+
+            if ($resultado['estado'] === 'no_existe') {
+                $this->json(['ok' => false, 'error' => 'La materia ya no existe.']);
+                return;
+            }
+            if ($resultado['estado'] === 'con_tutorias') {
+                $n = $resultado['tutorias'];
+                $this->json(['ok' => false, 'error' => "No se puede eliminar: tiene {$n} " . ($n === 1 ? 'tutoría publicada.' : 'tutorías publicadas.')]);
+                return;
+            }
+
+            $this->registrarAuditoria($db, "Materia \"{$resultado['nombre']}\" (#{$id}) eliminada por el administrador.", 'eliminar');
+            $this->json(['ok' => true, 'mensaje' => 'Materia eliminada del catálogo.']);
+        } catch (PDOException $e) {
+            error_log('Error al eliminar la materia: ' . $e->getMessage());
+            $this->json(['ok' => false, 'error' => 'Error en la base de datos.']);
+        }
+    }
+
+    /**
+     * Alta o edición de una carrera (id_carrera vacío = alta). Responde JSON.
+     */
+    public function guardarCarrera()
+    {
+        if (!$this->isPost()) {
+            $this->redirect('index.php?r=admin-materias');
+            return;
+        }
+
+        $id = (int) $this->postTexto('id_carrera');
+        $nombre = $this->postTexto('nombre');
+        $codigo = strtoupper($this->postTexto('codigo'));
+        $activa = $this->postTexto('activa') !== '0';
+
+        if ($nombre === '' || mb_strlen($nombre, 'UTF-8') > 150) {
+            $this->json(['ok' => false, 'error' => 'Ingresá el nombre de la carrera (hasta 150 caracteres).']);
+            return;
+        }
+        if (!preg_match('/^[A-Z0-9_-]{2,20}$/', $codigo)) {
+            $this->json(['ok' => false, 'error' => 'La sigla debe tener entre 2 y 20 letras o números (sin espacios).']);
+            return;
+        }
+
+        try {
+            $db = Database::getConnection();
+            $materias = new Materia($db);
+
+            if ($id > 0) {
+                if (!$materias->actualizarCarrera($id, $nombre, $codigo, $activa)) {
+                    $this->json(['ok' => false, 'error' => 'La carrera no existe.']);
+                    return;
+                }
+                $this->registrarAuditoria($db, "Carrera \"{$nombre}\" ({$codigo}, #{$id}) editada por el administrador.");
+                $mensaje = 'Carrera actualizada correctamente.';
+            } else {
+                $id = $materias->crearCarrera($nombre, $codigo);
+                $this->registrarAuditoria($db, "Carrera \"{$nombre}\" ({$codigo}, #{$id}) creada por el administrador.", 'crear');
+                $mensaje = 'Carrera creada correctamente.';
+            }
+
+            $this->json(['ok' => true, 'mensaje' => $mensaje]);
+        } catch (PDOException $e) {
+            if (isset($e->errorInfo[1]) && (int) $e->errorInfo[1] === 1062) {
+                $this->json(['ok' => false, 'error' => 'Ya existe una carrera con ese nombre o esa sigla.']);
+                return;
+            }
+            error_log('Error al guardar la carrera: ' . $e->getMessage());
+            $this->json(['ok' => false, 'error' => 'Error en la base de datos.']);
+        }
+    }
+
+    /** Valor de $_POST como texto recortado ('' si falta o no es texto). */
+    private function postTexto($clave)
+    {
+        return isset($_POST[$clave]) && is_string($_POST[$clave]) ? trim($_POST[$clave]) : '';
     }
 
     public function salas()
@@ -294,13 +454,14 @@ final class AdminController extends Controller
     /**
      * Deja constancia de una acción del administrador en la auditoría.
      */
-    private function registrarAuditoria(PDO $db, $descripcion)
+    private function registrarAuditoria(PDO $db, $descripcion, $accion = 'modificar')
     {
         $db->prepare(
-            "INSERT INTO auditoria (id_usuario, accion, descripcion, ip) VALUES (:admin, 'modificar', :descripcion, :ip)"
+            'INSERT INTO auditoria (id_usuario, accion, descripcion, ip) VALUES (:admin, :accion, :descripcion, :ip)'
         )->execute([
             'admin' => Session::userId(),
-            'descripcion' => $descripcion,
+            'accion' => in_array($accion, ['crear', 'modificar', 'eliminar'], true) ? $accion : 'modificar',
+            'descripcion' => mb_substr($descripcion, 0, 255, 'UTF-8'),
             'ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1',
         ]);
     }
@@ -344,121 +505,55 @@ final class AdminController extends Controller
     }
 
     // ------------------------------------------------------------------
-    // Datos simulados: gestion-materias
+    // Gestión de materias y carreras: catálogo real (tablas `materia` y `carreras`)
     // ------------------------------------------------------------------
     private function datosMaterias()
     {
-        /* ==========================================================================
-         * GUÍA DE INTEGRACIÓN BACKEND (PHP PDO + MySQL):
-         * ==========================================================================
-         * Tu compañero de backend podrá conectar esta vista con la base de datos:
-         * 
-         * $db = Database::getConnection();
-         * 
-         * 1. Carreras registradas:
-         *    $carreras = $db->query("SELECT c.*, COUNT(m.id_materia) as materias_count 
-         *                            FROM carreras c 
-         *                            LEFT JOIN materias m ON c.codigo = m.carrera 
-         *                            GROUP BY c.id_carrera ORDER BY c.nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
-         * 
-         * 2. Catálogo de materias:
-         *    $materias = $db->query("SELECT id_materia, codigo, nombre, carrera, tipo 
-         *                            FROM materias ORDER BY codigo ASC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
-         * ========================================================================== */
+        $carreras = [];
+        $materias = [];
+        $errorMaterias = false;
+        $metricas = ['alumnos' => ['total' => 0], 'salas' => ['activas' => 0], 'materias' => ['total' => 0]];
+        $totalReportes = 0;
 
-        // Catálogo de carreras registradas en la facultad
-        $carreras = [
-            [
-                'id_carrera'      => 1,
-                'codigo'          => 'TUP',
-                'nombre'          => 'Tecnicatura Universitaria en Programación',
-                'color'           => 'primary',
-                'icono'           => 'bi-code-slash',
-                'materias_count'  => 3
-            ],
-            [
-                'id_carrera'      => 2,
-                'codigo'          => 'TGE',
-                'nombre'          => 'Tecnicatura en Gestión Empresarial',
-                'color'           => 'info',
-                'icono'           => 'bi-briefcase-fill',
-                'materias_count'  => 1
-            ],
-            [
-                'id_carrera'      => 3,
-                'codigo'          => 'ISI',
-                'nombre'          => 'Ingeniería en Sistemas de Información',
-                'color'           => 'success',
-                'icono'           => 'bi-cpu-fill',
-                'materias_count'  => 0
-            ],
-            [
-                'id_carrera'      => 4,
-                'codigo'          => 'LAR',
-                'nombre'          => 'Licenciatura en Administración Rural',
-                'color'           => 'warning',
-                'icono'           => 'bi-tree-fill',
-                'materias_count'  => 0
-            ]
-        ];
+        try {
+            $db = Database::getConnection();
+            $modelo = new Materia($db);
 
-        // Datos simulados del catálogo general de materias (5 ejemplos representativos)
-        $materias = [
-            [
-                'id_materia' => 1,
-                'codigo'     => 'TUP-01',
-                'nombre'     => 'Programación I (C++)',
-                'carrera'    => 'TUP',
-                'tipo'       => 'carrera'
-            ],
-            [
-                'id_materia' => 2,
-                'codigo'     => 'TUP-02',
-                'nombre'     => 'Sistemas de Procesamiento de Datos',
-                'carrera'    => 'TUP',
-                'tipo'       => 'carrera'
-            ],
-            [
-                'id_materia' => 3,
-                'codigo'     => 'GEN-01',
-                'nombre'     => 'Inglés Técnico I',
-                'carrera'    => 'General',
-                'tipo'       => 'libre'
-            ],
-            [
-                'id_materia' => 4,
-                'codigo'     => 'TGE-01',
-                'nombre'     => 'Principios de Administración y Organización',
-                'carrera'    => 'TGE',
-                'tipo'       => 'carrera'
-            ],
-            [
-                'id_materia' => 5,
-                'codigo'     => 'TUP-03',
-                'nombre'     => 'Bases de Datos Relacionales (SQL)',
-                'carrera'    => 'TUP',
-                'tipo'       => 'carrera'
-            ]
-        ];
+            foreach ($modelo->listarCarrerasParaAdmin() as $fila) {
+                $carreras[] = [
+                    'id_carrera' => (int) $fila['id_carrera'],
+                    'codigo'     => $fila['codigo_carrera'],
+                    'nombre'     => $fila['nombre_carrera'],
+                    'activa'     => (int) $fila['activa'] === 1,
+                    'materias'   => (int) $fila['materias'],
+                ];
+            }
 
-        // Contadores rápidos para métricas y filtros
-        $cantTotal    = count($materias);
+            foreach ($modelo->listarParaAdmin() as $fila) {
+                $materias[] = [
+                    'id_materia'  => (int) $fila['id_materia'],
+                    'nombre'      => $fila['nombre'],
+                    'anio'        => $fila['anio_carrera'] === null ? null : (int) $fila['anio_carrera'],
+                    'descripcion' => (string) $fila['descripcion'],
+                    'id_carrera'  => (int) $fila['id_carrera'],
+                    'carrera'     => $fila['codigo_carrera'],
+                    'carrera_nombre' => $fila['nombre_carrera'],
+                    'tutorias'    => (int) $fila['tutorias'],
+                ];
+            }
+
+            // Contadores del menú lateral (los mismos que usa el resumen)
+            $metricas = (new MetricasAdmin($db))->resumen();
+            $totalReportes = (int) (new Reporte($db))->metricas()['pendientes'];
+        } catch (PDOException $e) {
+            error_log('Error al cargar materias y carreras: ' . $e->getMessage());
+            $errorMaterias = true;
+        }
+
+        $cantTotal = count($materias);
         $cantCarreras = count($carreras);
-        $cantLibres   = count(array_filter($materias, fn($m) => $m['carrera'] === 'General' || $m['tipo'] === 'libre'));
-        $cantTUP      = count(array_filter($materias, fn($m) => $m['carrera'] === 'TUP'));
-        $cantTGE      = count(array_filter($materias, fn($m) => $m['carrera'] === 'TGE'));
-        $cantISI      = count(array_filter($materias, fn($m) => $m['carrera'] === 'ISI'));
 
-        return compact(
-            'carreras',
-            'materias',
-            'cantTotal',
-            'cantCarreras',
-            'cantLibres',
-            'cantTUP',
-            'cantTGE',
-            'cantISI'
-        );
+        return compact('carreras', 'materias', 'cantTotal', 'cantCarreras', 'errorMaterias', 'metricas', 'totalReportes');
     }
 
     // ------------------------------------------------------------------
