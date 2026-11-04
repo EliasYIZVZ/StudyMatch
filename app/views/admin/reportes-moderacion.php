@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Estilos base compartidos de Dashboards -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261103_page_title">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_reportes">
 
   <!-- Estilos globales de Administración (sidebar claro gris azulado / oscuro grafito) -->
   <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
@@ -214,7 +214,7 @@
               Centro de Moderación y Alertas
             </h1>
             <p class="text-white text-opacity-75 small mb-0">
-              Gestión de reportes comunitarios y control disciplinario sobre salas de Discord y cuentas de alumnos.
+              Gestión de reportes comunitarios sobre salas, tutorías, mensajes, tutores y alumnos.
             </p>
           </div>
 
@@ -247,16 +247,24 @@
             <div class="d-flex align-items-center flex-wrap gap-2">
               
               <!-- Filtro tipo píldora con contadores integrados -->
-              <div class="btn-group btn-group-sm rounded-pill p-1 bg-light border" role="group" aria-label="Filtro de reportes">
+              <div class="btn-group btn-group-sm flex-wrap rounded-pill p-1 bg-light border" role="group" aria-label="Filtro de reportes">
+                <?php
+                  $filtrosTipo = [
+                      'sala'    => ['bi-discord text-primary', 'Sala'],
+                      'tutoria' => ['bi-journal-text', 'Tutoría'],
+                      'mensaje' => ['bi-chat-left-text', 'Mensaje'],
+                      'tutor'   => ['bi-patch-check text-primary', 'Tutor'],
+                      'alumno'  => ['bi-mortarboard', 'Alumno'],
+                  ];
+                ?>
                 <button type="button" class="btn btn-sm btn-white active rounded-pill fw-semibold px-3 shadow-sm filter-btn-tipo" onclick="cambiarFiltroTipo('todos', this)">
                   Todos <span class="badge bg-secondary-subtle text-dark ms-1" id="countFilterTodos"><?= $totalReportes; ?></span>
                 </button>
-                <button type="button" class="btn btn-sm text-secondary rounded-pill fw-semibold px-2.5 filter-btn-tipo" onclick="cambiarFiltroTipo('sala', this)">
-                  <i class="bi bi-discord me-1 text-primary"></i>Discord <span class="badge bg-secondary-subtle text-secondary ms-1" id="countFilterSalas"><?= $salasReportadas; ?></span>
-                </button>
-                <button type="button" class="btn btn-sm text-secondary rounded-pill fw-semibold px-2.5 filter-btn-tipo" onclick="cambiarFiltroTipo('usuario', this)">
-                  <i class="bi bi-person me-1"></i>Alumnos <span class="badge bg-secondary-subtle text-secondary ms-1" id="countFilterUsuarios"><?= $usuariosReportados; ?></span>
-                </button>
+                <?php foreach ($filtrosTipo as $clave => $filtro): ?>
+                  <button type="button" class="btn btn-sm text-secondary rounded-pill fw-semibold px-2.5 filter-btn-tipo" onclick="cambiarFiltroTipo('<?= $clave; ?>', this)">
+                    <i class="bi <?= $filtro[0]; ?> me-1"></i><?= $filtro[1]; ?> <span class="badge bg-secondary-subtle text-secondary ms-1" data-count-tipo="<?= $clave; ?>"><?= (int) $conteoTipos[$clave]; ?></span>
+                  </button>
+                <?php endforeach; ?>
               </div>
 
               <!-- Menú Desplegable con: Más nuevos, Pendientes, Resueltos -->
@@ -265,9 +273,10 @@
                         class="form-select form-select-sm rounded-pill bg-light border px-3 py-1.5 fw-semibold text-secondary shadow-none" 
                         style="min-width: 155px; font-size: 0.82rem;" 
                         onchange="cambiarFiltroSelect(this.value)">
-                  <option value="nuevos" selected>Más nuevos</option>
-                  <option value="pendientes">Pendientes</option>
-                  <option value="resueltos">Resueltos</option>
+                  <option value="nuevos" selected>Más nuevos (Todos)</option>
+                  <option value="pendiente">🟡 Pendientes</option>
+                  <option value="finalizado">🟢 Finalizados</option>
+                  <option value="rechazado">⚪ Rechazados</option>
                 </select>
               </div>
 
@@ -303,17 +312,21 @@
                     data-estado="<?= $rep['estado']; ?>"
                     data-timestamp="<?= $rep['timestamp']; ?>">
                   
-                  <!-- 1. Columna: Tipo (Discord / Alumno) -->
+                  <!-- 1. Columna: Tipo (Sala / Tutoría / Mensaje / Tutor / Alumno) -->
                   <td>
-                    <?php if ($esSala): ?>
-                      <span class="badge badge-tipo-elemento" style="background-color: rgba(88, 101, 242, 0.15); color: #5865F2; border: 1px solid rgba(88, 101, 242, 0.3);">
-                        <i class="bi bi-discord"></i> Discord
-                      </span>
-                    <?php else: ?>
-                      <span class="badge badge-tipo-elemento bg-primary-subtle text-primary border border-primary-subtle">
-                        <i class="bi bi-person-fill"></i> Alumno
-                      </span>
-                    <?php endif; ?>
+                    <?php
+                      $estilosTipo = [
+                          'sala'    => ['bi-discord', 'badge-tipo-elemento', 'background-color: rgba(88, 101, 242, 0.15); color: #5865F2; border: 1px solid rgba(88, 101, 242, 0.3);'],
+                          'tutoria' => ['bi-journal-text', 'badge-tipo-elemento bg-info-subtle text-info-emphasis border border-info-subtle', ''],
+                          'mensaje' => ['bi-chat-left-text', 'badge-tipo-elemento bg-warning-subtle text-warning-emphasis border border-warning-subtle', ''],
+                          'tutor'   => ['bi-patch-check-fill', 'badge-tipo-elemento bg-success-subtle text-success border border-success-subtle', ''],
+                          'alumno'  => ['bi-mortarboard-fill', 'badge-tipo-elemento bg-primary-subtle text-primary border border-primary-subtle', ''],
+                      ];
+                      $estiloTipo = $estilosTipo[$rep['tipo']];
+                    ?>
+                    <span class="badge <?= $estiloTipo[1]; ?>"<?= $estiloTipo[2] !== '' ? ' style="' . $estiloTipo[2] . '"' : ''; ?>>
+                      <i class="bi <?= $estiloTipo[0]; ?>"></i> <?= htmlspecialchars($rep['tipo_etiqueta']); ?>
+                    </span>
                   </td>
 
                   <!-- 2. Columna: Elemento Reportado -->
@@ -344,17 +357,22 @@
                     </div>
                   </td>
 
-                  <!-- 5. Columna: Estado (Pendiente / Resuelto) -->
+                  <!-- 5. Columna: Estado (Pendiente / Finalizado / Rechazado) -->
                   <td class="estado-badge-slot">
-                    <?php if ($esPendiente): ?>
+                    <?php if ($rep['estado'] === 'pendiente'): ?>
                       <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1.5">
                         <span class="live-dot pulse-warning"></span>
                         <span>Pendiente</span>
                       </span>
-                    <?php else: ?>
+                    <?php elseif ($rep['estado'] === 'finalizado'): ?>
                       <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
                         <i class="bi bi-check-circle-fill"></i>
-                        <span>Resuelto</span>
+                        <span>Finalizado</span>
+                      </span>
+                    <?php else: ?>
+                      <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-x-circle"></i>
+                        <span>Rechazado</span>
                       </span>
                     <?php endif; ?>
                   </td>
@@ -391,6 +409,13 @@
         </div>
 
         <!-- Estado vacío -->
+        <?php if ($errorReportes): ?>
+          <div class="p-5 text-center bg-white">
+            <i class="bi bi-exclamation-triangle text-warning fs-1 d-block mb-2"></i>
+            <p class="text-secondary mb-0">No se pudieron cargar los reportes. Intentá nuevamente más tarde.</p>
+          </div>
+        <?php endif; ?>
+
         <div id="emptySearchReportes" class="p-5 text-center bg-white" style="display: none;">
           <div class="bg-light text-muted rounded-circle p-3 d-inline-flex mb-3">
             <i class="bi bi-shield-check fs-1 text-success"></i>
@@ -478,11 +503,12 @@
             <p class="text-secondary small mb-0" id="detDescripcion" style="line-height: 1.5;">...</p>
           </div>
 
-          <!-- Evidencia o enlace -->
+          <!-- Información adjunta: copia de lo reportado al momento del reporte -->
           <div class="p-3 rounded-3 border mb-2">
-            <span class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.68rem;">Evidencia / Referencia de Ubicación:</span>
-            <code class="text-dark d-block text-break" id="detEvidencia">...</code>
+            <span class="text-muted text-uppercase fw-bold d-block mb-2" style="font-size: 0.68rem;">Información adjunta (copia al momento del reporte):</span>
+            <dl class="row mb-0 small" id="detEvidencia"></dl>
           </div>
+          <p class="small text-secondary mb-0 mt-2" id="detSancion"></p>
 
         </div>
 
@@ -500,7 +526,7 @@
                     id="btnDescartarModal"
                     onclick="descartarDesdeModal()">
               <i class="bi bi-trash"></i>
-              <span>Descartar Alerta</span>
+              <span>Rechazar Reporte</span>
             </button>
 
             <!-- Botón Dinámico: Desactivar Sala de Discord O Desactivar Cuenta de Alumno -->
@@ -587,7 +613,7 @@
     // ==========================================
     const ITEMS_POR_PAGINA = 5;
     let paginaActualRep = 1;
-    let filtroTipoActual = 'todos';     // 'todos' | 'sala' (Discord) | 'usuario' (Alumnos)
+    let filtroTipoActual = 'todos';     // 'todos' | 'sala' | 'tutoria' | 'mensaje' | 'tutor' | 'alumno'
     let filtroOrdenEstado = 'nuevos';   // 'nuevos' | 'pendientes' | 'resueltos'
     let reportesFiltrados = [];
 
@@ -602,12 +628,14 @@
         // Filtro 1: Discord o Alumnos
         let coincideTipo = (filtroTipoActual === 'todos') || (tipo === filtroTipoActual);
 
-        // Filtro 2: Desplegable (Más nuevos, Pendientes, Resueltos)
+        // Filtro 2: Desplegable (Más nuevos, Pendientes, Finalizados, Rechazados)
         let coincideEstado = true;
-        if (filtroOrdenEstado === 'pendientes') {
+        if (filtroOrdenEstado === 'pendiente') {
           coincideEstado = (estado === 'pendiente');
-        } else if (filtroOrdenEstado === 'resueltos') {
-          coincideEstado = (estado === 'resuelto');
+        } else if (filtroOrdenEstado === 'finalizado') {
+          coincideEstado = (estado === 'finalizado');
+        } else if (filtroOrdenEstado === 'rechazado') {
+          coincideEstado = (estado === 'rechazado');
         }
 
         return coincideTipo && coincideEstado;
@@ -735,7 +763,8 @@
       document.getElementById('detDenuncianteNombre').textContent = rep.denunciante;
       document.getElementById('detDenuncianteRol').textContent = rep.denunciante_rol;
       document.getElementById('detDenuncianteAvatar').textContent = rep.denunciante_avatar;
-      document.getElementById('detEvidencia').textContent = rep.evidencia_url || 'Sin evidencia adjunta';
+      renderEvidencia(rep.evidencia);
+      document.getElementById('detSancion').textContent = textoSancion(rep);
 
       // Configurar botón dinámico según si es Discord o Alumno
       const btnDesactivar = document.getElementById('btnAccionDesactivarModal');
@@ -743,29 +772,60 @@
       const textoDesactivar = document.getElementById('textoAccionDesactivar');
       const btnDescartarModal = document.getElementById('btnDescartarModal');
 
-      if (rep.estado === 'resuelto') {
+      if (rep.estado === 'finalizado' || rep.estado === 'rechazado') {
         btnDesactivar.disabled = true;
         btnDesactivar.className = 'btn btn-secondary rounded-pill px-4 disabled';
         iconoDesactivar.className = 'bi bi-check-circle-fill me-1';
-        textoDesactivar.textContent = 'Caso ya Resuelto';
+        textoDesactivar.textContent = (rep.estado === 'finalizado') ? 'Caso Finalizado' : 'Caso Rechazado';
         if (btnDescartarModal) btnDescartarModal.style.display = 'none';
       } else {
         btnDesactivar.disabled = false;
         btnDesactivar.className = 'btn btn-danger rounded-pill px-4 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm';
         if (btnDescartarModal) btnDescartarModal.style.display = 'inline-flex';
         
-        if (rep.tipo === 'sala') {
-          iconoDesactivar.className = 'bi bi-slash-circle me-1';
-          textoDesactivar.textContent = 'Desactivar Sala de Discord';
-        } else {
-          iconoDesactivar.className = 'bi bi-person-slash me-1';
-          textoDesactivar.textContent = 'Desactivar Cuenta de Alumno';
-        }
+        const esSala = rep.tipo === 'sala';
+        iconoDesactivar.className = esSala ? 'bi bi-slash-circle me-1' : 'bi bi-person-slash me-1';
+        textoDesactivar.textContent = esSala ? 'Suspender Sala y Finalizar' : 'Inactivar Usuario y Finalizar';
       }
 
       const modalEl = document.getElementById('modalDetalleReporte');
       const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
       modal.show();
+    }
+
+    // La evidencia es texto de otros usuarios: se inserta siempre como texto, nunca como HTML
+    function renderEvidencia(evidencia) {
+      const lista = document.getElementById('detEvidencia');
+      lista.textContent = '';
+      const claves = Object.keys(evidencia || {});
+
+      if (claves.length === 0) {
+        const vacio = document.createElement('dd');
+        vacio.className = 'col-12 mb-0 text-muted';
+        vacio.textContent = 'Sin información adjunta.';
+        lista.appendChild(vacio);
+        return;
+      }
+
+      claves.forEach(clave => {
+        const dt = document.createElement('dt');
+        dt.className = 'col-sm-4 text-secondary fw-semibold';
+        dt.textContent = clave;
+        const dd = document.createElement('dd');
+        dd.className = 'col-sm-8 mb-1 text-dark text-break';
+        dd.style.whiteSpace = 'pre-line';
+        dd.textContent = evidencia[clave];
+        lista.appendChild(dt);
+        lista.appendChild(dd);
+      });
+    }
+
+    function textoSancion(rep) {
+      if (rep.estado !== 'pendiente') return '';
+      if (rep.tipo === 'sala') return 'Al finalizar, la sala de Discord quedará suspendida.';
+      if (!rep.reportado) return 'El usuario reportado ya no existe: no hay a quién sancionar.';
+      if (rep.reportado_estado !== 'activo') return `La cuenta de ${rep.reportado} ya está inactiva.`;
+      return `Al finalizar, la cuenta de ${rep.reportado} quedará inactiva (podés reactivarla desde Gestión de Usuarios).`;
     }
 
     function descartarDesdeModal() {
@@ -781,87 +841,129 @@
       if (!reporteActivoEnModal) return;
 
       const id = reporteActivoEnModal.id_reporte;
-      const esSala = (reporteActivoEnModal.tipo === 'sala');
-      const row = document.getElementById(`row-reporte-${id}`);
+      const btn = document.getElementById('btnAccionDesactivarModal');
+      if (btn) btn.disabled = true;
 
-      if (row) {
-        row.setAttribute('data-estado', 'resuelto');
-        row.classList.add('fila-resuelta');
+      const formData = new FormData();
+      formData.append('id_reporte', id);
+      formData.append('accion', 'finalizar');
 
-        // Actualizar badge de estado a Resuelto
-        const badgeSlot = row.querySelector('.estado-badge-slot');
-        if (badgeSlot) {
-          badgeSlot.innerHTML = `
-            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
-              <i class="bi bi-check-circle-fill"></i>
-              <span>Resuelto</span>
-            </span>
-          `;
+      fetch('index.php?r=admin-resolver-reporte', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          const row = document.getElementById(`row-reporte-${id}`);
+          if (row) {
+            row.setAttribute('data-estado', 'finalizado');
+            row.classList.add('fila-resuelta');
+
+            const badgeSlot = row.querySelector('.estado-badge-slot');
+            if (badgeSlot) {
+              badgeSlot.innerHTML = `
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-check-circle-fill"></i>
+                  <span>Finalizado</span>
+                </span>
+              `;
+            }
+          }
+
+          reporteActivoEnModal.estado = 'finalizado';
+          const modalEl = document.getElementById('modalDetalleReporte');
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) modal.hide();
+
+          actualizarContadorPendientes();
+          actualizarPaginacionRep();
+          mostrarToast(data.mensaje || 'Reporte finalizado y sanción aplicada.');
+        } else {
+          alert(data.error || 'No se pudo resolver el reporte.');
+          if (btn) btn.disabled = false;
         }
-      }
-
-      reporteActivoEnModal.estado = 'resuelto';
-
-      // Cerrar modal
-      const modalEl = document.getElementById('modalDetalleReporte');
-      const modal = bootstrap.Modal.getInstance(modalEl);
-      if (modal) modal.hide();
-
-      // Recalcular contador de pendientes
-      actualizarContadorPendientes();
-      actualizarPaginacionRep();
-
-      const mensaje = esSala ? 
-        `Sala de Discord desactivada y reporte #${id} marcado como resuelto.` : 
-        `Cuenta de alumno suspendida y reporte #${id} marcado como resuelto.`;
-
-      mostrarToast(mensaje);
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error al comunicar con el servidor.');
+        if (btn) btn.disabled = false;
+      });
     }
 
     // ==========================================
     // 5. [Descartar Alerta]
     // ==========================================
     function descartarAlerta(id) {
-      const row = document.getElementById(`row-reporte-${id}`);
-      if (row) {
-        row.style.transition = 'all 0.25s ease';
-        row.style.opacity = '0';
-        row.style.transform = 'scale(0.96)';
-        setTimeout(() => {
-          row.remove();
+      if (!confirm('¿Deseas rechazar y desestimar este reporte?')) return;
+
+      const formData = new FormData();
+      formData.append('id_reporte', id);
+      formData.append('accion', 'rechazar');
+
+      fetch('index.php?r=admin-resolver-reporte', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          const row = document.getElementById(`row-reporte-${id}`);
+          if (row) {
+            row.setAttribute('data-estado', 'rechazado');
+            row.classList.add('fila-resuelta');
+
+            const badgeSlot = row.querySelector('.estado-badge-slot');
+            if (badgeSlot) {
+              badgeSlot.innerHTML = `
+                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-x-circle"></i>
+                  <span>Rechazado</span>
+                </span>
+              `;
+            }
+          }
+
+          if (reporteActivoEnModal && reporteActivoEnModal.id_reporte == id) {
+            reporteActivoEnModal.estado = 'rechazado';
+          }
+
           actualizarContadorPendientes();
           actualizarPaginacionRep();
-          mostrarToast(`Alerta #${id} descartada por falta de mérito.`);
-        }, 250);
-      }
+          mostrarToast(data.mensaje || `Reporte #${id} rechazado.`);
+        } else {
+          alert(data.error || 'No se pudo rechazar el reporte.');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error al procesar el rechazo del reporte.');
+      });
     }
 
     function actualizarContadorPendientes() {
       const rows = document.querySelectorAll('#tablaReportesBody .reporte-row');
       let pendientes = 0;
-      let salas = 0;
-      let usuarios = 0;
+      const porTipo = {};
       let total = rows.length;
 
       rows.forEach(r => {
         const est = r.getAttribute('data-estado');
         const tip = r.getAttribute('data-tipo');
         if (est === 'pendiente') pendientes++;
-        if (tip === 'sala') salas++;
-        if (tip === 'usuario') usuarios++;
+        porTipo[tip] = (porTipo[tip] || 0) + 1;
       });
 
       const badgeHeader = document.getElementById('badgeHeaderPendientes');
       const badgeNav = document.getElementById('badgeSidebarReportes');
       const countTodos = document.getElementById('countFilterTodos');
-      const countSalas = document.getElementById('countFilterSalas');
-      const countUsuarios = document.getElementById('countFilterUsuarios');
 
       if (badgeHeader) badgeHeader.textContent = `${pendientes} pendientes`;
       if (badgeNav) badgeNav.textContent = pendientes;
       if (countTodos) countTodos.textContent = total;
-      if (countSalas) countSalas.textContent = salas;
-      if (countUsuarios) countUsuarios.textContent = usuarios;
+      document.querySelectorAll('[data-count-tipo]').forEach(el => {
+        el.textContent = porTipo[el.getAttribute('data-count-tipo')] || 0;
+      });
     }
 
     function actualizarListaReportes() {

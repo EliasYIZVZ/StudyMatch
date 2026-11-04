@@ -49,7 +49,7 @@ html, body {
 body.dashboard-body {
   font-family: var(--font-primary);
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.82) 40%, rgba(224, 242, 254, 0.86) 100%) no-repeat center / cover fixed,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.76) 0%, rgba(248, 250, 252, 0.70) 40%, rgba(224, 242, 254, 0.74) 100%) no-repeat center / cover fixed,
     url('../img/Utn_ia4.jfif') no-repeat center / cover fixed !important;
   color: var(--text-main);
   display: flex !important;
@@ -63,8 +63,30 @@ body.dashboard-body {
 
 body.dashboard-body[data-role="tutor"] {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.82) 40%, rgba(224, 242, 254, 0.86) 100%) no-repeat center / cover fixed,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.76) 0%, rgba(248, 250, 252, 0.70) 40%, rgba(224, 242, 254, 0.74) 100%) no-repeat center / cover fixed,
     url('../img/Utn_ia7.jfif') no-repeat center / cover fixed !important;
+}
+
+/* Modo claro: con la foto de fondo más visible, los textos que quedan directo
+   sobre ella llevan un halo claro suave (sobre las cards blancas no se nota). */
+:root:not([data-bs-theme="dark"]) :is(h1, h2, h3, .lead, .text-dark, .text-secondary, .text-muted) {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85), 0 0 8px rgba(255, 255, 255, 0.7);
+}
+
+/* Gris secundario más oscuro para que subtítulos y etiquetas se lean sobre la foto */
+:root:not([data-bs-theme="dark"]) body.dashboard-body .text-secondary {
+  color: #475569 !important;
+}
+
+/* Texto con degradé (transparente + background-clip): el halo lo desluciría */
+:root:not([data-bs-theme="dark"]) .text-gradient {
+  text-shadow: none;
+}
+
+/* El halo no debe aparecer en textos sobre fondos oscuros o de color pleno */
+:root:not([data-bs-theme="dark"]) :is(.btn, .badge, .bg-primary, .bg-dark, .bg-danger, .bg-success, .text-bg-primary, .navbar-brand) :is(h1, h2, h3, .lead, .text-dark, .text-secondary, .text-muted),
+:root:not([data-bs-theme="dark"]) :is(.btn, .badge, .bg-primary, .bg-dark, .bg-danger, .bg-success, .text-bg-primary).text-secondary {
+  text-shadow: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -430,6 +452,61 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   transform: translateY(-3px);
   box-shadow: 0 14px 20px -6px rgba(15, 23, 42, 0.06), 0 0 16px var(--role-tutor-glow);
   border-color: rgba(16, 185, 129, 0.35);
+}
+
+/* Métricas del Panel Tutor: ícono de Bootstrap Icons como marca de agua de fondo.
+   Es decorativo, así que se dibuja con ::after (glifo de la fuente bootstrap-icons)
+   en lugar de un <i> en el HTML; el "/ ''" lo deja fuera de los lectores de pantalla. */
+.metric-card--publicaciones,
+.metric-card--solicitudes,
+.metric-card--en-curso,
+.metric-card--finalizadas {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.metric-card--publicaciones { --metric-glifo: "\f43e"; --metric-color: var(--bs-success); }
+.metric-card--solicitudes   { --metric-glifo: "\f189"; --metric-color: var(--bs-danger); }
+.metric-card--en-curso      { --metric-glifo: "\f24a"; --metric-color: var(--bs-primary); }
+.metric-card--finalizadas   { --metric-glifo: "\f5e7"; --metric-color: var(--bs-warning); }
+
+.metric-card--publicaciones::after,
+.metric-card--solicitudes::after,
+.metric-card--en-curso::after,
+.metric-card--finalizadas::after {
+  content: var(--metric-glifo);
+  content: var(--metric-glifo) / "";
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  bottom: 0;
+  z-index: -1;
+  display: flex;
+  align-items: center;
+  font-family: "bootstrap-icons";
+  font-size: 5.5rem;
+  line-height: 1;
+  color: var(--metric-color);
+  opacity: 0.14;
+  pointer-events: none;
+  transition: transform 0.3s ease;
+}
+
+.metric-card--publicaciones:hover::after,
+.metric-card--solicitudes:hover::after,
+.metric-card--en-curso:hover::after,
+.metric-card--finalizadas:hover::after {
+  transform: translateX(0.75rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metric-card--publicaciones::after,
+  .metric-card--solicitudes::after,
+  .metric-card--en-curso::after,
+  .metric-card--finalizadas::after {
+    transition: none;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -1042,9 +1119,25 @@ body.sidebar-is-collapsed .dashboard-main-wrapper {
   min-width: 190px;
 }
 
+/* Ancho medio (3 por fila en computadora): Modalidad y Disponibilidad lado a lado,
+   el precio debajo a todo el ancho */
+@container (min-width: 300px) {
+  .oferta-card-datos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .oferta-card-datos > :last-child {
+    grid-column: 1 / -1;
+  }
+}
+
 @container (min-width: 480px) {
   .oferta-card-datos {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .oferta-card-datos > :last-child {
+    grid-column: auto;
   }
 }
 
@@ -1318,6 +1411,58 @@ html[data-bs-theme="dark"] body.dashboard-body .profile-menu .dropdown-item.text
 .chat-burbuja a {
   color: inherit;
   text-decoration: underline;
+}
+
+/* Mensaje del otro usuario: burbuja + bandera de reporte a su derecha */
+.chat-fila {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+}
+
+.chat-flag {
+  flex-shrink: 0;
+  padding: 0.15rem 0.3rem;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  /* Oculta: sin ocupar lugar para el clic hasta que aparece */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0s linear 0.15s;
+}
+
+.chat-flag:hover,
+.chat-flag:focus-visible {
+  color: #dc2626;
+}
+
+/* Con mouse: aparece tras 2 s con el puntero sobre el mensaje */
+@media (hover: hover) and (pointer: fine) {
+  .chat-msg:hover .chat-flag {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 2s, 2s;
+  }
+}
+
+/* En pantallas táctiles: aparece al mantener presionado el mensaje 1 s (chat-tutoria.js) */
+.chat-msg-bandera .chat-flag {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+@media (hover: none) {
+  .chat-fila .chat-burbuja {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
 }
 
 .chat-meta {

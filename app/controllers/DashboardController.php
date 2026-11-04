@@ -5,25 +5,28 @@
  */
 final class DashboardController extends Controller
 {
-    /** Tutorías visibles en el dashboard del alumno sin filtros (y por cada "Ver más"). */
-    private const OFERTAS_VISIBLES = 8;
+    /** Tutorías visibles en el dashboard del alumno sin filtros (y por cada "Ver más"): "Ver más" aparece con más de estas. */
+    private const OFERTAS_VISIBLES = 6;
 
     /** Máximo de tutorías que se cargan para buscar (el filtrado es en el navegador). */
     private const OFERTAS_BUSQUEDA = 120;
 
     /**
-     * Dashboard del alumno: tutorías visibles para buscar y filtrar en el
-     * navegador, y las materias presentes en ellas para el filtro.
+     * Dashboard del alumno: tutorías disponibles para solicitar (sin las que ya
+     * solicitó: esas se ven y cancelan solo en Mis tutorías), para buscar y
+     * filtrar en el navegador, y las materias presentes en ellas para el filtro.
+     * También las salas públicas de Discord activas, que se pueden reportar.
      */
     public function alumno()
     {
         $ofertas = [];
         $materias = [];
+        $salasPublicas = [];
         $errorOfertas = false;
 
         try {
             $ofertas = (new OfertaTutoria(Database::getConnection()))
-                ->listarParaAlumno(Session::userId(), self::OFERTAS_BUSQUEDA);
+                ->listarParaAlumno(Session::userId(), self::OFERTAS_BUSQUEDA, true);
 
             $materias = $this->materiasDeOfertas($ofertas);
         } catch (PDOException $exception) {
@@ -31,9 +34,17 @@ final class DashboardController extends Controller
             $errorOfertas = true;
         }
 
+        // Aparte de las tutorías: si las salas no se pueden leer, el resto del dashboard sigue funcionando
+        try {
+            $salasPublicas = (new SalaPublica(Database::getConnection()))->listarActivas();
+        } catch (PDOException $exception) {
+            error_log('Error al cargar las salas públicas: ' . $exception->getMessage());
+        }
+
         $this->render('dashboard/dashboard', [
             'ofertas' => $ofertas,
             'materias' => $materias,
+            'salasPublicas' => $salasPublicas,
             'ofertasVisibles' => self::OFERTAS_VISIBLES,
             'errorOfertas' => $errorOfertas,
         ]);
@@ -113,6 +124,7 @@ final class DashboardController extends Controller
 
                 if (!isset($tutores[$idTutor])) {
                     $tutores[$idTutor] = [
+                        'id_usuario' => $idTutor,
                         'nombre' => $oferta['tutor'],
                         'foto' => $oferta['tutor_foto'],
                         'carrera' => $oferta['tutor_carrera'],

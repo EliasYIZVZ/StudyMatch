@@ -116,6 +116,10 @@ Todas las URLs dinámicas tienen la forma `index.php?r=<ruta>`. Se definen en `a
 | `admin-materias`  | `AdminController::materias`           | **Admin**      | Gestión de carreras y materias |
 | `admin-salas`     | `AdminController::salas`              | **Admin**      | Moderación de salas públicas |
 | `admin-reportes`  | `AdminController::reportes`           | **Admin**      | Reportes de moderación |
+| `admin-moderar-sala` | `AdminController::moderarSala`     | **Admin** (API) | Suspender / reactivar una sala (POST) |
+| `admin-moderar-usuario` | `AdminController::moderarUsuario` | **Admin** (API) | Suspender / reactivar la cuenta de un alumno o tutor (POST) |
+| `admin-resolver-reporte` | `AdminController::resolverReporte` | **Admin** (API) | Finalizar (inactiva al usuario reportado o suspende la sala) o rechazar un reporte (POST) |
+| `crear-reporte`   | `ReporteController::crear`            | **Con sesión** (API) | Reportar una sala, tutoría, mensaje, tutor o alumno (POST) |
 
 Páginas públicas estáticas (sin PHP): `public/conoce.html`, `public/quienessomos.html` y `public/contacto.html`.
 
@@ -204,7 +208,7 @@ En cambio, desde los `.html` de `public/` se usa `../index.php?r=...` para volve
 ## Pendientes conocidos
 
 - Algunas páginas del área privada todavía muestran datos estáticos de ejemplo.
-- **Panel admin:** los datos son simulados. Están en los métodos `datos*()` de `AdminController`, y los comentarios de cada uno explican qué consulta los reemplazaría. Las tablas que necesitan (`materias`, `carreras`, salas, reportes, etc.) todavía no existen. Las acciones de los botones (aprobar, suspender, crear materia…) son solo del lado del navegador.
+- **Panel admin:** *Usuarios*, *Salas públicas* y *Reportes* leen y escriben en la base (modelos `User`, `SalaPublica` y `Reporte`; tablas `usuarios`, `salas_publicas`, `reportes` y `auditoria`). Un reporte guarda qué se reportó (`sala`, `tutoria`, `mensaje`, `tutor` o `alumno`), el usuario responsable y una copia del contenido; al finalizarlo, el admin inactiva a ese usuario (o suspende la sala) y puede reactivarlo desde *Gestión de usuarios*. Un usuario inactivo no puede iniciar sesión y, si ya estaba conectado, el Router le cierra la sesión en su próxima petición. El resumen (dashboard) y las materias siguen con datos simulados en los métodos `datos*()` de `AdminController`. Las tablas nuevas están en `sql/studymatch_db.sql`; si tu base es anterior, creá `auditoria`, `reportes` y `salas_publicas` con ese script.
 - El enlace "¿Olvidaste tu contraseña?" apunta a `public/recuperar.html`, que aún no existe.
 - El formulario de contacto muestra sus errores como texto plano.
 - Los formularios no tienen protección CSRF.

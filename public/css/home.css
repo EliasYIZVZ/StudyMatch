@@ -42,6 +42,18 @@
   margin-inline: 0;
 }
 
+/* Modo claro: la foto de fondo es más visible, así que el texto que va directo
+   encima lleva un halo claro suave para conservar la lectura. */
+:root:not([data-bs-theme="dark"]) .hero-title,
+:root:not([data-bs-theme="dark"]) .hero-subtitle {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85), 0 0 14px rgba(255, 255, 255, 0.6);
+}
+
+:root:not([data-bs-theme="dark"]) .hero-description {
+  color: #334155 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9), 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
 /* 2. Tarjeta de Métricas */
 .stats-card {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(224, 242, 254, 0.82) 50%, rgba(219, 234, 254, 0.88) 100%);

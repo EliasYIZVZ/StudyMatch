@@ -4,9 +4,9 @@
  * Panel de administración (solo usuarios con rol_usuario = 'admin').
  * El Router ya verificó el rol antes de llegar aquí.
  *
- * IMPORTANTE: los datos de cada sección son SIMULADOS. Las tablas que necesitan
- * (materias, carreras, salas, reportes, etc.) todavía no existen en la base.
- * Cuando se creen, reemplazar cada método datos*() por llamadas a su modelo.
+ * Usuarios, salas y reportes leen y escriben en la base de datos. El resumen
+ * (dashboard) y las materias siguen con datos SIMULADOS: están en los métodos
+ * datos*() de abajo, hasta que se los reemplace por llamadas a su modelo.
  */
 final class AdminController extends Controller
 {
@@ -15,9 +15,94 @@ final class AdminController extends Controller
         $this->renderAdmin('admin/dashboard', $this->datosDashboard());
     }
 
+    /**
+     * Gestión de alumnos y tutores. Es tutor quien publicó al menos una tutoría.
+     */
     public function usuarios()
     {
-        $this->renderAdmin('admin/gestion-usuarios', $this->datosUsuarios());
+        $usuarios = [];
+        $errorUsuarios = false;
+        $anios = ['1ro' => '1er año', '2do' => '2do año', '3ro' => '3er año', '4to' => '4to año', '5to' => '5to año', 'graduado' => 'Graduado/a'];
+
+        try {
+            foreach ((new User(Database::getConnection()))->listarParaAdmin() as $fila) {
+                $esTutor = (int) $fila['publicadas'] > 0;
+                $estado = $fila['estado_usuario'] === 'activo' ? 'activo' : 'suspendido';
+
+                $usuarios[] = [
+                    'id_usuario'     => (int) $fila['id_usuario'],
+                    'nombre'         => $fila['nombre_usuario'],
+                    'correo'         => $fila['correo_usuario'],
+                    'carrera'        => $fila['carrera_usuario'] ?: 'Sin carrera cargada',
+                    'anio'           => isset($anios[$fila['anio_cursada_usuario']]) ? $anios[$fila['anio_cursada_usuario']] : 'Sin año cargado',
+                    'es_tutor'       => $esTutor,
+                    'publicadas'     => (int) $fila['publicadas'],
+                    'estado'         => $estado,
+                    'fecha_registro' => Vista::fecha($fila['fecha_registro']),
+                    'avatar_bg'      => $estado === 'suspendido'
+                        ? 'bg-danger-subtle text-danger'
+                        : ($esTutor ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary'),
+                ];
+            }
+        } catch (PDOException $e) {
+            error_log('Error al cargar los usuarios: ' . $e->getMessage());
+            $errorUsuarios = true;
+        }
+
+        $this->renderAdmin('admin/gestion-usuarios', [
+            'usuarios'      => $usuarios,
+            'errorUsuarios' => $errorUsuarios,
+            'cantTotal'     => count($usuarios),
+            'cantTutores'   => count(array_filter($usuarios, function ($u) { return $u['es_tutor']; })),
+            'cantAlumnos'   => count($usuarios),
+        ]);
+    }
+
+    /**
+     * Inactiva ("suspender") o reactiva la cuenta de un alumno o tutor. Responde JSON.
+     */
+    public function moderarUsuario()
+    {
+        if (!$this->isPost()) {
+            $this->redirect('index.php?r=admin-usuarios');
+            return;
+        }
+
+        $idUsuario = (int) (isset($_POST['id_usuario']) ? $_POST['id_usuario'] : 0);
+        $accion = isset($_POST['accion']) && is_string($_POST['accion']) ? trim($_POST['accion']) : '';
+        $motivo = isset($_POST['motivo']) && is_string($_POST['motivo']) ? trim($_POST['motivo']) : '';
+
+        if ($idUsuario <= 0 || !in_array($accion, ['suspender', 'reactivar'], true)) {
+            $this->json(['ok' => false, 'error' => 'Parámetros inválidos.']);
+            return;
+        }
+
+        try {
+            $db = Database::getConnection();
+            $usuario = (new User($db))->cambiarEstado($idUsuario, $accion === 'suspender' ? 'inactivo' : 'activo');
+
+            if ($usuario === false) {
+                $this->json(['ok' => false, 'error' => 'El usuario no existe o no se puede moderar.']);
+                return;
+            }
+
+            $descripcion = $accion === 'suspender'
+                ? "Cuenta de {$usuario['nombre_usuario']} (#{$idUsuario}) suspendida por el administrador."
+                    . ($motivo !== '' ? ' Motivo: ' . mb_substr($motivo, 0, 120, 'UTF-8') : '')
+                : "Cuenta de {$usuario['nombre_usuario']} (#{$idUsuario}) reactivada por el administrador.";
+            $this->registrarAuditoria($db, $descripcion);
+
+            $this->json([
+                'ok' => true,
+                'estado' => $accion === 'suspender' ? 'suspendido' : 'activo',
+                'mensaje' => $accion === 'suspender'
+                    ? 'Usuario suspendido correctamente.'
+                    : 'Usuario reactivado correctamente.',
+            ]);
+        } catch (PDOException $e) {
+            error_log('Error al moderar el usuario: ' . $e->getMessage());
+            $this->json(['ok' => false, 'error' => 'Error en la base de datos.']);
+        }
     }
 
     public function materias()
@@ -27,12 +112,197 @@ final class AdminController extends Controller
 
     public function salas()
     {
-        $this->renderAdmin('admin/salas', $this->datosSalas());
+        try {
+            $db = Database::getConnection();
+            $salasModel = new SalaPublica($db);
+            $salas = $salasModel->listarParaAdmin();
+        } catch (Exception $e) {
+            error_log('Error al cargar salas: ' . $e->getMessage());
+            $salas = $this->datosSalas()['salas'];
+        }
+
+        $this->renderAdmin('admin/salas', [
+            'salas'            => $salas,
+            'totalSalas'       => count($salas),
+            'salasActivas'     => count(array_filter($salas, fn($s) => $s['estado'] === 'activa')),
+            'salasSuspendidas' => count(array_filter($salas, fn($s) => $s['estado'] === 'suspendida')),
+        ]);
     }
 
     public function reportes()
     {
-        $this->renderAdmin('admin/reportes-moderacion', $this->datosReportes());
+        $data = [
+            'reportes'            => [],
+            'totalReportes'       => 0,
+            'reportesPendientes'  => 0,
+            'reportesFinalizados' => 0,
+            'reportesRechazados'  => 0,
+            'conteoTipos'         => array_fill_keys(Reporte::TIPOS, 0),
+            'errorReportes'       => false,
+        ];
+
+        try {
+            $reporteModel = new Reporte(Database::getConnection());
+            $metricas = $reporteModel->metricas();
+
+            $data['reportes']            = $reporteModel->listarParaAdmin();
+            $data['totalReportes']       = $metricas['total'];
+            $data['reportesPendientes']  = $metricas['pendientes'];
+            $data['reportesFinalizados'] = $metricas['finalizados'];
+            $data['reportesRechazados']  = $metricas['rechazados'];
+            $data['conteoTipos']         = $metricas['por_tipo'];
+        } catch (PDOException $e) {
+            error_log('Error al cargar reportes: ' . $e->getMessage());
+            $data['errorReportes'] = true;
+        }
+
+        $this->renderAdmin('admin/reportes-moderacion', $data);
+    }
+
+    /**
+     * Resuelve o rechaza una alerta de reporte desde el panel de administración.
+     */
+    /**
+     * Suspende o reactiva una sala de Discord desde el panel de administración.
+     */
+    public function moderarSala()
+    {
+        if (!$this->isPost()) {
+            $this->redirect('index.php?r=admin-salas');
+            return;
+        }
+
+        $idSala = (int) ($_POST['id_sala'] ?? 0);
+        $accion = trim($_POST['accion'] ?? '');
+        $motivo = trim($_POST['motivo'] ?? 'Medida de moderación');
+
+        if ($idSala <= 0 || !in_array($accion, ['suspender', 'reactivar'], true)) {
+            $this->json(['ok' => false, 'error' => 'Parámetros inválidos.']);
+            return;
+        }
+
+        try {
+            $db = Database::getConnection();
+            $salaModel = new SalaPublica($db);
+
+            if ($accion === 'suspender') {
+                $salaModel->suspender($idSala, $motivo);
+                $desc = "Sala #{$idSala} suspendida por el administrador. Motivo: {$motivo}";
+            } else {
+                $salaModel->reactivar($idSala);
+                $desc = "Sala #{$idSala} reactivada por el administrador.";
+            }
+
+            // Registrar en auditoría
+            $adminId = Session::userId() ?: 1;
+            $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+            $stmtAud = $db->prepare(
+                "INSERT INTO auditoria (id_usuario, accion, descripcion, ip) VALUES (:admin, 'modificar', :desc, :ip)"
+            );
+            $stmtAud->execute([
+                'admin' => $adminId,
+                'desc'  => $desc,
+                'ip'    => $ip,
+            ]);
+
+            $this->json([
+                'ok' => true,
+                'mensaje' => ($accion === 'suspender') 
+                    ? "Sala #{$idSala} suspendida correctamente." 
+                    : "Sala #{$idSala} reactivada con éxito."
+            ]);
+        } catch (Exception $e) {
+            error_log('Error al moderar sala: ' . $e->getMessage());
+            $this->json(['ok' => false, 'error' => 'Error en la base de datos.']);
+        }
+    }
+
+    /**
+     * Finaliza o rechaza un reporte pendiente.
+     * Finalizar sanciona: inactiva al usuario reportado (alumno, tutor, dueño de la
+     * tutoría o autor del mensaje) o, si se reportó una sala, la suspende.
+     */
+    public function resolverReporte()
+    {
+        if (!$this->isPost()) {
+            $this->redirect('index.php?r=admin-reportes');
+            return;
+        }
+
+        $idReporte = (int) (isset($_POST['id_reporte']) ? $_POST['id_reporte'] : 0);
+        $accion = isset($_POST['accion']) && is_string($_POST['accion']) ? trim($_POST['accion']) : '';
+
+        if ($idReporte <= 0 || !in_array($accion, ['finalizar', 'rechazar'], true)) {
+            $this->json(['ok' => false, 'error' => 'Parámetros inválidos.']);
+            return;
+        }
+
+        $db = Database::getConnection();
+
+        try {
+            $reporteModel = new Reporte($db);
+            $reporte = $reporteModel->obtenerPorId($idReporte);
+
+            if (!$reporte) {
+                $this->json(['ok' => false, 'error' => 'Reporte no encontrado.']);
+                return;
+            }
+
+            if ($reporte['estado'] !== 'pendiente') {
+                $this->json(['ok' => false, 'error' => 'Este reporte ya fue resuelto.']);
+                return;
+            }
+
+            $nuevoEstado = $accion === 'finalizar' ? 'finalizado' : 'rechazado';
+            $adminId = Session::userId();
+            $detalle = "Reporte #{$idReporte} marcado como '{$nuevoEstado}'";
+
+            $db->beginTransaction();
+            $reporteModel->cambiarEstado($idReporte, $nuevoEstado, $adminId);
+
+            if ($accion === 'finalizar') {
+                if ($reporte['tipo_entidad'] === 'sala') {
+                    (new SalaPublica($db))->suspender($reporte['id_referencia'], "Suspendida por resolución de reporte #{$idReporte}");
+                    $detalle .= " y se suspendió la sala de Discord #{$reporte['id_referencia']}";
+                } elseif ($reporte['id_usuario_reportado'] !== null) {
+                    $usuario = (new User($db))->cambiarEstado((int) $reporte['id_usuario_reportado'], 'inactivo');
+                    $detalle .= $usuario !== false
+                        ? " y se inactivó al usuario {$usuario['nombre_usuario']} (#{$reporte['id_usuario_reportado']})"
+                        : ' (el usuario reportado no se puede sancionar)';
+                }
+            }
+
+            $this->registrarAuditoria($db, $detalle);
+            $db->commit();
+
+            $this->json([
+                'ok' => true,
+                'nuevoEstado' => $nuevoEstado,
+                'mensaje' => $accion === 'finalizar'
+                    ? 'Reporte finalizado y sanción aplicada con éxito.'
+                    : 'Reporte rechazado y desestimado correctamente.',
+            ]);
+        } catch (PDOException $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            error_log('Error al resolver reporte: ' . $e->getMessage());
+            $this->json(['ok' => false, 'error' => 'Error en la base de datos.']);
+        }
+    }
+
+    /**
+     * Deja constancia de una acción del administrador en la auditoría.
+     */
+    private function registrarAuditoria(PDO $db, $descripcion)
+    {
+        $db->prepare(
+            "INSERT INTO auditoria (id_usuario, accion, descripcion, ip) VALUES (:admin, 'modificar', :descripcion, :ip)"
+        )->execute([
+            'admin' => Session::userId(),
+            'descripcion' => $descripcion,
+            'ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1',
+        ]);
     }
 
     /**
@@ -88,120 +358,6 @@ final class AdminController extends Controller
             'totalMaterias',
             'tutoresPendientes',
             'totalReportes'
-        );
-    }
-
-    // ------------------------------------------------------------------
-    // Datos simulados: gestion-usuarios
-    // ------------------------------------------------------------------
-    private function datosUsuarios()
-    {
-        /* ==========================================================================
-         * GUÍA DE INTEGRACIÓN BACKEND (PHP PDO + MySQL):
-         * ==========================================================================
-         * Tu compañero de backend podrá conectar esta vista con la base de datos real:
-         * 
-         * $db = Database::getConnection();
-         * 
-         * $sql = "SELECT id_usuario, nombre_usuario, correo_usuario, fecha_registro, 
-         *                estado_usuario, carrera_usuario, anio_cursada_usuario, 
-         *                es_tutor, tutor_verificado, doc_titulo
-         *         FROM usuarios 
-         *         ORDER BY fecha_registro DESC 
-         *         LIMIT 5";
-         * $stmt = $db->query($sql);
-         * $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-         * ========================================================================== */
-
-        // Datos simulados reducidos a 5 registros de ejemplo
-        $usuarios = [
-            [
-                'id_usuario'       => 110,
-                'nombre'           => 'Lucas Benítez',
-                'correo'           => 'lbenitez@frh.utn.edu.ar',
-                'carrera'          => 'TUP (Programación)',
-                'anio'             => '2do año',
-                'legajo'           => '51294',
-                'es_alumno'        => true,
-                'es_tutor'         => false,
-                'tutor_verificado' => false,
-                'doc_titulo'       => null,
-                'estado'           => 'activo',
-                'fecha_registro'   => '29/10/2026 10:15',
-                'avatar_bg'        => 'bg-primary-subtle text-primary'
-            ],
-            [
-                'id_usuario'       => 109,
-                'nombre'           => 'Julieta Abbiati',
-                'correo'           => 'jabbiati@frh.utn.edu.ar',
-                'carrera'          => 'TUP (Programación)',
-                'anio'             => '3er año',
-                'legajo'           => '49812',
-                'es_alumno'        => true,
-                'es_tutor'         => true,
-                'tutor_verificado' => true,
-                'doc_titulo'       => 'titulo_tecnico_abbiati.jpg',
-                'estado'           => 'activo',
-                'fecha_registro'   => '28/10/2026 18:40',
-                'avatar_bg'        => 'bg-success-subtle text-success'
-            ],
-            [
-                'id_usuario'       => 108,
-                'nombre'           => 'Matías Fuentes',
-                'correo'           => 'mfuentes@frh.utn.edu.ar',
-                'carrera'          => 'Ing. en Sistemas',
-                'anio'             => '4to año',
-                'legajo'           => '48991',
-                'es_alumno'        => true,
-                'es_tutor'         => true,
-                'tutor_verificado' => true,
-                'doc_titulo'       => 'analitico_titulacion_fuentes.pdf',
-                'estado'           => 'activo',
-                'fecha_registro'   => '28/10/2026 14:22',
-                'avatar_bg'        => 'bg-success-subtle text-success'
-            ],
-            [
-                'id_usuario'       => 105,
-                'nombre'           => 'Valentina Rojas',
-                'correo'           => 'vrojas@frh.utn.edu.ar',
-                'carrera'          => 'Ing. en Sistemas',
-                'anio'             => '4to año',
-                'legajo'           => '47820',
-                'es_alumno'        => true,
-                'es_tutor'         => true,
-                'tutor_verificado' => false, // Tutor sin verificar título aún
-                'doc_titulo'       => null,
-                'estado'           => 'activo',
-                'fecha_registro'   => '26/10/2026 11:15',
-                'avatar_bg'        => 'bg-warning-subtle text-warning-emphasis'
-            ],
-            [
-                'id_usuario'       => 103,
-                'nombre'           => 'Facundo Morales',
-                'correo'           => 'fmorales@frh.utn.edu.ar',
-                'carrera'          => 'Ing. Ferroviaria',
-                'anio'             => '2do año',
-                'legajo'           => '50312',
-                'es_alumno'        => true,
-                'es_tutor'         => false,
-                'tutor_verificado' => false,
-                'doc_titulo'       => null,
-                'estado'           => 'suspendido',
-                'fecha_registro'   => '24/10/2026 22:10',
-                'avatar_bg'        => 'bg-danger-subtle text-danger'
-            ]
-        ];
-
-        // Contadores rápidos para los botones de filtrado
-        $cantTotal   = count($usuarios);
-        $cantTutores = count(array_filter($usuarios, fn($u) => $u['es_tutor']));
-        $cantAlumnos = $cantTotal;
-
-        return compact(
-            'usuarios',
-            'cantTotal',
-            'cantTutores',
-            'cantAlumnos'
         );
     }
 
@@ -434,121 +590,6 @@ final class AdminController extends Controller
             'totalSalas',
             'salasActivas',
             'salasSuspendidas'
-        );
-    }
-
-    // ------------------------------------------------------------------
-    // Datos simulados: reportes-moderacion
-    // ------------------------------------------------------------------
-    private function datosReportes()
-    {
-        /* ==========================================================================
-         * GUÍA DE INTEGRACIÓN BACKEND (PHP PDO + MySQL):
-         * ==========================================================================
-         * Tu compañero de backend podrá conectar esta vista con la base de datos real:
-         * 
-         * $db = Database::getConnection();
-         * 
-         * $sql = "SELECT r.*, u.nombre as denunciante, u.rol as denunciante_rol 
-         *         FROM reportes_moderacion r 
-         *         JOIN usuarios u ON r.id_denunciante = u.id_usuario 
-         *         ORDER BY r.fecha DESC 
-         *         LIMIT 5";
-         * $stmt = $db->query($sql);
-         * $reportes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-         * ========================================================================== */
-
-        // Datos simulados de reportes simplificados: Discord o Alumnos (5 registros)
-        $reportes = [
-            [
-                'id_reporte'        => 101,
-                'tipo'              => 'sala', // 'sala' (Discord) | 'usuario' (Alumno)
-                'elemento'          => 'Canal General de Charlas y Juegos - Off Topic',
-                'elemento_sub'      => 'Sala Pública de Discord • ID #7',
-                'motivo'            => 'Spam y enlaces comerciales no autorizados',
-                'descripcion'       => 'Varios usuarios están difundiendo enlaces externos de apuestas y servidores comerciales ajenos a la comunidad académica de la UTN.',
-                'denunciante'       => 'Martín Gómez',
-                'denunciante_rol'   => 'Tutor',
-                'denunciante_avatar'=> 'MG',
-                'fecha'             => 'Hoy, 14:32',
-                'timestamp'         => 1730223120,
-                'estado'            => 'pendiente', // 'pendiente' | 'resuelto'
-                'evidencia_url'     => 'https://discord.gg/studymatch-offtopic'
-            ],
-            [
-                'id_reporte'        => 102,
-                'tipo'              => 'usuario',
-                'elemento'          => 'Carlos Méndez',
-                'elemento_sub'      => 'Alumno • Legajo 54.120',
-                'motivo'            => 'Conducta inapropiada en chat de voz',
-                'descripcion'       => 'Interrumpe con música a alto volumen y expresiones irrespetuosas a los alumnos que intentaban repasar la guía de Programación.',
-                'denunciante'       => 'Lucía Varela',
-                'denunciante_rol'   => 'Alumno',
-                'denunciante_avatar'=> 'LV',
-                'fecha'             => 'Hoy, 12:15',
-                'timestamp'         => 1730214900,
-                'estado'            => 'pendiente',
-                'evidencia_url'     => 'Sala de voz #1 (Programación I)'
-            ],
-            [
-                'id_reporte'        => 103,
-                'tipo'              => 'sala',
-                'elemento'          => 'Sala de Enlaces no Verificados y Publicidad',
-                'elemento_sub'      => 'Sala Pública de Discord • ID #8',
-                'motivo'            => 'Publicidad y venta de exámenes resueltos',
-                'descripcion'       => 'Se publican números de teléfono ofreciendo cobrar dinero por realizar trabajos prácticos y parciales de la carrera.',
-                'denunciante'       => 'Prof. Andrea Ferrari',
-                'denunciante_rol'   => 'Tutor',
-                'denunciante_avatar'=> 'AF',
-                'fecha'             => 'Ayer, 18:40',
-                'timestamp'         => 1730151600,
-                'estado'            => 'pendiente',
-                'evidencia_url'     => 'https://discord.gg/studymatch-spam'
-            ],
-            [
-                'id_reporte'        => 104,
-                'tipo'              => 'usuario',
-                'elemento'          => 'Franco Ibarra',
-                'elemento_sub'      => 'Alumno • Legajo 48.910',
-                'motivo'            => 'Inasistencia reiterada a tutorías pactadas',
-                'descripcion'       => 'El alumno no se conectó en tres ocasiones seguidas a las sesiones confirmadas sin aviso previo al tutor asignado.',
-                'denunciante'       => 'Santiago Torres',
-                'denunciante_rol'   => 'Tutor',
-                'denunciante_avatar'=> 'ST',
-                'fecha'             => '27/10/2026',
-                'timestamp'         => 1729987200,
-                'estado'            => 'resuelto',
-                'evidencia_url'     => 'Sesión individual #44'
-            ],
-            [
-                'id_reporte'        => 105,
-                'tipo'              => 'usuario',
-                'elemento'          => 'Rodrigo Peralta',
-                'elemento_sub'      => 'Alumno • Legajo 61.802',
-                'motivo'            => 'Uso indebido del chat comunitario',
-                'descripcion'       => 'Envío masivo de mensajes repetidos obstaculizando las consultas sobre la materia Sistemas de Procesamiento.',
-                'denunciante'       => 'Sofía Domínguez',
-                'denunciante_rol'   => 'Tutor',
-                'denunciante_avatar'=> 'SD',
-                'fecha'             => '25/10/2026',
-                'timestamp'         => 1729814400,
-                'estado'            => 'resuelto',
-                'evidencia_url'     => 'Sala #2 (Sistemas)'
-            ]
-        ];
-
-        // Métricas para KPIs
-        $totalReportes      = count($reportes);
-        $reportesPendientes = count(array_filter($reportes, fn($r) => $r['estado'] === 'pendiente'));
-        $salasReportadas    = count(array_filter($reportes, fn($r) => $r['tipo'] === 'sala'));
-        $usuariosReportados = count(array_filter($reportes, fn($r) => $r['tipo'] === 'usuario'));
-
-        return compact(
-            'reportes',
-            'totalReportes',
-            'reportesPendientes',
-            'salasReportadas',
-            'usuariosReportados'
         );
     }
 }

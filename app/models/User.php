@@ -40,6 +40,63 @@ final class User
         return $statement->fetch();
     }
 
+    /**
+     * ¿La cuenta existe y está activa? (la usa el Router en cada petición para
+     * cerrar la sesión de quien fue inactivado mientras estaba conectado).
+     */
+    public function estaActivo($id)
+    {
+        $statement = $this->database->prepare(
+            "SELECT 1 FROM usuarios WHERE id_usuario = :id AND estado_usuario = 'activo' LIMIT 1"
+        );
+        $statement->execute(['id' => (int) $id]);
+
+        return $statement->fetchColumn() !== false;
+    }
+
+    /**
+     * Alumnos y tutores (no administradores) para la gestión de usuarios del panel admin.
+     * "publicadas" son las tutorías que publicó: más de cero lo convierte en tutor.
+     */
+    public function listarParaAdmin($limite = 500)
+    {
+        $statement = $this->database->prepare(
+            "SELECT u.id_usuario, u.nombre_usuario, u.correo_usuario, u.estado_usuario,
+                    u.carrera_usuario, u.anio_cursada_usuario, u.fecha_registro,
+                    (SELECT COUNT(*) FROM oferta_tutoria t WHERE t.id_tutor = u.id_usuario) AS publicadas
+             FROM usuarios u
+             WHERE u.rol_usuario = 'usuario'
+             ORDER BY u.fecha_registro DESC, u.id_usuario DESC
+             LIMIT :limite"
+        );
+        $statement->bindValue(':limite', (int) $limite, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
+
+    /**
+     * Inactiva o reactiva una cuenta de alumno/tutor. Los administradores no se tocan.
+     * Devuelve los datos básicos del usuario, o false si no existe o es administrador.
+     */
+    public function cambiarEstado($id, $estado)
+    {
+        $statement = $this->database->prepare(
+            "SELECT id_usuario, nombre_usuario FROM usuarios WHERE id_usuario = :id AND rol_usuario = 'usuario'"
+        );
+        $statement->execute(['id' => (int) $id]);
+        $usuario = $statement->fetch();
+
+        if ($usuario === false) {
+            return false;
+        }
+
+        $statement = $this->database->prepare('UPDATE usuarios SET estado_usuario = :estado WHERE id_usuario = :id');
+        $statement->execute(['estado' => $estado === 'activo' ? 'activo' : 'inactivo', 'id' => (int) $id]);
+
+        return $usuario;
+    }
+
     public function emailExists($email)
     {
         $statement = $this->database->prepare(

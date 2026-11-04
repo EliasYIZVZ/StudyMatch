@@ -73,9 +73,9 @@ $textoBusqueda = mb_strtolower(implode(' ', array_merge(
       </div>
     </div>
 
-    <!-- Experiencia, precio y acceso al perfil -->
+    <!-- Experiencia y precio -->
     <div class="pt-3 border-top">
-      <div class="d-flex justify-content-between align-items-center mb-3 text-secondary small gap-2">
+      <div class="d-flex justify-content-between align-items-center text-secondary small gap-2">
         <span>
           <i class="bi bi-mortarboard-fill text-primary me-1"></i>
           <?php if ($tutoriasDadas > 0): ?>
@@ -93,11 +93,16 @@ $textoBusqueda = mb_strtolower(implode(' ', array_merge(
         <?php endif; ?>
       </div>
 
-      <!-- El perfil público del tutor todavía no existe -->
-      <button type="button" class="btn btn-outline-primary w-100 rounded-pill fw-bold py-2 d-flex align-items-center justify-content-center gap-2" disabled
-              title="El perfil del tutor estará disponible próximamente">
-        <i class="bi bi-person-badge"></i> Ver perfil <span class="fw-normal small">(próximamente)</span>
-      </button>
+      <?php if (!empty($tutor['id_usuario'])): ?>
+        <div class="text-center mt-2">
+          <button type="button"
+                  class="btn btn-link text-muted p-0 text-decoration-none small d-inline-flex align-items-center gap-1"
+                  style="font-size: 0.72rem;"
+                  onclick="abrirModalReporte('tutor', <?= (int) $tutor['id_usuario'] ?>, '<?= Vista::e(addslashes($tutor['nombre'])) ?>')">
+            <i class="bi bi-flag"></i> Reportar perfil
+          </button>
+        </div>
+      <?php endif; ?>
     </div>
   </article>
 </div>

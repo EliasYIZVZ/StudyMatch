@@ -22,7 +22,7 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Estilos del Dashboard y Perfil (100% Independiente de Landing) -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261103_page_title">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_reportes">
 </head>
 <body class="dashboard-body" data-role="tutor">
 <?php $cantPendientes = (int) $resumenSolicitudes['pendientes']; ?>
@@ -137,30 +137,21 @@
           <h1 class="page-title fw-bold text-dark mb-1">Panel del Tutor</h1>
           <p class="text-secondary small mb-0">Un resumen de tus publicaciones, solicitudes y tutorías.</p>
         </div>
-        <a href="index.php?r=mis-publicaciones&amp;nueva=1" class="btn btn-role-action rounded-pill px-4 py-2 fw-semibold shadow-sm">
-          <i class="bi bi-plus-lg me-1"></i> Publicar nueva tutoría
-        </a>
       </div>
 
       <!-- Métricas del tutor (datos reales) -->
       <div class="row g-3 mb-4">
         <div class="col-sm-6 col-xl-3">
-          <a href="index.php?r=mis-publicaciones" class="metric-card p-3 p-xl-4 h-100 d-block text-decoration-none">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="text-secondary small fw-semibold">Publicaciones activas</span>
-              <div class="bg-success-subtle text-success p-2 rounded-3"><i class="bi bi-journal-check fs-5"></i></div>
-            </div>
+          <a href="index.php?r=mis-publicaciones" class="metric-card metric-card--publicaciones p-3 p-xl-4 h-100 d-block text-decoration-none">
+            <span class="d-block text-secondary small fw-semibold mb-2">Publicaciones activas</span>
             <h3 class="fw-bold text-dark mb-1"><?= (int) $resumenOfertas['activas'] ?></h3>
             <span class="text-secondary small" style="font-size: 0.72rem;">de <?= (int) $resumenOfertas['total'] ?> publicada<?= (int) $resumenOfertas['total'] === 1 ? '' : 's' ?></span>
           </a>
         </div>
 
         <div class="col-sm-6 col-xl-3">
-          <a href="index.php?r=mis-tutorias&amp;rol=tutor&amp;estado=pendientes" class="metric-card p-3 p-xl-4 h-100 d-block text-decoration-none">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="text-secondary small fw-semibold">Solicitudes pendientes</span>
-              <div class="bg-danger-subtle text-danger p-2 rounded-3"><i class="bi bi-bell-fill fs-5"></i></div>
-            </div>
+          <a href="index.php?r=mis-tutorias&amp;rol=tutor&amp;estado=pendientes" class="metric-card metric-card--solicitudes p-3 p-xl-4 h-100 d-block text-decoration-none">
+            <span class="d-block text-secondary small fw-semibold mb-2">Solicitudes pendientes</span>
             <h3 class="fw-bold text-dark mb-1" id="metricCounterSolicitudes"><?= $cantPendientes ?></h3>
             <span class="<?= $cantPendientes > 0 ? 'text-danger fw-semibold' : 'text-secondary' ?> small" style="font-size: 0.72rem;">
               <?= $cantPendientes > 0 ? 'Requieren tu respuesta' : 'Estás al día' ?>
@@ -169,22 +160,16 @@
         </div>
 
         <div class="col-sm-6 col-xl-3">
-          <a href="index.php?r=mis-tutorias&amp;rol=tutor&amp;estado=en-curso" class="metric-card p-3 p-xl-4 h-100 d-block text-decoration-none">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="text-secondary small fw-semibold">Tutorías en curso</span>
-              <div class="bg-primary-subtle text-primary p-2 rounded-3"><i class="bi bi-chat-dots fs-5"></i></div>
-            </div>
+          <a href="index.php?r=mis-tutorias&amp;rol=tutor&amp;estado=en-curso" class="metric-card metric-card--en-curso p-3 p-xl-4 h-100 d-block text-decoration-none">
+            <span class="d-block text-secondary small fw-semibold mb-2">Tutorías en curso</span>
             <h3 class="fw-bold text-dark mb-1"><?= (int) $resumenSolicitudes['en_curso'] ?></h3>
             <span class="text-secondary small" style="font-size: 0.72rem;">Coordinalas por chat</span>
           </a>
         </div>
 
         <div class="col-sm-6 col-xl-3">
-          <a href="index.php?r=mis-tutorias&amp;rol=tutor&amp;estado=historial" class="metric-card p-3 p-xl-4 h-100 d-block text-decoration-none">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="text-secondary small fw-semibold">Tutorías finalizadas</span>
-              <div class="bg-warning-subtle text-warning p-2 rounded-3"><i class="bi bi-trophy fs-5"></i></div>
-            </div>
+          <a href="index.php?r=mis-tutorias&amp;rol=tutor&amp;estado=historial" class="metric-card metric-card--finalizadas p-3 p-xl-4 h-100 d-block text-decoration-none">
+            <span class="d-block text-secondary small fw-semibold mb-2">Tutorías finalizadas</span>
             <h3 class="fw-bold text-dark mb-1"><?= (int) $resumenSolicitudes['finalizadas'] ?></h3>
             <span class="text-secondary small" style="font-size: 0.72rem;"><?= (int) $resumenSolicitudes['alumnos'] ?> alumno<?= (int) $resumenSolicitudes['alumnos'] === 1 ? '' : 's' ?> distinto<?= (int) $resumenSolicitudes['alumnos'] === 1 ? '' : 's' ?></span>
           </a>

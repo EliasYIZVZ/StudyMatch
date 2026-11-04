@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Estilos base compartidos de Dashboards -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261103_page_title">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_reportes">
 
   <!-- Estilos globales de Administración (sidebar claro gris azulado / oscuro grafito) -->
   <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
@@ -303,7 +303,6 @@
           <div class="sala-card p-3 p-md-4 shadow-sm <?= !$esActiva ? 'sala-suspendida' : ''; ?>" 
                id="card-sala-<?= $sala['id_sala']; ?>"
                data-estado="<?= $sala['estado']; ?>"
-               data-materia="<?= htmlspecialchars(strtolower($sala['materia'] . ' ' . $sala['materia_code'])); ?>"
                data-titulo="<?= htmlspecialchars(strtolower($sala['titulo'])); ?>"
                data-creador="<?= htmlspecialchars(strtolower($sala['creador'])); ?>">
             
@@ -320,12 +319,12 @@
                 <!-- Detalles Principales de la Sala -->
                 <div class="flex-grow-1 overflow-hidden">
                   
-                  <!-- Fila superior: Badge de Materia + Badge de Estado Visible -->
+                  <!-- Fila superior: Badge de Canal + Badge de Estado Visible -->
                   <div class="d-flex align-items-center flex-wrap gap-2 mb-1.5">
                     
-                    <!-- Badge de la materia -->
+                    <!-- Badge del canal de Discord -->
                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 small fw-semibold">
-                      <i class="bi bi-book me-1"></i><?= htmlspecialchars($sala['materia_code']); ?> • <?= htmlspecialchars($sala['materia']); ?>
+                      <i class="bi bi-discord me-1"></i>Canal de Discord
                     </span>
 
                     <!-- Badge de estado visible en cada tarjeta (Activa / Suspendida) -->
@@ -520,7 +519,7 @@
               <span class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.68rem; letter-spacing: 0.5px;">Sala a Desactivar:</span>
               <h6 class="fw-bold text-dark mb-1" id="suspenderSalaTituloDisplay">Cargando...</h6>
               <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill small" id="suspenderSalaMateriaDisplay">
-                Materia
+                <i class="bi bi-discord me-1"></i>Canal de Discord
               </span>
             </div>
 
@@ -788,7 +787,7 @@
       salaSeleccionadaParaSuspender = sala;
       document.getElementById('suspenderSalaId').value = sala.id_sala;
       document.getElementById('suspenderSalaTituloDisplay').textContent = sala.titulo;
-      document.getElementById('suspenderSalaMateriaDisplay').textContent = `${sala.materia_code} • ${sala.materia}`;
+      document.getElementById('suspenderSalaMateriaDisplay').innerHTML = '<i class="bi bi-discord me-1"></i>Canal de Discord';
       document.getElementById('motivoSuspensionSelect').value = '';
       document.getElementById('observacionesSuspension').value = '';
 
@@ -803,100 +802,139 @@
 
       const id = salaSeleccionadaParaSuspender.id_sala;
       const motivo = document.getElementById('motivoSuspensionSelect').value;
-      const card = document.getElementById(`card-sala-${id}`);
 
-      if (card) {
-        card.setAttribute('data-estado', 'suspendida');
-        card.classList.add('sala-suspendida');
+      const formData = new FormData();
+      formData.append('id_sala', id);
+      formData.append('accion', 'suspender');
+      formData.append('motivo', motivo);
 
-        // Actualizar badge de estado
-        const badgeSlot = card.querySelector('.badge-estado-slot');
-        if (badgeSlot) {
-          badgeSlot.className = 'badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1.5 badge-estado-slot';
-          badgeSlot.innerHTML = '<i class="bi bi-slash-circle-fill"></i><span>Suspendida</span>';
+      fetch('index.php?r=admin-moderar-sala', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          const card = document.getElementById(`card-sala-${id}`);
+          if (card) {
+            card.setAttribute('data-estado', 'suspendida');
+            card.classList.add('sala-suspendida');
+
+            // Actualizar badge de estado
+            const badgeSlot = card.querySelector('.badge-estado-slot');
+            if (badgeSlot) {
+              badgeSlot.className = 'badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1.5 badge-estado-slot';
+              badgeSlot.innerHTML = '<i class="bi bi-slash-circle-fill"></i><span>Suspendida</span>';
+            }
+
+            // Actualizar botón Unirse (bloquearlo)
+            const btnUnirse = card.querySelector('.btn-unirse-slot');
+            if (btnUnirse) {
+              btnUnirse.className = 'btn btn-secondary btn-sm rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 disabled btn-unirse-slot';
+              btnUnirse.innerHTML = '<i class="bi bi-lock-fill"></i><span>Enlace Bloqueado</span>';
+              btnUnirse.removeAttribute('href');
+              btnUnirse.setAttribute('disabled', 'disabled');
+            }
+
+            // Actualizar botón de acción a [Reactivar Sala]
+            const btnContainer = card.querySelector('.btn-moderacion-container');
+            if (btnContainer) {
+              btnContainer.innerHTML = `
+                <button type="button" 
+                        class="btn btn-outline-success btn-sm rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5"
+                        onclick="reactivarSala(${id}, '${salaSeleccionadaParaSuspender.titulo.replace(/'/g, "\\'")}')"
+                        title="Reactivar sala">
+                  <i class="bi bi-arrow-clockwise"></i>
+                  <span>Reactivar Sala</span>
+                </button>
+              `;
+            }
+          }
+
+          // Cerrar modal
+          const modalEl = document.getElementById('modalSuspenderSala');
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) modal.hide();
+
+          // Recalcular contadores y refrescar paginación
+          actualizarContadores();
+          actualizarPaginacion();
+
+          mostrarToast(data.mensaje || `Sala "${salaSeleccionadaParaSuspender.titulo}" suspendida exitosamente.`);
+        } else {
+          mostrarToast(data.error || 'No se pudo suspender la sala.');
         }
-
-        // Actualizar botón Unirse (bloquearlo)
-        const btnUnirse = card.querySelector('.btn-unirse-slot');
-        if (btnUnirse) {
-          btnUnirse.className = 'btn btn-secondary btn-sm rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 disabled btn-unirse-slot';
-          btnUnirse.innerHTML = '<i class="bi bi-lock-fill"></i><span>Enlace Bloqueado</span>';
-          btnUnirse.removeAttribute('href');
-          btnUnirse.setAttribute('disabled', 'disabled');
-        }
-
-        // Actualizar botón de acción a [Reactivar Sala]
-        const btnContainer = card.querySelector('.btn-moderacion-container');
-        if (btnContainer) {
-          btnContainer.innerHTML = `
-            <button type="button" 
-                    class="btn btn-outline-success btn-sm rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5"
-                    onclick="reactivarSala(${id}, '${salaSeleccionadaParaSuspender.titulo.replace(/'/g, "\\'")}')"
-                    title="Reactivar sala">
-              <i class="bi bi-arrow-clockwise"></i>
-              <span>Reactivar Sala</span>
-            </button>
-          `;
-        }
-      }
-
-      // Cerrar modal
-      const modalEl = document.getElementById('modalSuspenderSala');
-      const modal = bootstrap.Modal.getInstance(modalEl);
-      if (modal) modal.hide();
-
-      // Recalcular contadores y refrescar paginación
-      actualizarContadores();
-      actualizarPaginacion();
-
-      mostrarToast(`Sala "${salaSeleccionadaParaSuspender.titulo}" suspendida exitosamente.`);
+      })
+      .catch(err => {
+        console.error(err);
+        mostrarToast('Error de conexión al suspender la sala.');
+      });
     }
 
     // ==========================================
     // 6. Reactivar Sala
     // ==========================================
     function reactivarSala(id, titulo) {
-      const card = document.getElementById(`card-sala-${id}`);
-      if (card) {
-        card.setAttribute('data-estado', 'activa');
-        card.classList.remove('sala-suspendida');
+      const formData = new FormData();
+      formData.append('id_sala', id);
+      formData.append('accion', 'reactivar');
 
-        // Actualizar badge de estado
-        const badgeSlot = card.querySelector('.badge-estado-slot');
-        if (badgeSlot) {
-          badgeSlot.className = 'badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1.5 badge-estado-slot';
-          badgeSlot.innerHTML = '<span class="live-dot pulse-success"></span><span>Activa</span>';
-        }
+      fetch('index.php?r=admin-moderar-sala', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          const card = document.getElementById(`card-sala-${id}`);
+          if (card) {
+            card.setAttribute('data-estado', 'activa');
+            card.classList.remove('sala-suspendida');
 
-        // Actualizar botón Unirse (habilitarlo)
-        const btnUnirse = card.querySelector('.btn-unirse-slot');
-        if (btnUnirse) {
-          btnUnirse.className = 'btn btn-discord btn-sm rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm btn-unirse-slot';
-          btnUnirse.innerHTML = '<i class="bi bi-discord"></i><span>Unirse a Discord</span><i class="bi bi-box-arrow-up-right small"></i>';
-          btnUnirse.setAttribute('href', 'https://discord.gg/studymatch');
-          btnUnirse.setAttribute('target', '_blank');
-          btnUnirse.removeAttribute('disabled');
-        }
+            // Actualizar badge de estado
+            const badgeSlot = card.querySelector('.badge-estado-slot');
+            if (badgeSlot) {
+              badgeSlot.className = 'badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1.5 badge-estado-slot';
+              badgeSlot.innerHTML = '<span class="live-dot pulse-success"></span><span>Activa</span>';
+            }
 
-        // Actualizar botón de acción a [Suspender]
-        const btnContainer = card.querySelector('.btn-moderacion-container');
-        if (btnContainer) {
-          const salaObj = { id_sala: id, titulo: titulo, materia_code: 'TUP', materia: 'Materia' };
-          btnContainer.innerHTML = `
-            <button type="button" 
-                    class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5"
-                    onclick='abrirModalSuspension(${JSON.stringify(salaObj)})'
-                    title="Suspender sala">
+            // Actualizar botón Unirse (habilitarlo)
+            const btnUnirse = card.querySelector('.btn-unirse-slot');
+            if (btnUnirse) {
+              btnUnirse.className = 'btn btn-discord btn-sm rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm btn-unirse-slot';
+              btnUnirse.innerHTML = '<i class="bi bi-discord"></i><span>Unirse a Discord</span><i class="bi bi-box-arrow-up-right small"></i>';
+              btnUnirse.setAttribute('href', 'https://discord.gg/studymatch');
+              btnUnirse.setAttribute('target', '_blank');
+              btnUnirse.removeAttribute('disabled');
+            }
+
+            // Actualizar botón de acción a [Suspender]
+            const btnContainer = card.querySelector('.btn-moderacion-container');
+            if (btnContainer) {
+              const salaObj = { id_sala: id, titulo: titulo };
+              btnContainer.innerHTML = `
+                <button type="button" 
+                        class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5"
+                        onclick='abrirModalSuspension(${JSON.stringify(salaObj)})'
+                        title="Suspender sala">
               <i class="bi bi-slash-circle"></i>
               <span>Suspender</span>
             </button>
           `;
-        }
-      }
+            }
+          }
 
-      actualizarContadores();
-      actualizarPaginacion();
-      mostrarToast(`Sala reactivada con éxito.`);
+          actualizarContadores();
+          actualizarPaginacion();
+          mostrarToast(data.mensaje || `Sala reactivada con éxito.`);
+        } else {
+          mostrarToast(data.error || 'No se pudo reactivar la sala.');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        mostrarToast('Error de conexión al reactivar la sala.');
+      });
     }
 
     // ==========================================

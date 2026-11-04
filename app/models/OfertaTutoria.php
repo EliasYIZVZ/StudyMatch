@@ -14,8 +14,7 @@ final class OfertaTutoria
 
     /**
      * Ofertas visibles para un alumno: activas, de tutores activos y que no sean propias.
-     * Las publicadas más recientemente primero. Incluye la solicitud vigente
-     * (pendiente / aceptada) que el alumno ya tenga sobre cada oferta, si existe.
+     * Las publicadas más recientemente primero.
      *
      * Un usuario es tutor si tiene al menos una oferta activa: la consulta parte
      * de `oferta_tutoria` (índice idx_oferta_estado_fecha) y une `usuarios` por
@@ -23,11 +22,25 @@ final class OfertaTutoria
      * `tutorias_dadas` cuenta las solicitudes finalizadas de todas sus ofertas
      * (índices fk_tutorias_tutor e idx_solicitud_oferta_estado).
      *
-     * @param int $idUsuario Usuario logueado (sus propias ofertas se excluyen).
-     * @param int $limite    Cantidad máxima de filas a devolver.
+     * @param int  $idUsuario          Usuario logueado (sus propias ofertas se excluyen).
+     * @param int  $limite             Cantidad máxima de filas a devolver.
+     * @param bool $excluirSolicitadas Si es true, también se excluyen las ofertas sobre las que
+     *                                 el alumno ya tiene una solicitud vigente (pendiente o
+     *                                 aceptada): esas se gestionan solo en Mis tutorías.
+     *                                 La búsqueda de tutores las conserva para no ocultar perfiles.
      */
-    public function listarParaAlumno($idUsuario, $limite)
+    public function listarParaAlumno($idUsuario, $limite, $excluirSolicitadas = false)
     {
+        $filtroSolicitadas = $excluirSolicitadas
+            ? "AND NOT EXISTS (
+                     SELECT 1
+                     FROM solicitud_tutoria sv
+                     WHERE sv.id_oferta = t.id_tutoria
+                       AND sv.id_alumno = :id_alumno
+                       AND sv.estado IN ('pendiente', 'aceptada')
+                   )"
+            : '';
+
         $statement = $this->database->prepare(
             "SELECT t.id_tutoria,
                     t.id_tutor,
@@ -47,28 +60,21 @@ final class OfertaTutoria
                      FROM oferta_tutoria ot
                      JOIN solicitud_tutoria sf ON sf.id_oferta = ot.id_tutoria
                      WHERE ot.id_tutor = t.id_tutor
-                       AND sf.estado = 'finalizada') AS tutorias_dadas,
-                    s.id_solicitud AS mi_solicitud_id,
-                    s.estado AS mi_solicitud_estado
+                       AND sf.estado = 'finalizada') AS tutorias_dadas
              FROM oferta_tutoria t
              JOIN materia m  ON m.id_materia = t.id_materia
              JOIN usuarios u ON u.id_usuario = t.id_tutor
-             LEFT JOIN (
-                 SELECT id_oferta, MAX(id_solicitud) AS id_solicitud
-                 FROM solicitud_tutoria
-                 WHERE id_alumno = :id_alumno
-                   AND estado IN ('pendiente', 'aceptada')
-                 GROUP BY id_oferta
-             ) sv ON sv.id_oferta = t.id_tutoria
-             LEFT JOIN solicitud_tutoria s ON s.id_solicitud = sv.id_solicitud
              WHERE t.id_tutor <> :id_usuario
                AND t.estado = 'activa'
                AND u.estado_usuario = 'activo'
+               {$filtroSolicitadas}
              ORDER BY t.fecha_publicacion DESC, t.id_tutoria DESC
              LIMIT :limite"
         );
         $statement->bindValue(':id_usuario', (int) $idUsuario, PDO::PARAM_INT);
-        $statement->bindValue(':id_alumno', (int) $idUsuario, PDO::PARAM_INT);
+        if ($excluirSolicitadas) {
+            $statement->bindValue(':id_alumno', (int) $idUsuario, PDO::PARAM_INT);
+        }
         $statement->bindValue(':limite', (int) $limite, PDO::PARAM_INT);
         $statement->execute();
 

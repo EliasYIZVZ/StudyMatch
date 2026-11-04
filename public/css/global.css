@@ -58,7 +58,7 @@ body {
   font-family: var(--bs-font-sans-serif);
   background-color: #0f172a;
   background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.82) 40%, rgba(224, 242, 254, 0.86) 100%) no-repeat center / cover fixed,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.76) 0%, rgba(248, 250, 252, 0.70) 40%, rgba(224, 242, 254, 0.74) 100%) no-repeat center / cover fixed,
     url('../img/alumnos_utn.png') no-repeat center 28% / cover fixed;
   color: #1e293b;
   min-height: 100vh;
@@ -69,19 +69,25 @@ body {
 
 body.page-home {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.82) 40%, rgba(224, 242, 254, 0.86) 100%) no-repeat center / cover fixed,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.76) 0%, rgba(248, 250, 252, 0.70) 40%, rgba(224, 242, 254, 0.74) 100%) no-repeat center / cover fixed,
     url('../img/Utn_ia3.jfif') no-repeat center 28% / cover fixed;
 }
 
 body.page-quienessomos {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.82) 40%, rgba(224, 242, 254, 0.86) 100%) no-repeat center / cover fixed,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.76) 0%, rgba(248, 250, 252, 0.70) 40%, rgba(224, 242, 254, 0.74) 100%) no-repeat center / cover fixed,
     url('../img/Utn_ia1.jfif') no-repeat center 28% / cover fixed;
+}
+
+/* Registro: la foto la pone la propia vista (.hero-bg-img), así que el fondo del body
+   es solo el degradé, sin la foto global que se superponía. */
+body.page-registro {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.76) 0%, rgba(248, 250, 252, 0.70) 40%, rgba(224, 242, 254, 0.74) 100%) no-repeat center / cover fixed;
 }
 
 body.page-contacto {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.82) 40%, rgba(224, 242, 254, 0.86) 100%) no-repeat center / cover fixed,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.76) 0%, rgba(248, 250, 252, 0.70) 40%, rgba(224, 242, 254, 0.74) 100%) no-repeat center / cover fixed,
     url('../img/Utn_ia6.jfif') no-repeat center 28% / cover fixed;
 }
 
@@ -102,7 +108,7 @@ body.page-contacto {
 
 body.page-programming {
   background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.90) 0%, rgba(248, 250, 252, 0.85) 40%, rgba(224, 242, 254, 0.88) 100%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.78) 0%, rgba(248, 250, 252, 0.73) 40%, rgba(224, 242, 254, 0.76) 100%),
     url('../img/bg-programming.jpg') no-repeat center center / cover fixed;
 }
 
@@ -345,6 +351,28 @@ body.page-programming {
   color: var(--bs-primary) !important;
 }
 
+/* Modo claro: con la foto de fondo más visible, los textos que quedan directo
+   sobre ella llevan un halo claro suave (sobre las cards blancas no se nota). */
+:root:not([data-bs-theme="dark"]) :is(h1, h2, h3, .lead, .text-dark, .text-secondary, .text-muted) {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85), 0 0 8px rgba(255, 255, 255, 0.7);
+}
+
+/* Párrafos de introducción (.lead) que van sobre la foto: un gris más oscuro */
+:root:not([data-bs-theme="dark"]) .lead.text-secondary {
+  color: #475569 !important;
+}
+
+/* Texto con degradé (transparente + background-clip): el halo lo desluciría */
+:root:not([data-bs-theme="dark"]) .text-gradient {
+  text-shadow: none;
+}
+
+/* El halo no debe aparecer en textos sobre fondos oscuros o de color pleno */
+:root:not([data-bs-theme="dark"]) :is(.btn, .badge, .bg-primary, .bg-dark, .bg-danger, .bg-success, .text-bg-primary, .navbar-brand) :is(h1, h2, h3, .lead, .text-dark, .text-secondary, .text-muted),
+:root:not([data-bs-theme="dark"]) :is(.btn, .badge, .bg-primary, .bg-dark, .bg-danger, .bg-success, .text-bg-primary).text-secondary {
+  text-shadow: none;
+}
+
 /* --------------------------------------------------------------------------
    7. MODO OSCURO PARA ELEMENTOS GLOBALES
    -------------------------------------------------------------------------- */
@@ -366,6 +394,10 @@ body.page-programming {
   background:
     linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(15, 23, 42, 0.90) 50%, rgba(12, 74, 110, 0.72) 100%) no-repeat center / cover fixed,
     url('../img/Utn_ia1.jfif') no-repeat center 28% / cover fixed;
+}
+
+[data-bs-theme="dark"] body.page-registro {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(15, 23, 42, 0.90) 50%, rgba(12, 74, 110, 0.72) 100%) no-repeat center / cover fixed;
 }
 
 [data-bs-theme="dark"] body.page-contacto {

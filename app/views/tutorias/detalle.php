@@ -24,7 +24,7 @@ $precio = (float) $t['precio'] > 0
 
 $ultimoMensaje = end($mensajes);
 $ultimoId = $ultimoMensaje ? (int) $ultimoMensaje['id_mensaje'] : 0;
-$scriptsExtra = ['public/js/chat-tutoria.js'];
+$scriptsExtra = ['public/js/chat-tutoria.js?v=20261106_reportes'];
 ?>
 <?php require APP_PATH . '/views/partials/privado-head.php'; ?>
 <body class="dashboard-body" data-role="<?= $rol ?>">
@@ -84,12 +84,22 @@ $scriptsExtra = ['public/js/chat-tutoria.js'];
           <section id="chat" class="card border-0 shadow-sm rounded-4 bg-white h-100 d-flex flex-column chat-card"
                    data-id-solicitud="<?= (int) $t['id_solicitud'] ?>"
                    data-ultimo-id="<?= $ultimoId ?>"
-                   data-habilitado="<?= $chatHabilitado ? '1' : '0' ?>">
+                   data-habilitado="<?= $chatHabilitado ? '1' : '0' ?>"
+                   data-otro-nombre="<?= Vista::e($otro) ?>">
             <div class="d-flex align-items-center justify-content-between px-4 py-3 border-bottom">
               <h2 class="h6 fw-bold text-dark mb-0"><i class="bi bi-chat-dots me-2"></i>Chat de la tutoría</h2>
-              <?php if (!$chatHabilitado && $chatVisible): ?>
-                <span class="badge bg-secondary-subtle text-secondary border rounded-pill"><i class="bi bi-lock me-1"></i>Solo lectura</span>
-              <?php endif; ?>
+              <div class="d-flex align-items-center gap-3">
+                <?php if (!$chatHabilitado && $chatVisible): ?>
+                  <span class="badge bg-secondary-subtle text-secondary border rounded-pill"><i class="bi bi-lock me-1"></i>Solo lectura</span>
+                <?php endif; ?>
+                <!-- Reporta siempre a la otra persona: el tutor al alumno y el alumno al tutor -->
+                <button type="button"
+                        class="btn btn-link text-muted p-0 text-decoration-none small d-inline-flex align-items-center gap-1"
+                        style="font-size: 0.8rem;"
+                        onclick="abrirModalReporte('<?= $rol === 'tutor' ? 'alumno' : 'tutor' ?>', <?= (int) ($rol === 'tutor' ? $t['id_alumno'] : $t['id_tutor']) ?>, '<?= Vista::e(addslashes($otro)) ?>')">
+                  <i class="bi bi-flag"></i> Reportar <?= $rol === 'tutor' ? 'alumno' : 'tutor' ?>
+                </button>
+              </div>
             </div>
 
             <?php if ($chatVisible): ?>
@@ -98,8 +108,17 @@ $scriptsExtra = ['public/js/chat-tutoria.js'];
                   <p id="chatVacio" class="text-center text-secondary small my-auto">Todavía no hay mensajes. ¡Escribí para coordinar el primer encuentro!</p>
                 <?php endif; ?>
                 <?php foreach ($mensajes as $m): ?>
-                  <div class="chat-msg<?= (int) $m['id_emisor'] === $idUsuario ? ' chat-msg-propio' : '' ?>" data-id="<?= (int) $m['id_mensaje'] ?>">
-                    <div class="chat-burbuja chat-texto"><?= Vista::enlazar($m['contenido']) ?></div>
+                  <?php $esPropio = (int) $m['id_emisor'] === $idUsuario; ?>
+                  <div class="chat-msg<?= $esPropio ? ' chat-msg-propio' : '' ?>" data-id="<?= (int) $m['id_mensaje'] ?>">
+                    <?php if (!$esPropio && $chatHabilitado): ?>
+                      <!-- Mensaje del otro usuario: la bandera aparece al dejar el mouse encima 2 s (o al mantener presionado 1 s en el celular) -->
+                      <div class="chat-fila">
+                        <div class="chat-burbuja chat-texto"><?= Vista::enlazar($m['contenido']) ?></div>
+                        <button type="button" class="chat-flag" title="Reportar mensaje" aria-label="Reportar mensaje"><i class="bi bi-flag"></i></button>
+                      </div>
+                    <?php else: ?>
+                      <div class="chat-burbuja chat-texto"><?= Vista::enlazar($m['contenido']) ?></div>
+                    <?php endif; ?>
                     <div class="chat-meta"><?= Vista::e(Vista::fecha($m['fecha'], 'd/m H:i')) ?></div>
                   </div>
                 <?php endforeach; ?>
@@ -154,6 +173,7 @@ $scriptsExtra = ['public/js/chat-tutoria.js'];
     </main>
   </div>
 
+  <?php require APP_PATH . '/views/partials/modal-reportar.php'; ?>
   <?php require APP_PATH . '/views/partials/privado-scripts.php'; ?>
 </body>
 </html>

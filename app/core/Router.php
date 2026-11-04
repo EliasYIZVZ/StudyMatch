@@ -32,6 +32,23 @@ final class Router
             exit();
         }
 
+        // Si el admin inactivó la cuenta mientras estaba conectado, se cierra su sesión
+        if ($auth !== null && !$this->cuentaActiva()) {
+            Session::destroy();
+            Session::start();
+            $_SESSION['login_error'] = 'Tu cuenta fue suspendida. Si creés que es un error, contactá a un administrador.';
+
+            if ($auth === 'api') {
+                http_response_code(401);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['error' => 'Tu cuenta fue suspendida.']);
+                exit();
+            }
+
+            header('Location: index.php', true, 303);
+            exit();
+        }
+
         // Cada rol solo accede a su área: el admin al panel admin y el resto a los dashboards.
         if ($auth === 'admin' && !Session::isAdmin()) {
             header('Location: index.php?r=dashboard', true, 303);
@@ -50,5 +67,19 @@ final class Router
         }
 
         (new $controllerName())->$method();
+    }
+
+    /**
+     * ¿La cuenta de la sesión sigue activa? Una consulta por clave primaria por petición.
+     * Si la base no responde no se expulsa a nadie: la propia página mostrará el error.
+     */
+    private function cuentaActiva()
+    {
+        try {
+            return (new User(Database::getConnection()))->estaActivo(Session::userId());
+        } catch (PDOException $exception) {
+            error_log('No se pudo verificar la cuenta de la sesión: ' . $exception->getMessage());
+            return true;
+        }
     }
 }

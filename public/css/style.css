@@ -6,13 +6,13 @@
    ========================================================================== */
 
 /* 1. Estilos Globales Compartidos (Estructura, Navbar, Botones, Footer) */
-@import url('global.css');
+@import url('global.css?v=20261105_velo4');
 
 /* 2. Formularios (Inicio de Sesión y Registro) */
-@import url('forms.css');
+@import url('forms.css?v=20261105_velo4');
 
 /* 3. Secciones Específicas */
-@import url('home.css');
+@import url('home.css?v=20261105_velo4');
 @import url('conoce.css');
 @import url('quienessomos.css');
 @import url('contacto.css');

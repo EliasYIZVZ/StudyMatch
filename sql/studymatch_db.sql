@@ -28,6 +28,7 @@ DROP TABLE IF EXISTS consultausuarios;
 DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS auditoria;
 DROP TABLE IF EXISTS reportes;
+DROP TABLE IF EXISTS salas_publicas;
 
 
 -- --------------------------------------------------------------------------
@@ -179,7 +180,7 @@ CREATE TABLE auditoria (
     id_usuario INT UNSIGNED NOT NULL,
     accion ENUM('crear', 'modificar', 'eliminar', 'login', 'logout') NOT NULL,
     descripcion VARCHAR(255) NOT NULL,
-    detalle_previo TEXT NOT NULL,
+    detalle_previo TEXT NULL,
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ip VARCHAR(45) NOT NULL,
     PRIMARY KEY (id_auditoria),
@@ -188,22 +189,59 @@ CREATE TABLE auditoria (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------------------------
--- 10. Reportes.
---    cualquier usuario puede reportar segun opciones en front 
---    mediante back enviar sobre que tipo entidad se genera el reporte
+-- 10. Reportes
+--    Cualquier usuario puede reportar una sala, una tutoría, un mensaje del
+--    chat, un tutor o un alumno. Cada reporte guarda:
+--      tipo_entidad / id_referencia  qué se reportó (id de sala, de oferta_tutoria,
+--                                    de mensaje_tutoria o de usuario)
+--      id_usuario_reportado          el usuario al que se le atribuye (el dueño de
+--                                    la tutoría, el autor del mensaje, el creador
+--                                    de la sala...). Es a quien se sanciona.
+--      evidencia                     copia (JSON) del contenido en el momento del
+--                                    reporte, por si luego se edita o se borra.
+--    Finalizar un reporte inactiva al usuario reportado (en una sala, suspende
+--    la sala). id_admin_resolutor registra quién lo resolvió.
 -- --------------------------------------------------------------------------
 CREATE TABLE reportes (
     id_reporte INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    id_usuario INT UNSIGNED NOT NULL,
-    entidad VARCHAR(100) NOT NULL, 
+    id_denunciante INT UNSIGNED NOT NULL,
+    tipo_entidad ENUM('sala', 'tutoria', 'mensaje', 'tutor', 'alumno') NOT NULL,
+    id_referencia INT UNSIGNED NOT NULL,
+    id_usuario_reportado INT UNSIGNED NULL,
+    motivo VARCHAR(100) NOT NULL,
     descripcion TEXT NOT NULL,
-    estado ENUM('pendiente', 'en revision', 'resuelto', 'rechazado') NOT NULL DEFAULT 'pendiente',
+    evidencia TEXT NOT NULL,
+    estado ENUM('pendiente', 'finalizado', 'rechazado') NOT NULL DEFAULT 'pendiente',
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_resolucion DATETIME NULL,
+    id_admin_resolutor INT UNSIGNED NULL,
     PRIMARY KEY (id_reporte),
-    CONSTRAINT fk_reportes_usuario FOREIGN KEY (id_usuario) 
-        REFERENCES usuarios(id_usuario) ON DELETE CASCADE ON UPDATE CASCADE
+    KEY idx_reportes_estado_fecha (estado, fecha_creacion),
+    KEY idx_reportes_duplicado (id_denunciante, tipo_entidad, id_referencia, estado),
+    KEY idx_reportes_reportado (id_usuario_reportado),
+    CONSTRAINT fk_reportes_denunciante FOREIGN KEY (id_denunciante)
+        REFERENCES usuarios (id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_reportes_reportado FOREIGN KEY (id_usuario_reportado)
+        REFERENCES usuarios (id_usuario) ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_reportes_admin FOREIGN KEY (id_admin_resolutor)
+        REFERENCES usuarios (id_usuario) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------------------------
+-- 11. Salas Públicas de Estudio (Discord)
+-- --------------------------------------------------------------------------
+CREATE TABLE salas_publicas (
+    id_sala INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    titulo VARCHAR(150) NOT NULL,
+    descripcion TEXT NULL,
+    enlace_discord VARCHAR(255) NOT NULL,
+    id_creador INT UNSIGNED NOT NULL,
+    estado ENUM('activa', 'suspendida') NOT NULL DEFAULT 'activa',
+    motivo_suspension VARCHAR(255) NULL,
+    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_sala),
+    CONSTRAINT fk_salas_creador FOREIGN KEY (id_creador)
+        REFERENCES usuarios (id_usuario) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -213,6 +251,9 @@ SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO carreras (nombre_carrera, codigo_carrera)
 VALUES ('Tecnicatura Universitaria en Programación', 'TUP');
 
+----------------------------------------------------------------------------
+-- 12. Datos de prueba: materias
+----------------------------------------------------------------------------
 INSERT IGNORE INTO materia (id_carrera, nombre, descripcion)
 SELECT c.id_carrera, x.nombre, x.descripcion
 FROM carreras c
@@ -237,9 +278,6 @@ CROSS JOIN (
     UNION ALL SELECT 'Trabajo Final Integrador', 'Aplicación práctica de los conocimientos adquiridos en la carrera'
 ) AS x
 WHERE c.codigo_carrera = 'TUP';
-
-
-
 
 -- Para convertir una cuenta existente en administrador:
 -- UPDATE usuarios SET rol_usuario = 'admin' WHERE correo_usuario = 'admin@frh.utn.edu.ar';

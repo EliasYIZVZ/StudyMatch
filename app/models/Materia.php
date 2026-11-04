@@ -27,6 +27,19 @@ final class Materia
     }
 
     /**
+     * Cantidad de materias de las carreras activas.
+     */
+    public function contarActivas()
+    {
+        return (int) $this->database->query(
+            'SELECT COUNT(*)
+             FROM materia m
+             JOIN carreras c ON c.id_carrera = m.id_carrera
+             WHERE c.activa = 1'
+        )->fetchColumn();
+    }
+
+    /**
      * ¿Existe la materia y pertenece a una carrera activa?
      */
     public function existeActiva($idMateria)

@@ -24,9 +24,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Estilos Personalizados Study Match -->
-    <link rel="stylesheet" href="public/css/global.css?v=20261101_bg_scrollfix2">
-    <link rel="stylesheet" href="public/css/forms.css">
-    <link rel="stylesheet" href="public/css/home.css">
+    <link rel="stylesheet" href="public/css/global.css?v=20261105_velo42">
+    <link rel="stylesheet" href="public/css/forms.css?v=20261105_velo42">
+    <link rel="stylesheet" href="public/css/home.css?v=20261105_velo42">
   </head>
   <body class="page-home d-flex flex-column min-vh-100 justify-content-between">
 
@@ -133,10 +133,10 @@
               
               <!-- Métrica 1: Materias Activas -->
               <div class="col-4 stat-item">
-                <div class="stat-number">+40</div>
+                <div class="stat-number"><?= $totalMaterias === null ? '—' : (int) $totalMaterias ?></div>
                 <div class="stat-label">
                   <i class="bi bi-journal-bookmark-fill text-primary"></i>
-                  <span>Materias Activas</span>
+                  <span>Materias TUP</span>
                 </div>
               </div>
 
@@ -248,7 +248,7 @@
       <div class="d-flex align-items-center gap-2">
         <span class="fw-bold text-dark">Study Match</span>
         <span class="text-muted">•</span>
-        <span>© 2026 Prototipo Oficial • Universidad Tecnológica Nacional (FRH)</span>
+        <span>© 2026 • Proyecto académico. Abbiatti, De Chico, Garcia, Rios</span>
       </div>
       <div class="d-flex align-items-center gap-3">
         <a href="public/conoce.html" class="footer-link text-decoration-none text-secondary">Conocer Más</a>

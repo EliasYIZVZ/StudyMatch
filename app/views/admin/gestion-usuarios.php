@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Estilos base compartidos de Dashboards -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261103_page_title">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_reportes">
 
   <!-- Estilos globales de Administración (sidebar claro gris azulado / oscuro grafito) -->
   <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
@@ -76,7 +76,7 @@
         <a href="index.php?r=admin-usuarios" class="sidebar-link active" title="Gestión de Usuarios">
           <i class="bi bi-people fs-5"></i>
           <span class="sidebar-text">Gestión de Usuarios</span>
-          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;">1,280</span>
+          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;"><?= (int) $cantTotal; ?></span>
         </a>
 
         <!-- 3. Gestión de Materias -->
@@ -210,12 +210,12 @@
               Gestión de Alumnos y Tutores
             </h1>
             <p class="text-white text-opacity-75 small mb-0">
-              Auditoría, validación de certificados de tutoría y control de cuentas activas en la UTN.
+              Consulta de alumnos y tutores, y control de cuentas activas (suspender o reactivar).
             </p>
           </div>
           <div>
             <span class="badge bg-white bg-opacity-10 text-white rounded-pill px-3.5 py-2 small border border-white border-opacity-15">
-              <i class="bi bi-database me-1"></i> <strong>1,280</strong> Registros totales
+              <i class="bi bi-database me-1"></i> <strong><?= (int) $cantTotal; ?></strong> Registros totales
             </span>
           </div>
         </div>
@@ -271,7 +271,15 @@
             </thead>
             <tbody>
               
-              <!-- Iteración dinámica PHP (Mock representativo de 5 usuarios) -->
+              <!-- Usuarios reales (User::listarParaAdmin) -->
+              <?php if ($errorUsuarios): ?>
+                <tr><td colspan="4" class="text-center text-secondary py-5">
+                  <i class="bi bi-exclamation-triangle text-warning fs-3 d-block mb-2"></i>
+                  No se pudieron cargar los usuarios. Intentá nuevamente más tarde.
+                </td></tr>
+              <?php elseif (empty($usuarios)): ?>
+                <tr><td colspan="4" class="text-center text-secondary py-5">Todavía no hay alumnos ni tutores registrados.</td></tr>
+              <?php endif; ?>
               <?php foreach ($usuarios as $usr): ?>
                 <?php 
                   $esTutor = $usr['es_tutor'];
@@ -323,30 +331,32 @@
                       <!-- Botón Ver Ficha (Modal con rol completo y acreditaciones) -->
                       <button type="button" 
                               class="btn btn-sm btn-primary rounded-pill btn-action-user d-inline-flex align-items-center gap-1 shadow-sm px-3"
-                              onclick="abrirModalDetalles(<?= htmlspecialchars(json_encode($usr)); ?>)"
+                              onclick="abrirModalDetalles(<?= (int) $usr['id_usuario']; ?>)"
                               title="Ver ficha completa y rol del usuario">
                         <i class="bi bi-person-lines-fill"></i>
                         <span>Ver Ficha</span>
                       </button>
 
-                      <!-- Botón Suspender / Reactivar según estado actual -->
-                      <?php if ($usr['estado'] === 'activo'): ?>
-                        <button type="button" 
-                                class="btn btn-sm btn-outline-danger btn-action-user btn-action-suspend d-inline-flex align-items-center gap-1"
-                                onclick="confirmarSuspension(<?= $usr['id_usuario']; ?>, '<?= htmlspecialchars($usr['nombre']); ?>', 'suspender')"
-                                title="Suspender cuenta por infracción">
-                          <i class="bi bi-slash-circle"></i>
-                          <span class="d-none d-md-inline">Suspender</span>
-                        </button>
-                      <?php else: ?>
-                        <button type="button" 
-                                class="btn btn-sm btn-outline-success btn-action-user d-inline-flex align-items-center gap-1"
-                                onclick="confirmarSuspension(<?= $usr['id_usuario']; ?>, '<?= htmlspecialchars($usr['nombre']); ?>', 'reactivar')"
-                                title="Reactivar acceso del usuario">
-                          <i class="bi bi-check2-circle"></i>
-                          <span class="d-none d-md-inline">Reactivar</span>
-                        </button>
-                      <?php endif; ?>
+                      <!-- Botón Suspender / Reactivar según estado actual (el JS lo vuelve a dibujar al cambiar) -->
+                      <span class="slot-boton-estado d-inline-flex">
+                        <?php if ($usr['estado'] === 'activo'): ?>
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-danger btn-action-user btn-action-suspend d-inline-flex align-items-center gap-1"
+                                  onclick="confirmarSuspension(<?= (int) $usr['id_usuario']; ?>, 'suspender')"
+                                  title="Suspender cuenta por infracción">
+                            <i class="bi bi-slash-circle"></i>
+                            <span class="d-none d-md-inline">Suspender</span>
+                          </button>
+                        <?php else: ?>
+                          <button type="button"
+                                  class="btn btn-sm btn-outline-success btn-action-user d-inline-flex align-items-center gap-1"
+                                  onclick="confirmarSuspension(<?= (int) $usr['id_usuario']; ?>, 'reactivar')"
+                                  title="Reactivar acceso del usuario">
+                            <i class="bi bi-check2-circle"></i>
+                            <span class="d-none d-md-inline">Reactivar</span>
+                          </button>
+                        <?php endif; ?>
+                      </span>
 
                     </div>
                   </td>
@@ -358,19 +368,11 @@
           </table>
         </div>
 
-        <!-- PAGINACIÓN Y RESUMEN INFERIOR -->
+        <!-- RESUMEN INFERIOR -->
         <div class="card-footer border-top px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
           <div class="text-secondary small">
-            Mostrando <strong>1 - 5</strong> de <strong><?= $cantTotal; ?></strong> usuarios cargados
+            Mostrando <strong><?= (int) $cantTotal; ?></strong> usuarios (alumnos y tutores)
           </div>
-          
-          <nav aria-label="Navegación de páginas">
-            <ul class="pagination pagination-sm mb-0">
-              <li class="page-item disabled"><a class="page-link rounded-start-pill px-3" href="#">Anterior</a></li>
-              <li class="page-item active"><a class="page-link" href="#">1</a></li>
-              <li class="page-item disabled"><a class="page-link rounded-end-pill px-3" href="#">Siguiente</a></li>
-            </ul>
-          </nav>
         </div>
 
       </div>
@@ -414,8 +416,8 @@
           <!-- Campos de Información -->
           <div class="row g-2 small">
             <div class="col-6">
-              <span class="text-muted d-block" style="font-size: 0.72rem;">Legajo Académico:</span>
-              <strong class="text-dark" id="modalLegajoDisplay">...</strong>
+              <span class="text-muted d-block" style="font-size: 0.72rem;">Tutorías publicadas:</span>
+              <strong class="text-dark" id="modalPublicadasDisplay">...</strong>
             </div>
             <div class="col-6">
               <span class="text-muted d-block" style="font-size: 0.72rem;">Estado de Cuenta:</span>
@@ -424,12 +426,6 @@
             <div class="col-12 mt-2">
               <span class="text-muted d-block" style="font-size: 0.72rem;">Carrera y Nivel:</span>
               <strong class="text-dark" id="modalCarreraDisplay">...</strong> (<span id="modalAnioDisplay">...</span>)
-            </div>
-            <div class="col-12 mt-2">
-              <span class="text-muted d-block" style="font-size: 0.72rem;">Certificación de Tutor:</span>
-              <div id="modalDocTituloDisplay" class="mt-1">
-                <!-- Estado del certificado -->
-              </div>
             </div>
             <div class="col-12 mt-2">
               <span class="text-muted d-block" style="font-size: 0.72rem;">Fecha de Registro:</span>
@@ -569,6 +565,9 @@
     // ==========================================
     // 3. Buscador en Tiempo Real por Nombre o Correo
     // ==========================================
+    // Usuarios cargados desde la base, por id (la ficha y las acciones los usan)
+    const USUARIOS = <?= json_encode(array_column($usuarios, null, 'id_usuario'), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+
     const searchInput = document.getElementById('userSearchInput');
     const tableRows = document.querySelectorAll('#tablaUsuariosAdmin tbody tr');
     let filtroActual = 'todos';
@@ -612,11 +611,14 @@
     // ==========================================
     // 5. Modal "Ver Detalles"
     // ==========================================
-    function abrirModalDetalles(userData) {
+    function abrirModalDetalles(id) {
+      const userData = USUARIOS[id];
+      if (!userData) return;
+
       document.getElementById('modalIdDisplay').textContent = '#' + userData.id_usuario;
       document.getElementById('modalNombreDisplay').textContent = userData.nombre;
       document.getElementById('modalCorreoDisplay').textContent = userData.correo;
-      document.getElementById('modalLegajoDisplay').textContent = userData.legajo;
+      document.getElementById('modalPublicadasDisplay').textContent = userData.publicadas;
       document.getElementById('modalCarreraDisplay').textContent = userData.carrera;
       document.getElementById('modalAnioDisplay').textContent = userData.anio;
       document.getElementById('modalFechaDisplay').textContent = userData.fecha_registro;
@@ -624,43 +626,25 @@
 
       const avatarBox = document.getElementById('modalAvatarDisplay');
       avatarBox.className = 'avatar-user-badge mx-auto mb-2 fw-bold ' + userData.avatar_bg;
-      const partes = userData.nombre.split(' ');
-      avatarBox.textContent = partes.length >= 2 
-        ? (partes[0][0] + partes[1][0]).toUpperCase() 
-        : userData.nombre.substring(0, 2).toUpperCase();
+      avatarBox.textContent = iniciales(userData.nombre);
 
-      const rolesBox = document.getElementById('modalRolesContainer');
-      let rolesHtml = '';
+      // Todos son alumnos; es tutor quien publicó al menos una tutoría
+      let rolesHtml = '<span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 fw-semibold small"><i class="bi bi-mortarboard me-1"></i>Alumno</span>';
       if (userData.es_tutor) {
-        if (userData.tutor_verificado) {
-          rolesHtml = '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-semibold small shadow-sm"><i class="bi bi-patch-check-fill me-1"></i>Tutor Acreditado (Título Verificado)</span>';
-        } else {
-          rolesHtml = '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-1.5 fw-semibold small"><i class="bi bi-clock-history me-1"></i>Tutor Postulante (Pendiente de Título)</span>';
-        }
-      } else {
-        rolesHtml = '<span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 fw-semibold small"><i class="bi bi-mortarboard me-1"></i>Alumno Regular</span>';
+        rolesHtml += ' <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-semibold small"><i class="bi bi-patch-check-fill me-1"></i>Tutor</span>';
       }
-      rolesBox.innerHTML = rolesHtml;
+      document.getElementById('modalRolesContainer').innerHTML = rolesHtml;
 
-      const docBox = document.getElementById('modalDocTituloDisplay');
-      if (userData.es_tutor && userData.tutor_verificado && userData.doc_titulo) {
-        docBox.innerHTML = `<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle-fill me-1"></i>Foto de título aprobada: <code>${userData.doc_titulo}</code></span>`;
-      } else if (userData.es_tutor && !userData.tutor_verificado) {
-        docBox.innerHTML = `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle"><i class="bi bi-clock me-1"></i>Sin foto de título adjunta (No verificado)</span>`;
-      } else {
-        docBox.innerHTML = `<span class="text-muted">No solicitada (Perfil Alumno)</span>`;
-      }
+      document.getElementById('modalEstadoBadge').innerHTML = userData.estado === 'activo'
+        ? '<span class="badge bg-success-subtle text-success border border-success-subtle">Activo</span>'
+        : '<span class="badge bg-danger-subtle text-danger border border-danger-subtle">Suspendido</span>';
 
-      const estadoBadge = document.getElementById('modalEstadoBadge');
-      if (userData.estado === 'activo') {
-        estadoBadge.innerHTML = '<span class="badge bg-success-subtle text-success border border-success-subtle">Activo</span>';
-      } else {
-        estadoBadge.innerHTML = '<span class="badge bg-danger-subtle text-danger border border-danger-subtle">Suspendido</span>';
-      }
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('modalDetallesUsuario')).show();
+    }
 
-      const modalEl = document.getElementById('modalDetallesUsuario');
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-      modal.show();
+    function iniciales(nombre) {
+      const partes = nombre.trim().split(/\s+/);
+      return (partes.length >= 2 ? partes[0][0] + partes[1][0] : nombre.substring(0, 2)).toUpperCase();
     }
 
     // ==========================================
@@ -669,16 +653,19 @@
     let usuarioModerarId = null;
     let usuarioModerarAccion = null;
 
-    function confirmarSuspension(id, nombre, accion) {
+    function confirmarSuspension(id, accion) {
+      const usr = USUARIOS[id];
+      if (!usr) return;
+
       usuarioModerarId = id;
       usuarioModerarAccion = accion;
 
-      document.getElementById('suspendUserNameDisplay').textContent = nombre;
-      const accionText = accion === 'suspender' ? 'suspender' : 'reactivar';
-      document.getElementById('suspendAccionNombre').textContent = accionText;
+      document.getElementById('suspendUserNameDisplay').textContent = usr.nombre;
+      document.getElementById('suspendAccionNombre').textContent = accion === 'suspender' ? 'suspender' : 'reactivar';
 
       const btnEjecutar = document.getElementById('btnEjecutarSuspension');
       const campoMotivo = document.getElementById('campoMotivoSuspension');
+      btnEjecutar.disabled = false;
 
       if (accion === 'suspender') {
         btnEjecutar.className = 'btn btn-danger rounded-pill px-4 fw-semibold';
@@ -690,36 +677,73 @@
         if (campoMotivo) campoMotivo.style.display = 'none';
       }
 
-      const modalEl = document.getElementById('modalSuspenderUsuario');
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-      modal.show();
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('modalSuspenderUsuario')).show();
+    }
+
+    function htmlBotonEstado(id, estado) {
+      return estado === 'activo'
+        ? `<button type="button" class="btn btn-sm btn-outline-danger btn-action-user btn-action-suspend d-inline-flex align-items-center gap-1" onclick="confirmarSuspension(${id}, 'suspender')" title="Suspender cuenta por infracción"><i class="bi bi-slash-circle"></i><span class="d-none d-md-inline">Suspender</span></button>`
+        : `<button type="button" class="btn btn-sm btn-outline-success btn-action-user d-inline-flex align-items-center gap-1" onclick="confirmarSuspension(${id}, 'reactivar')" title="Reactivar acceso del usuario"><i class="bi bi-check2-circle"></i><span class="d-none d-md-inline">Reactivar</span></button>`;
+    }
+
+    // Refleja el nuevo estado en la fila: etiqueta, color del avatar y botón
+    function aplicarEstadoEnFila(id, estado) {
+      const usr = USUARIOS[id];
+      usr.estado = estado;
+      usr.avatar_bg = estado === 'suspendido'
+        ? 'bg-danger-subtle text-danger'
+        : (usr.es_tutor ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary');
+
+      const row = document.getElementById(`user-row-${id}`);
+      if (!row) return;
+
+      const badge = row.querySelector('.user-status-badge');
+      if (badge) {
+        badge.className = estado === 'activo'
+          ? 'badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small user-status-badge'
+          : 'badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 small user-status-badge';
+        badge.innerHTML = estado === 'activo'
+          ? '<i class="bi bi-check-circle-fill me-1"></i>Activo'
+          : '<i class="bi bi-x-circle-fill me-1"></i>Suspendido';
+      }
+
+      const avatar = row.querySelector('.avatar-user-badge');
+      if (avatar) avatar.className = 'avatar-user-badge fw-bold ' + usr.avatar_bg;
+
+      const slot = row.querySelector('.slot-boton-estado');
+      if (slot) slot.innerHTML = htmlBotonEstado(id, estado);
     }
 
     function ejecutarAccionSuspension() {
       if (!usuarioModerarId) return;
 
-      const row = document.getElementById(`user-row-${usuarioModerarId}`);
-      if (row) {
-        const badge = row.querySelector('.user-status-badge');
+      const btnEjecutar = document.getElementById('btnEjecutarSuspension');
+      btnEjecutar.disabled = true;
 
-        if (usuarioModerarAccion === 'suspender') {
-          if (badge) {
-            badge.className = 'badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 small user-status-badge';
-            badge.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i>Suspendido';
-          }
-          mostrarToast("Usuario suspendido correctamente.");
-        } else {
-          if (badge) {
-            badge.className = 'badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small user-status-badge';
-            badge.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Activo';
-          }
-          mostrarToast("Usuario reactivado correctamente.");
-        }
+      const formData = new FormData();
+      formData.append('id_usuario', usuarioModerarId);
+      formData.append('accion', usuarioModerarAccion);
+      if (usuarioModerarAccion === 'suspender') {
+        formData.append('motivo', document.getElementById('motivoSuspensionInput').value);
       }
 
-      const modalEl = document.getElementById('modalSuspenderUsuario');
-      const modalInst = bootstrap.Modal.getInstance(modalEl);
-      if (modalInst) modalInst.hide();
+      fetch('index.php?r=admin-moderar-usuario', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            aplicarEstadoEnFila(usuarioModerarId, data.estado);
+            const modalInst = bootstrap.Modal.getInstance(document.getElementById('modalSuspenderUsuario'));
+            if (modalInst) modalInst.hide();
+            mostrarToast(data.mensaje);
+          } else {
+            mostrarToast(data.error || 'No se pudo completar la acción.');
+            btnEjecutar.disabled = false;
+          }
+        })
+        .catch(() => {
+          mostrarToast('Error de conexión con el servidor.');
+          btnEjecutar.disabled = false;
+        });
     }
 
     function mostrarToast(mensaje) {

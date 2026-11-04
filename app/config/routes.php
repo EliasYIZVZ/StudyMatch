@@ -44,7 +44,13 @@ return [
     'admin-usuarios'  => ['AdminController', 'usuarios', 'admin'],
     'admin-materias'  => ['AdminController', 'materias', 'admin'],
     'admin-salas'     => ['AdminController', 'salas', 'admin'],
+    'admin-moderar-sala'     => ['AdminController', 'moderarSala', 'admin'],
+    'admin-moderar-usuario'  => ['AdminController', 'moderarUsuario', 'admin'],
     'admin-reportes'  => ['AdminController', 'reportes', 'admin'],
+    'admin-resolver-reporte' => ['AdminController', 'resolverReporte', 'admin'],
+
+    // Reportes (usuarios registrados)
+    'crear-reporte'   => ['ReporteController', 'crear', 'api'],
 
     // API
     'usuario-actual'  => ['UsuarioController', 'actual', 'api'],

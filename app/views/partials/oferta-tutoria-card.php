@@ -2,7 +2,8 @@
 <?php
 /**
  * Card de una oferta de tutoría, en tres bloques: tutor, oferta y solicitud.
- * Espera la variable $oferta (fila de OfertaTutoria::listarParaAlumno).
+ * Espera la variable $oferta (fila de OfertaTutoria::listarParaAlumno con las
+ * solicitadas excluidas): solo permite solicitar, nunca ver ni cancelar solicitudes.
  */
 $anios = [
     '1ro' => '1° año', '2do' => '2° año', '3ro' => '3° año',
@@ -87,35 +88,25 @@ $textoBusqueda = mb_strtolower(implode(' ', [
       </dl>
     </section>
 
-    <!-- 3. Solicitud del alumno sobre esta oferta -->
+    <!-- 3. Solicitud: las ofertas ya solicitadas no llegan acá (se gestionan en Mis tutorías) -->
     <footer class="oferta-card-solicitud d-flex align-items-center justify-content-between gap-3 flex-wrap">
-      <?php if (!empty($oferta['mi_solicitud_id'])): ?>
-        <?php [$etiquetaEstado, $claseEstado] = Vista::estadoSolicitud($oferta['mi_solicitud_estado']); ?>
-        <div class="d-flex flex-column gap-1">
-          <span class="badge rounded-pill align-self-start <?= Vista::e($claseEstado) ?>">Solicitud <?= Vista::e(mb_strtolower($etiquetaEstado, 'UTF-8')) ?></span>
-          <form method="POST" action="index.php?r=cancelar-solicitud">
-            <input type="hidden" name="id_solicitud" value="<?= (int) $oferta['mi_solicitud_id'] ?>">
-            <button type="submit" class="btn btn-link btn-sm text-danger text-decoration-none p-0">Cancelar solicitud</button>
-          </form>
-        </div>
-        <?php if ($oferta['mi_solicitud_estado'] === 'aceptada'): ?>
-          <a href="index.php?r=tutoria&amp;id=<?= (int) $oferta['mi_solicitud_id'] ?>" class="btn btn-success rounded-pill fw-bold px-4 d-inline-flex align-items-center gap-2 oferta-card-accion">
-            <i class="bi bi-chat-dots"></i> Abrir chat
-          </a>
-        <?php else: ?>
-          <span class="small text-secondary oferta-card-accion text-sm-end">Esperando respuesta del tutor</span>
-        <?php endif; ?>
-      <?php else: ?>
+      <div class="d-flex flex-column">
         <span class="small text-secondary">¿Te sirve esta tutoría?</span>
-        <button type="button" class="btn btn-discord rounded-pill fw-bold px-4 d-inline-flex align-items-center justify-content-center gap-2 oferta-card-accion"
-                data-bs-toggle="modal" data-bs-target="#modalSolicitarTutoria"
-                data-id-oferta="<?= (int) $oferta['id_tutoria'] ?>"
-                data-materia="<?= Vista::e($oferta['materia']) ?>"
-                data-tutor="<?= Vista::e($oferta['tutor']) ?>"
-                data-descripcion="<?= Vista::e($oferta['descripcion']) ?>">
-          <i class="bi bi-send"></i> Solicitar tutoría
+        <button type="button"
+                class="btn btn-link text-muted p-0 text-decoration-none text-start small mt-1"
+                style="font-size: 0.72rem;"
+                onclick="abrirModalReporte('tutoria', <?= (int) $oferta['id_tutoria'] ?>, '<?= Vista::e(addslashes($oferta['materia'] . ' · ' . $oferta['tutor'])) ?>')">
+          <i class="bi bi-flag"></i> Reportar publicación
         </button>
-      <?php endif; ?>
+      </div>
+      <button type="button" class="btn btn-discord rounded-pill fw-bold px-4 d-inline-flex align-items-center justify-content-center gap-2 oferta-card-accion"
+              data-bs-toggle="modal" data-bs-target="#modalSolicitarTutoria"
+              data-id-oferta="<?= (int) $oferta['id_tutoria'] ?>"
+              data-materia="<?= Vista::e($oferta['materia']) ?>"
+              data-tutor="<?= Vista::e($oferta['tutor']) ?>"
+              data-descripcion="<?= Vista::e($oferta['descripcion']) ?>">
+        <i class="bi bi-send"></i> Solicitar tutoría
+      </button>
     </footer>
   </article>
 </div>
