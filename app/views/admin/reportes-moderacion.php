@@ -32,7 +32,7 @@
   <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
 
   <!-- Estilos específicos de Moderación y Alertas -->
-  <link rel="stylesheet" href="public/css/admin-reportes.css?v=20261029_v3">
+  <link rel="stylesheet" href="public/css/admin-reportes.css?v=20261104_redise2">
 </head>
 <body class="dashboard-body" data-role="admin">
 
@@ -76,21 +76,21 @@
         <a href="index.php?r=admin-usuarios" class="sidebar-link" title="Gestión de Usuarios">
           <i class="bi bi-people fs-5"></i>
           <span class="sidebar-text">Gestión de Usuarios</span>
-          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;">1,280</span>
+          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;"><?= (int) $metricas['alumnos']['total']; ?></span>
         </a>
 
         <!-- 3. Gestión de Materias -->
         <a href="index.php?r=admin-materias" class="sidebar-link" title="Gestión de Materias y Carreras">
           <i class="bi bi-journal-bookmark fs-5"></i>
           <span class="sidebar-text">Gestión de Materias</span>
-          <span class="badge bg-secondary-subtle text-light ms-auto sidebar-text" style="font-size: 0.68rem;">10</span>
+          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;"><?= (int) $metricas['materias']['total']; ?></span>
         </a>
 
         <!-- 4. Salas Públicas -->
         <a href="index.php?r=admin-salas" class="sidebar-link" title="Salas Públicas">
           <i class="bi bi-broadcast fs-5 text-danger"></i>
           <span class="sidebar-text">Salas Públicas</span>
-          <span class="badge bg-danger text-white rounded-pill ms-auto sidebar-text" style="font-size: 0.65rem;">6 en vivo</span>
+          <span class="badge bg-danger text-white rounded-pill ms-auto sidebar-text" style="font-size: 0.65rem;"><?= (int) $metricas['salas']['activas']; ?> en vivo</span>
         </a>
 
         <!-- 5. Reportes y Moderación (ACTIVO) -->
@@ -206,7 +206,7 @@
            style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 65%, #991b1b 100%);">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
           <div>
-            <span class="badge rounded-pill px-3 py-1 small fw-semibold mb-2 d-inline-flex align-items-center gap-1.5"
+            <span class="badge rounded-pill px-3 py-1 small fw-semibold mb-2 d-inline-flex align-items-center gap-2"
                   style="background-color: rgba(239, 68, 68, 0.25); color: #fecaca; border: 1px solid rgba(239, 68, 68, 0.4);">
               <i class="bi bi-shield-lock-fill"></i> Seguridad & Convivencia
             </span>
@@ -219,7 +219,7 @@
           </div>
 
           <button type="button" 
-                  class="btn btn-outline-light rounded-pill btn-sm px-3 fw-semibold shadow-sm d-inline-flex align-items-center gap-1.5"
+                  class="btn btn-outline-light rounded-pill btn-sm px-3 fw-semibold shadow-sm d-inline-flex align-items-center gap-2"
                   onclick="actualizarListaReportes()">
             <i class="bi bi-arrow-clockwise"></i>
             <span>Actualizar</span>
@@ -227,227 +227,214 @@
         </div>
       </div>
 
+      <?php
+        $e = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
+
+        // Presentación de cada tipo de reporte: ícono y clase de color (definidos en admin-reportes.css)
+        $estilosTipo = [
+            'sala'    => ['bi-discord',          'tipo-sala'],
+            'tutoria' => ['bi-journal-text',     'tipo-tutoria'],
+            'mensaje' => ['bi-chat-left-text',   'tipo-mensaje'],
+            'tutor'   => ['bi-patch-check-fill', 'tipo-tutor'],
+            'alumno'  => ['bi-mortarboard-fill', 'tipo-alumno'],
+        ];
+        $etiquetasTipo = ['sala' => 'Sala', 'tutoria' => 'Tutoría', 'mensaje' => 'Mensaje', 'tutor' => 'Tutor', 'alumno' => 'Alumno'];
+      ?>
+
       <!-- ====================================================================
-           TABLA DE AUDITORÍA (KPIs FUSIONADOS EN FILTROS Y REVELACIÓN PROGRESIVA)
+           RESUMEN (datos reales)
            ==================================================================== -->
-      <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden mb-4">
-        
-        <!-- Cabecera de la tabla: contadores integrados sin duplicar tarjetas -->
-        <div class="p-3.5 px-4 border-bottom">
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <div class="d-flex align-items-center gap-2">
-              <h5 class="fw-bold text-dark mb-0">Auditoría de Reportes</h5>
-              <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1.5" style="font-size: 0.72rem;">
-                <span class="live-dot pulse-warning"></span>
-                <span id="badgeHeaderPendientes"><?= $reportesPendientes; ?> pendientes</span>
-              </span>
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100 stat-card">
+            <div class="card-body d-flex align-items-center gap-3">
+              <span class="stat-icon stat-icon--amber"><i class="bi bi-hourglass-split"></i></span>
+              <div>
+                <div class="stat-value" id="statPendientes"><?= (int) $reportesPendientes ?></div>
+                <div class="stat-label">Pendientes de revisión</div>
+              </div>
             </div>
-
-            <!-- Filtros Integrados con Contadores: Todos / Discord / Alumnos + Menú desplegable -->
-            <div class="d-flex align-items-center flex-wrap gap-2">
-              
-              <!-- Filtro tipo píldora con contadores integrados -->
-              <div class="btn-group btn-group-sm flex-wrap rounded-pill p-1 bg-light border" role="group" aria-label="Filtro de reportes">
-                <?php
-                  $filtrosTipo = [
-                      'sala'    => ['bi-discord text-primary', 'Sala'],
-                      'tutoria' => ['bi-journal-text', 'Tutoría'],
-                      'mensaje' => ['bi-chat-left-text', 'Mensaje'],
-                      'tutor'   => ['bi-patch-check text-primary', 'Tutor'],
-                      'alumno'  => ['bi-mortarboard', 'Alumno'],
-                  ];
-                ?>
-                <button type="button" class="btn btn-sm btn-white active rounded-pill fw-semibold px-3 shadow-sm filter-btn-tipo" onclick="cambiarFiltroTipo('todos', this)">
-                  Todos <span class="badge bg-secondary-subtle text-dark ms-1" id="countFilterTodos"><?= $totalReportes; ?></span>
-                </button>
-                <?php foreach ($filtrosTipo as $clave => $filtro): ?>
-                  <button type="button" class="btn btn-sm text-secondary rounded-pill fw-semibold px-2.5 filter-btn-tipo" onclick="cambiarFiltroTipo('<?= $clave; ?>', this)">
-                    <i class="bi <?= $filtro[0]; ?> me-1"></i><?= $filtro[1]; ?> <span class="badge bg-secondary-subtle text-secondary ms-1" data-count-tipo="<?= $clave; ?>"><?= (int) $conteoTipos[$clave]; ?></span>
-                  </button>
-                <?php endforeach; ?>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100 stat-card">
+            <div class="card-body d-flex align-items-center gap-3">
+              <span class="stat-icon stat-icon--green"><i class="bi bi-check-circle-fill"></i></span>
+              <div>
+                <div class="stat-value" id="statFinalizados"><?= (int) $reportesFinalizados ?></div>
+                <div class="stat-label">Finalizados con sanción</div>
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100 stat-card">
+            <div class="card-body d-flex align-items-center gap-3">
+              <span class="stat-icon stat-icon--slate"><i class="bi bi-x-circle-fill"></i></span>
+              <div>
+                <div class="stat-value" id="statRechazados"><?= (int) $reportesRechazados ?></div>
+                <div class="stat-label">Rechazados</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100 stat-card">
+            <div class="card-body d-flex align-items-center gap-3">
+              <span class="stat-icon stat-icon--blue"><i class="bi bi-flag-fill"></i></span>
+              <div>
+                <div class="stat-value" id="statTotal"><?= (int) $totalReportes ?></div>
+                <div class="stat-label">Reportes recibidos</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <!-- Menú Desplegable con: Más nuevos, Pendientes, Resueltos -->
+      <!-- ====================================================================
+           AUDITORÍA DE REPORTES
+           ==================================================================== -->
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+
+        <div class="p-4 border-bottom">
+          <div class="mb-3">
+            <h5 class="fw-bold mb-0">Auditoría de reportes</h5>
+            <span class="text-secondary small">Denuncias de la comunidad sobre salas, tutorías, mensajes, tutores y alumnos</span>
+          </div>
+
+          <div class="row g-2 align-items-center">
+            <div class="col-12 col-lg">
               <div class="position-relative">
-                <select id="filtroEstadoOrden" 
-                        class="form-select form-select-sm rounded-pill bg-light border px-3 py-1.5 fw-semibold text-secondary shadow-none" 
-                        style="min-width: 155px; font-size: 0.82rem;" 
-                        onchange="cambiarFiltroSelect(this.value)">
-                  <option value="nuevos" selected>Más nuevos (Todos)</option>
-                  <option value="pendiente">🟡 Pendientes</option>
-                  <option value="finalizado">🟢 Finalizados</option>
-                  <option value="rechazado">⚪ Rechazados</option>
-                </select>
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+                <input type="text" id="reporteSearchInput" class="form-control rounded-pill ps-5 py-2 search-input-wide shadow-none"
+                       placeholder="Buscar por elemento, motivo o fecha...">
               </div>
-
+            </div>
+            <div class="col-6 col-lg-auto">
+              <select id="filtroTipo" class="form-select rounded-pill filtro-select shadow-none" aria-label="Filtrar por tipo">
+                <option value="">Todos los tipos</option>
+                <?php foreach ($etiquetasTipo as $clave => $etiqueta): ?>
+                  <option value="<?= $e($clave) ?>"><?= $e($etiqueta) ?> (<?= (int) $conteoTipos[$clave] ?>)</option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <div class="col-6 col-lg-auto">
+              <select id="filtroEstado" class="form-select rounded-pill filtro-select shadow-none" aria-label="Filtrar por estado">
+                <option value="">Todos los estados</option>
+                <option value="pendiente">Pendientes</option>
+                <option value="finalizado">Finalizados</option>
+                <option value="rechazado">Rechazados</option>
+              </select>
+            </div>
+            <div class="col-12 col-lg-auto">
+              <button type="button" class="btn btn-outline-secondary rounded-pill btn-sm px-3 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 w-100" onclick="restablecerFiltrosReportes()">
+                <i class="bi bi-funnel"></i><span>Limpiar</span>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Tabla responsiva y limpia: revelación progresiva sin sobrecargar las filas -->
         <div class="table-responsive">
           <table class="table table-reportes align-middle mb-0" id="tablaReportesAdmin">
             <thead>
               <tr>
-                <th scope="col" style="width: 110px;">Tipo</th>
-                <th scope="col" style="min-width: 250px;">Elemento Reportado</th>
-                <th scope="col" style="min-width: 260px;">Motivo</th>
-                <th scope="col" style="width: 140px;">Fecha</th>
-                <th scope="col" style="width: 120px;">Estado</th>
-                <th scope="col" class="text-end" style="width: 150px;">Acciones</th>
+                <th scope="col" style="width: 120px;">Tipo</th>
+                <th scope="col" style="min-width: 200px;">Elemento reportado</th>
+                <th scope="col" style="min-width: 190px;">Motivo</th>
+                <th scope="col" style="width: 150px;">Fecha</th>
+                <th scope="col" style="width: 130px;">Estado</th>
+                <th scope="col" class="text-end" style="width: 200px;">Acciones</th>
               </tr>
             </thead>
             <tbody id="tablaReportesBody">
-              
-              <!-- Filas dinámicas de reportes -->
               <?php foreach ($reportes as $rep): ?>
-                <?php
-                  $esPendiente = ($rep['estado'] === 'pendiente');
-                  $esSala = ($rep['tipo'] === 'sala');
-                ?>
-                <tr class="reporte-row <?= !$esPendiente ? 'fila-resuelta' : ''; ?>" 
-                    id="row-reporte-<?= $rep['id_reporte']; ?>"
-                    data-id="<?= $rep['id_reporte']; ?>"
-                    data-tipo="<?= $rep['tipo']; ?>"
-                    data-estado="<?= $rep['estado']; ?>"
-                    data-timestamp="<?= $rep['timestamp']; ?>">
-                  
-                  <!-- 1. Columna: Tipo (Sala / Tutoría / Mensaje / Tutor / Alumno) -->
+                <?php $estiloTipo = $estilosTipo[$rep['tipo']]; ?>
+                <tr class="reporte-row <?= $rep['estado'] !== 'pendiente' ? 'fila-resuelta' : '' ?>"
+                    id="row-reporte-<?= (int) $rep['id_reporte'] ?>"
+                    data-id="<?= (int) $rep['id_reporte'] ?>"
+                    data-tipo="<?= $e($rep['tipo']) ?>"
+                    data-estado="<?= $e($rep['estado']) ?>"
+                    data-timestamp="<?= (int) $rep['timestamp'] ?>">
+
                   <td>
-                    <?php
-                      $estilosTipo = [
-                          'sala'    => ['bi-discord', 'badge-tipo-elemento', 'background-color: rgba(88, 101, 242, 0.15); color: #5865F2; border: 1px solid rgba(88, 101, 242, 0.3);'],
-                          'tutoria' => ['bi-journal-text', 'badge-tipo-elemento bg-info-subtle text-info-emphasis border border-info-subtle', ''],
-                          'mensaje' => ['bi-chat-left-text', 'badge-tipo-elemento bg-warning-subtle text-warning-emphasis border border-warning-subtle', ''],
-                          'tutor'   => ['bi-patch-check-fill', 'badge-tipo-elemento bg-success-subtle text-success border border-success-subtle', ''],
-                          'alumno'  => ['bi-mortarboard-fill', 'badge-tipo-elemento bg-primary-subtle text-primary border border-primary-subtle', ''],
-                      ];
-                      $estiloTipo = $estilosTipo[$rep['tipo']];
-                    ?>
-                    <span class="badge <?= $estiloTipo[1]; ?>"<?= $estiloTipo[2] !== '' ? ' style="' . $estiloTipo[2] . '"' : ''; ?>>
-                      <i class="bi <?= $estiloTipo[0]; ?>"></i> <?= htmlspecialchars($rep['tipo_etiqueta']); ?>
+                    <span class="badge-tipo-elemento <?= $estiloTipo[1] ?>">
+                      <i class="bi <?= $estiloTipo[0] ?>"></i><?= $e($rep['tipo_etiqueta']) ?>
                     </span>
                   </td>
 
-                  <!-- 2. Columna: Elemento Reportado -->
                   <td>
                     <div class="d-flex flex-column">
-                      <span class="fw-bold text-dark elemento-nombre-slot text-truncate" style="max-width: 280px;" title="<?= htmlspecialchars($rep['elemento']); ?>">
-                        <?= htmlspecialchars($rep['elemento']); ?>
-                      </span>
-                      <span class="text-muted small" style="font-size: 0.74rem;">
-                        <?= htmlspecialchars($rep['elemento_sub']); ?>
-                      </span>
+                      <span class="fw-semibold text-truncate" style="max-width: 230px;" title="<?= $e($rep['elemento']) ?>"><?= $e($rep['elemento']) ?></span>
+                      <span class="text-secondary text-truncate" style="font-size: 0.76rem; max-width: 230px;"><?= $e($rep['elemento_sub']) ?></span>
                     </div>
                   </td>
 
-                  <!-- 3. Columna: Motivo breve en una línea (la descripción completa se lee en el modal) -->
                   <td>
-                    <span class="fw-semibold text-danger small d-inline-flex align-items-center gap-1 text-truncate" style="max-width: 280px;" title="<?= htmlspecialchars($rep['motivo']); ?>">
-                      <i class="bi bi-shield-exclamation text-danger flex-shrink-0"></i>
-                      <span class="text-truncate"><?= htmlspecialchars($rep['motivo']); ?></span>
+                    <span class="motivo-text d-inline-flex align-items-center gap-2" title="<?= $e($rep['motivo']) ?>">
+                      <i class="bi bi-shield-exclamation flex-shrink-0"></i>
+                      <span class="text-truncate" style="max-width: 170px;"><?= $e($rep['motivo']) ?></span>
                     </span>
                   </td>
 
-                  <!-- 4. Columna: Fecha y Hora -->
                   <td>
-                    <div class="text-secondary small d-flex align-items-center gap-1" style="font-size: 0.78rem;">
-                      <i class="bi bi-clock text-muted"></i>
-                      <span><?= htmlspecialchars($rep['fecha']); ?></span>
-                    </div>
+                    <span class="text-secondary small d-inline-flex align-items-center gap-2 text-nowrap">
+                      <i class="bi bi-clock"></i><?= $e($rep['fecha']) ?>
+                    </span>
                   </td>
 
-                  <!-- 5. Columna: Estado (Pendiente / Finalizado / Rechazado) -->
                   <td class="estado-badge-slot">
                     <?php if ($rep['estado'] === 'pendiente'): ?>
-                      <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1.5">
-                        <span class="live-dot pulse-warning"></span>
-                        <span>Pendiente</span>
-                      </span>
+                      <span class="badge-estado estado-pendiente"><i class="bi bi-hourglass-split"></i>Pendiente</span>
                     <?php elseif ($rep['estado'] === 'finalizado'): ?>
-                      <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
-                        <i class="bi bi-check-circle-fill"></i>
-                        <span>Finalizado</span>
-                      </span>
+                      <span class="badge-estado estado-finalizado"><i class="bi bi-check-circle-fill"></i>Finalizado</span>
                     <?php else: ?>
-                      <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
-                        <i class="bi bi-x-circle"></i>
-                        <span>Rechazado</span>
-                      </span>
+                      <span class="badge-estado estado-rechazado"><i class="bi bi-x-circle"></i>Rechazado</span>
                     <?php endif; ?>
                   </td>
 
-                  <!-- 6. Columna: Acciones Simplificadas [Revisar] + Descarte sutil -->
-                  <td class="text-end">
-                    <div class="d-inline-flex align-items-center gap-1.5">
-                      
-                      <!-- Botón Principal: [Revisar] -->
-                      <button type="button" 
-                              class="btn btn-sm btn-primary rounded-pill btn-action-pill d-inline-flex align-items-center gap-1 shadow-sm px-3"
-                              onclick="abrirModalDetalle(<?= htmlspecialchars(json_encode($rep)); ?>)"
-                              title="Revisar caso y aplicar sanción">
-                        <i class="bi bi-eye"></i>
-                        <span>Revisar</span>
-                      </button>
-
-                      <!-- Botón Descartar (icono sutil sin texto invasivo) -->
-                      <button type="button" 
-                              class="btn btn-sm btn-light border text-secondary rounded-circle btn-icon-subtle"
-                              onclick="descartarAlerta(<?= $rep['id_reporte']; ?>)"
-                              title="Descartar reporte">
-                        <i class="bi bi-x-lg"></i>
-                      </button>
-
+                  <td class="text-end acciones-slot">
+                    <div class="d-inline-flex align-items-center gap-2">
+                      <?php if ($rep['estado'] === 'pendiente'): ?>
+                        <button type="button" class="btn btn-sm btn-primary btn-action-pill d-inline-flex align-items-center justify-content-center gap-1"
+                                onclick="abrirModalDetalle(<?= (int) $rep['id_reporte'] ?>)" title="Revisar caso y aplicar sanción">
+                          <i class="bi bi-eye"></i><span>Revisar</span>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary btn-action-pill d-inline-flex align-items-center justify-content-center gap-1"
+                                onclick="descartarAlerta(<?= (int) $rep['id_reporte'] ?>)" title="Rechazar y desestimar el reporte">
+                          <i class="bi bi-x-lg"></i><span>Descartar</span>
+                        </button>
+                      <?php else: ?>
+                        <button type="button" class="btn btn-sm btn-outline-secondary btn-action-pill d-inline-flex align-items-center justify-content-center gap-1"
+                                onclick="abrirModalDetalle(<?= (int) $rep['id_reporte'] ?>)" title="Ver el caso">
+                          <i class="bi bi-eye"></i><span>Ver caso</span>
+                        </button>
+                      <?php endif; ?>
                     </div>
                   </td>
 
                 </tr>
               <?php endforeach; ?>
-
             </tbody>
           </table>
+
+          <?php if ($errorReportes): ?>
+            <div class="p-5 text-center">
+              <i class="bi bi-exclamation-triangle text-warning fs-1 d-block mb-2"></i>
+              <p class="text-secondary mb-0">No se pudieron cargar los reportes. Intentá nuevamente más tarde.</p>
+            </div>
+          <?php endif; ?>
+
+          <div id="emptySearchReportes" class="p-5 text-center text-secondary d-none">
+            <i class="bi bi-shield-check text-success fs-2 d-block mb-2"></i>
+            <h6 class="fw-bold mb-1"><?= empty($reportes) && !$errorReportes ? 'Todavía no hay reportes' : 'Sin reportes que coincidan' ?></h6>
+            <p class="small mb-0">No hay denuncias con los filtros seleccionados.</p>
+          </div>
         </div>
 
-        <!-- Estado vacío -->
-        <?php if ($errorReportes): ?>
-          <div class="p-5 text-center bg-white">
-            <i class="bi bi-exclamation-triangle text-warning fs-1 d-block mb-2"></i>
-            <p class="text-secondary mb-0">No se pudieron cargar los reportes. Intentá nuevamente más tarde.</p>
-          </div>
-        <?php endif; ?>
-
-        <div id="emptySearchReportes" class="p-5 text-center bg-white" style="display: none;">
-          <div class="bg-light text-muted rounded-circle p-3 d-inline-flex mb-3">
-            <i class="bi bi-shield-check fs-1 text-success"></i>
-          </div>
-          <h5 class="fw-bold text-dark mb-1">Sin alertas que coincidan</h5>
-          <p class="text-secondary small mb-3">No hay denuncias pendientes con el filtro seleccionado.</p>
-          <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="restablecerFiltrosReportes()">
-            Restablecer Filtros
-          </button>
-        </div>
-
-        <!-- Footer con Paginación Resumida -->
-        <div class="card-footer bg-white border-top px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3" id="paginacionReportesCard">
-          <div class="text-secondary small" id="paginacionReportesInfoTexto">
-            Mostrando <strong>1 - 5</strong> de <strong><?= $totalReportes; ?></strong> alertas registradas
-          </div>
-          
+        <div class="card-footer border-top px-4 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3" id="paginacionReportesCard">
+          <div class="text-secondary small" id="paginacionReportesInfoTexto"></div>
           <nav aria-label="Navegación de auditoría">
-            <ul class="pagination pagination-sm mb-0" id="paginacionReportesControles">
-              <li class="page-item disabled" id="btnPagAntRep">
-                <button class="page-link rounded-start-pill px-3" onclick="cambiarPaginaRep('prev')">Anterior</button>
-              </li>
-              <li class="page-item active" id="btnPagItemRep1">
-                <button class="page-link" onclick="irAPaginaRep(1)">1</button>
-              </li>
-              <li class="page-item" id="btnPagItemRep2" style="display: none;">
-                <button class="page-link" onclick="irAPaginaRep(2)">2</button>
-              </li>
-              <li class="page-item disabled" id="btnPagSigRep">
-                <button class="page-link rounded-end-pill px-3" onclick="cambiarPaginaRep('next')">Siguiente</button>
-              </li>
-            </ul>
+            <ul class="pagination pagination-sm mb-0" id="paginacionReportesControles"></ul>
           </nav>
         </div>
 
@@ -465,7 +452,7 @@
         
         <div class="modal-header border-bottom px-4 pt-4 pb-3">
           <div class="d-flex align-items-center gap-2">
-            <div class="bg-primary-subtle text-primary p-2 rounded-3">
+            <div class="bg-primary-subtle text-primary p-2 rounded-3 d-inline-flex">
               <i class="bi bi-card-checklist fs-4"></i>
             </div>
             <div>
@@ -497,9 +484,9 @@
           </div>
 
           <!-- Motivo y descripción del incidente -->
-          <div class="p-3 bg-light rounded-3 border mb-3">
+          <div class="p-3 rounded-3 border mb-3 bloque-motivo">
             <span class="text-muted text-uppercase fw-bold d-block mb-1" style="font-size: 0.68rem;">Motivo e Infracción Declarada:</span>
-            <div class="fw-bold text-danger mb-2" id="detMotivo">...</div>
+            <div class="fw-bold motivo-text mb-2" id="detMotivo">...</div>
             <p class="text-secondary small mb-0" id="detDescripcion" style="line-height: 1.5;">...</p>
           </div>
 
@@ -513,16 +500,16 @@
         </div>
 
         <!-- Footer con Acciones Directas: Desactivar cuenta de alumno o Discord -->
-        <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="modal-footer border-top px-4 py-3 rounded-bottom-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
           
-          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+          <button type="button" class="btn btn-outline-secondary btn-modal-accion" data-bs-dismiss="modal">
             Cerrar
           </button>
 
-          <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center flex-wrap justify-content-end gap-2">
             <!-- Botón Descartar desde Modal -->
             <button type="button" 
-                    class="btn btn-outline-secondary rounded-pill px-3 fw-semibold d-inline-flex align-items-center gap-1.5"
+                    class="btn btn-outline-secondary btn-modal-accion"
                     id="btnDescartarModal"
                     onclick="descartarDesdeModal()">
               <i class="bi bi-trash"></i>
@@ -531,7 +518,7 @@
 
             <!-- Botón Dinámico: Desactivar Sala de Discord O Desactivar Cuenta de Alumno -->
             <button type="button" 
-                    class="btn btn-danger rounded-pill px-4 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" 
+                    class="btn btn-danger btn-modal-accion"
                     id="btnAccionDesactivarModal" 
                     onclick="ejecutarDesactivacionDesdeDetalle()">
               <i class="bi" id="iconoAccionDesactivar"></i>
@@ -609,144 +596,100 @@
     }
 
     // ==========================================
-    // 3. Filtrado y Ordenamiento (Discord / Alumnos + Menú Desplegable)
+    // 3. Búsqueda, filtros y paginación de la auditoría
     // ==========================================
-    const ITEMS_POR_PAGINA = 5;
+    const ITEMS_POR_PAGINA = 10;
     let paginaActualRep = 1;
-    let filtroTipoActual = 'todos';     // 'todos' | 'sala' | 'tutoria' | 'mensaje' | 'tutor' | 'alumno'
-    let filtroOrdenEstado = 'nuevos';   // 'nuevos' | 'pendientes' | 'resueltos'
-    let reportesFiltrados = [];
+
+    const REPORTES = <?= json_encode(array_column($reportes, null, 'id_reporte'), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_PARTIAL_OUTPUT_ON_ERROR); ?>;
+
+    const searchRep = document.getElementById('reporteSearchInput');
+    const filtroTipo = document.getElementById('filtroTipo');
+    const filtroEstado = document.getElementById('filtroEstado');
 
     function actualizarPaginacionRep() {
       const todasLasFilas = Array.from(document.querySelectorAll('#tablaReportesBody .reporte-row'));
+      const query = (searchRep ? searchRep.value : '').toLowerCase().trim();
 
-      // Filtrar filas según tipo y desplegable
-      reportesFiltrados = todasLasFilas.filter(row => {
-        const tipo = row.getAttribute('data-tipo');
-        const estado = row.getAttribute('data-estado');
+      const coincidentes = todasLasFilas.filter(row =>
+        (!query || row.textContent.toLowerCase().includes(query))
+        && (!filtroTipo.value || row.dataset.tipo === filtroTipo.value)
+        && (!filtroEstado.value || row.dataset.estado === filtroEstado.value)
+      );
 
-        // Filtro 1: Discord o Alumnos
-        let coincideTipo = (filtroTipoActual === 'todos') || (tipo === filtroTipoActual);
+      const total = coincidentes.length;
+      const totalPaginas = Math.max(1, Math.ceil(total / ITEMS_POR_PAGINA));
+      paginaActualRep = Math.min(Math.max(1, paginaActualRep), totalPaginas);
 
-        // Filtro 2: Desplegable (Más nuevos, Pendientes, Finalizados, Rechazados)
-        let coincideEstado = true;
-        if (filtroOrdenEstado === 'pendiente') {
-          coincideEstado = (estado === 'pendiente');
-        } else if (filtroOrdenEstado === 'finalizado') {
-          coincideEstado = (estado === 'finalizado');
-        } else if (filtroOrdenEstado === 'rechazado') {
-          coincideEstado = (estado === 'rechazado');
-        }
-
-        return coincideTipo && coincideEstado;
-      });
-
-      // Ordenar por más nuevos si corresponde
-      if (filtroOrdenEstado === 'nuevos') {
-        reportesFiltrados.sort((a, b) => {
-          const tA = parseInt(a.getAttribute('data-timestamp') || '0', 10);
-          const tB = parseInt(b.getAttribute('data-timestamp') || '0', 10);
-          return tB - tA;
-        });
-      }
-
-      const totalFiltrados = reportesFiltrados.length;
-      const totalPaginas = Math.ceil(totalFiltrados / ITEMS_POR_PAGINA) || 1;
-
-      if (paginaActualRep > totalPaginas) paginaActualRep = totalPaginas;
-      if (paginaActualRep < 1) paginaActualRep = 1;
-
-      // Ocultar todas las filas
-      todasLasFilas.forEach(row => row.style.display = 'none');
-
-      // Mostrar filas de la página actual
       const inicio = (paginaActualRep - 1) * ITEMS_POR_PAGINA;
-      const fin = inicio + ITEMS_POR_PAGINA;
-      const visibles = reportesFiltrados.slice(inicio, fin);
-      visibles.forEach(row => row.style.display = '');
+      const visibles = new Set(coincidentes.slice(inicio, inicio + ITEMS_POR_PAGINA));
+      todasLasFilas.forEach(row => { row.style.display = visibles.has(row) ? '' : 'none'; });
 
-      // Control de estado vacío
-      const emptyState = document.getElementById('emptySearchReportes');
-      const pagCard = document.getElementById('paginacionReportesCard');
+      document.getElementById('emptySearchReportes').classList.toggle('d-none', total > 0);
+      document.getElementById('tablaReportesAdmin').classList.toggle('d-none', total === 0);
+      document.getElementById('paginacionReportesCard').classList.toggle('d-none', total === 0);
 
-      if (totalFiltrados === 0) {
-        if (emptyState) emptyState.style.display = '';
-        if (pagCard) pagCard.style.display = 'none';
-      } else {
-        if (emptyState) emptyState.style.display = 'none';
-        if (pagCard) pagCard.style.display = 'flex';
+      document.getElementById('paginacionReportesInfoTexto').innerHTML = total === 0
+        ? ''
+        : `Mostrando <strong>${inicio + 1} - ${Math.min(inicio + ITEMS_POR_PAGINA, total)}</strong> de <strong>${total}</strong> reportes`;
 
-        const infoTexto = document.getElementById('paginacionReportesInfoTexto');
-        if (infoTexto) {
-          const primerNum = inicio + 1;
-          const ultimoNum = Math.min(fin, totalFiltrados);
-          infoTexto.innerHTML = `Mostrando <strong>${primerNum} - ${ultimoNum}</strong> de <strong>${totalFiltrados}</strong> alertas registradas`;
-        }
-
-        const btnAnt = document.getElementById('btnPagAntRep');
-        const btnSig = document.getElementById('btnPagSigRep');
-        const item1 = document.getElementById('btnPagItemRep1');
-        const item2 = document.getElementById('btnPagItemRep2');
-
-        if (btnAnt) btnAnt.classList.toggle('disabled', paginaActualRep <= 1);
-        if (btnSig) btnSig.classList.toggle('disabled', paginaActualRep >= totalPaginas);
-
-        if (item1) {
-          item1.classList.toggle('active', paginaActualRep === 1);
-          item1.style.display = totalPaginas >= 1 ? '' : 'none';
-        }
-        if (item2) {
-          item2.classList.toggle('active', paginaActualRep === 2);
-          item2.style.display = totalPaginas >= 2 ? '' : 'none';
-        }
-      }
+      dibujarPaginacionRep(totalPaginas);
     }
 
-    function cambiarFiltroTipo(tipo, btn) {
-      filtroTipoActual = tipo;
-      paginaActualRep = 1;
+    function dibujarPaginacionRep(totalPaginas) {
+      const ul = document.getElementById('paginacionReportesControles');
+      ul.innerHTML = '';
+      if (totalPaginas <= 1) return;
 
-      document.querySelectorAll('.filter-btn-tipo').forEach(b => {
-        b.classList.remove('btn-white', 'active', 'shadow-sm');
-        b.classList.add('text-secondary');
-      });
-      btn.classList.remove('text-secondary');
-      btn.classList.add('btn-white', 'active', 'shadow-sm');
+      const item = (texto, pagina, opciones) => {
+        const o = opciones || {};
+        const li = document.createElement('li');
+        li.className = 'page-item' + (o.activo ? ' active' : '') + (o.deshabilitado ? ' disabled' : '');
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'page-link ' + (o.clase || '');
+        b.textContent = texto;
+        b.addEventListener('click', () => { paginaActualRep = pagina; actualizarPaginacionRep(); });
+        li.appendChild(b);
+        ul.appendChild(li);
+      };
 
-      actualizarPaginacionRep();
+      item('Anterior', paginaActualRep - 1, { deshabilitado: paginaActualRep <= 1, clase: 'rounded-start-pill px-3' });
+      for (let p = 1; p <= totalPaginas; p++) item(String(p), p, { activo: p === paginaActualRep });
+      item('Siguiente', paginaActualRep + 1, { deshabilitado: paginaActualRep >= totalPaginas, clase: 'rounded-end-pill px-3' });
     }
 
-    function cambiarFiltroSelect(valor) {
-      filtroOrdenEstado = valor;
-      paginaActualRep = 1;
-      actualizarPaginacionRep();
-    }
-
-    function irAPaginaRep(num) {
-      paginaActualRep = num;
-      actualizarPaginacionRep();
-    }
-
-    function cambiarPaginaRep(accion) {
-      if (accion === 'prev') irAPaginaRep(paginaActualRep - 1);
-      if (accion === 'next') irAPaginaRep(paginaActualRep + 1);
-    }
+    [searchRep, filtroTipo, filtroEstado].forEach(el => {
+      if (el) el.addEventListener(el === searchRep ? 'input' : 'change', () => { paginaActualRep = 1; actualizarPaginacionRep(); });
+    });
 
     function restablecerFiltrosReportes() {
-      filtroTipoActual = 'todos';
-      filtroOrdenEstado = 'nuevos';
-
-      const select = document.getElementById('filtroEstadoOrden');
-      if (select) select.value = 'nuevos';
-
-      document.querySelectorAll('.filter-btn-tipo').forEach(b => {
-        b.classList.remove('btn-white', 'active', 'shadow-sm');
-        b.classList.add('text-secondary');
-      });
-      document.querySelectorAll('.filter-btn-tipo')[0]?.classList.add('btn-white', 'active', 'shadow-sm');
-
+      searchRep.value = '';
+      filtroTipo.value = '';
+      filtroEstado.value = '';
       paginaActualRep = 1;
       actualizarPaginacionRep();
+    }
+
+    // Estado y acciones de una fila (también se usan al resolver un reporte sin recargar)
+    function htmlEstado(estado) {
+      if (estado === 'pendiente') return '<span class="badge-estado estado-pendiente"><i class="bi bi-hourglass-split"></i>Pendiente</span>';
+      if (estado === 'finalizado') return '<span class="badge-estado estado-finalizado"><i class="bi bi-check-circle-fill"></i>Finalizado</span>';
+      return '<span class="badge-estado estado-rechazado"><i class="bi bi-x-circle"></i>Rechazado</span>';
+    }
+
+    function htmlAccionesResuelto(id) {
+      return `<div class="d-inline-flex align-items-center gap-2"><button type="button" class="btn btn-sm btn-outline-secondary btn-action-pill d-inline-flex align-items-center justify-content-center gap-1" onclick="abrirModalDetalle(${id})" title="Ver el caso"><i class="bi bi-eye"></i><span>Ver caso</span></button></div>`;
+    }
+
+    function marcarFilaResuelta(id, estado) {
+      if (REPORTES[id]) REPORTES[id].estado = estado;
+      const row = document.getElementById(`row-reporte-${id}`);
+      if (!row) return;
+      row.setAttribute('data-estado', estado);
+      row.classList.add('fila-resuelta');
+      row.querySelector('.estado-badge-slot').innerHTML = htmlEstado(estado);
+      row.querySelector('.acciones-slot').innerHTML = htmlAccionesResuelto(id);
     }
 
     // ==========================================
@@ -754,7 +697,9 @@
     // ==========================================
     let reporteActivoEnModal = null;
 
-    function abrirModalDetalle(rep) {
+    function abrirModalDetalle(id) {
+      const rep = REPORTES[id];
+      if (!rep) return;
       reporteActivoEnModal = rep;
       document.getElementById('detElemento').textContent = rep.elemento;
       document.getElementById('detElementoSub').textContent = rep.elemento_sub;
@@ -774,17 +719,17 @@
 
       if (rep.estado === 'finalizado' || rep.estado === 'rechazado') {
         btnDesactivar.disabled = true;
-        btnDesactivar.className = 'btn btn-secondary rounded-pill px-4 disabled';
-        iconoDesactivar.className = 'bi bi-check-circle-fill me-1';
+        btnDesactivar.className = 'btn btn-secondary btn-modal-accion disabled';
+        iconoDesactivar.className = 'bi bi-check-circle-fill';
         textoDesactivar.textContent = (rep.estado === 'finalizado') ? 'Caso Finalizado' : 'Caso Rechazado';
         if (btnDescartarModal) btnDescartarModal.style.display = 'none';
       } else {
         btnDesactivar.disabled = false;
-        btnDesactivar.className = 'btn btn-danger rounded-pill px-4 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm';
-        if (btnDescartarModal) btnDescartarModal.style.display = 'inline-flex';
+        btnDesactivar.className = 'btn btn-danger btn-modal-accion';
+        if (btnDescartarModal) btnDescartarModal.style.display = '';
         
         const esSala = rep.tipo === 'sala';
-        iconoDesactivar.className = esSala ? 'bi bi-slash-circle me-1' : 'bi bi-person-slash me-1';
+        iconoDesactivar.className = esSala ? 'bi bi-slash-circle' : 'bi bi-person-slash';
         textoDesactivar.textContent = esSala ? 'Suspender Sala y Finalizar' : 'Inactivar Usuario y Finalizar';
       }
 
@@ -812,7 +757,7 @@
         dt.className = 'col-sm-4 text-secondary fw-semibold';
         dt.textContent = clave;
         const dd = document.createElement('dd');
-        dd.className = 'col-sm-8 mb-1 text-dark text-break';
+        dd.className = 'col-sm-8 mb-1 text-break';
         dd.style.whiteSpace = 'pre-line';
         dd.textContent = evidencia[clave];
         lista.appendChild(dt);
@@ -855,21 +800,7 @@
       .then(res => res.json())
       .then(data => {
         if (data.ok) {
-          const row = document.getElementById(`row-reporte-${id}`);
-          if (row) {
-            row.setAttribute('data-estado', 'finalizado');
-            row.classList.add('fila-resuelta');
-
-            const badgeSlot = row.querySelector('.estado-badge-slot');
-            if (badgeSlot) {
-              badgeSlot.innerHTML = `
-                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
-                  <i class="bi bi-check-circle-fill"></i>
-                  <span>Finalizado</span>
-                </span>
-              `;
-            }
-          }
+          marcarFilaResuelta(id, 'finalizado');
 
           reporteActivoEnModal.estado = 'finalizado';
           const modalEl = document.getElementById('modalDetalleReporte');
@@ -908,25 +839,7 @@
       .then(res => res.json())
       .then(data => {
         if (data.ok) {
-          const row = document.getElementById(`row-reporte-${id}`);
-          if (row) {
-            row.setAttribute('data-estado', 'rechazado');
-            row.classList.add('fila-resuelta');
-
-            const badgeSlot = row.querySelector('.estado-badge-slot');
-            if (badgeSlot) {
-              badgeSlot.innerHTML = `
-                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2.5 py-1 small fw-semibold d-inline-flex align-items-center gap-1">
-                  <i class="bi bi-x-circle"></i>
-                  <span>Rechazado</span>
-                </span>
-              `;
-            }
-          }
-
-          if (reporteActivoEnModal && reporteActivoEnModal.id_reporte == id) {
-            reporteActivoEnModal.estado = 'rechazado';
-          }
+          marcarFilaResuelta(id, 'rechazado');
 
           actualizarContadorPendientes();
           actualizarPaginacionRep();
@@ -942,33 +855,21 @@
     }
 
     function actualizarContadorPendientes() {
+      const cuenta = { pendiente: 0, finalizado: 0, rechazado: 0 };
       const rows = document.querySelectorAll('#tablaReportesBody .reporte-row');
-      let pendientes = 0;
-      const porTipo = {};
-      let total = rows.length;
+      rows.forEach(r => { cuenta[r.getAttribute('data-estado')]++; });
 
-      rows.forEach(r => {
-        const est = r.getAttribute('data-estado');
-        const tip = r.getAttribute('data-tipo');
-        if (est === 'pendiente') pendientes++;
-        porTipo[tip] = (porTipo[tip] || 0) + 1;
-      });
-
-      const badgeHeader = document.getElementById('badgeHeaderPendientes');
-      const badgeNav = document.getElementById('badgeSidebarReportes');
-      const countTodos = document.getElementById('countFilterTodos');
-
-      if (badgeHeader) badgeHeader.textContent = `${pendientes} pendientes`;
-      if (badgeNav) badgeNav.textContent = pendientes;
-      if (countTodos) countTodos.textContent = total;
-      document.querySelectorAll('[data-count-tipo]').forEach(el => {
-        el.textContent = porTipo[el.getAttribute('data-count-tipo')] || 0;
-      });
+      const poner = (id, valor) => { const el = document.getElementById(id); if (el) el.textContent = valor; };
+      poner('statPendientes', cuenta.pendiente);
+      poner('statFinalizados', cuenta.finalizado);
+      poner('statRechazados', cuenta.rechazado);
+      poner('statTotal', rows.length);
+      poner('badgeSidebarReportes', cuenta.pendiente);
     }
 
+    // Vuelve a leer los reportes desde la base de datos
     function actualizarListaReportes() {
-      mostrarToast(`Auditoría de reportes actualizada.`);
-      actualizarPaginacionRep();
+      window.location.reload();
     }
 
     // ==========================================

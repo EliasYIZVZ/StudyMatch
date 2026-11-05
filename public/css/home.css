@@ -50,7 +50,7 @@
 }
 
 :root:not([data-bs-theme="dark"]) .hero-description {
-  color: #334155 !important;
+  color: #000000 !important;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9), 0 0 10px rgba(255, 255, 255, 0.7);
 }
 

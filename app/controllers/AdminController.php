@@ -299,11 +299,15 @@ final class AdminController extends Controller
             'reportesRechazados'  => 0,
             'conteoTipos'         => array_fill_keys(Reporte::TIPOS, 0),
             'errorReportes'       => false,
+            // Contadores del menú lateral
+            'metricas'            => ['alumnos' => ['total' => 0], 'salas' => ['activas' => 0], 'materias' => ['total' => 0]],
         ];
 
         try {
-            $reporteModel = new Reporte(Database::getConnection());
+            $db = Database::getConnection();
+            $reporteModel = new Reporte($db);
             $metricas = $reporteModel->metricas();
+            $data['metricas'] = (new MetricasAdmin($db))->resumen();
 
             $data['reportes']            = $reporteModel->listarParaAdmin();
             $data['totalReportes']       = $metricas['total'];

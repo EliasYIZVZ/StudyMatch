@@ -2,153 +2,296 @@
  * ==========================================================================
  * STUDY MATCH • Estilos de Administración: Moderación y Alertas
  * Archivo: css/admin-reportes.css
+ *
+ * Misma base visual que Gestión de Materias (admin-materias.css): variables
+ * por tema, tarjetas de resumen, tabla, filtros y botones de acción.
  * ==========================================================================
  */
 
 :root {
-  --admin-accent: #2563eb;
-  --discord-color: #5865F2;
-  --admin-speed: 0.16s;
+  --rep-surface-soft: #f8fafc;
+  --rep-border: #e2e8f0;
+  --rep-muted: #64748b;
+  --rep-row-hover: #f1f5f9;
+}
+
+[data-bs-theme="dark"] {
+  --rep-surface-soft: #0f172a;
+  --rep-border: rgba(255, 255, 255, 0.1);
+  --rep-muted: #94a3b8;
+  --rep-row-hover: #162033;
+}
+
+/* Tarjetas del contenido: siguen el fondo del tema */
+main .card {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] main .card:not([style*="gradient"]) {
+  background-color: #1e293b;
+  border: 1px solid var(--rep-border) !important;
 }
 
 /* ==========================================================================
-   1. TABLA DE AUDITORÍA DE REPORTES
+   1. TARJETAS DE RESUMEN
    ========================================================================== */
+.stat-card {
+  transition: transform 0.16s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.stat-icon--blue  { background: #dbeafe; color: #1d4ed8; }
+.stat-icon--green { background: #dcfce7; color: #15803d; }
+.stat-icon--amber { background: #fef3c7; color: #b45309; }
+.stat-icon--slate { background: #e2e8f0; color: #475569; }
+
+[data-bs-theme="dark"] .stat-icon--blue  { background: rgba(59, 130, 246, 0.18); color: #93c5fd; }
+[data-bs-theme="dark"] .stat-icon--green { background: rgba(34, 197, 94, 0.16);  color: #86efac; }
+[data-bs-theme="dark"] .stat-icon--amber { background: rgba(245, 158, 11, 0.18); color: #fcd34d; }
+[data-bs-theme="dark"] .stat-icon--slate { background: rgba(148, 163, 184, 0.18); color: #cbd5e1; }
+
+.stat-value {
+  font-size: 1.65rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--bs-emphasis-color);
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  color: var(--rep-muted);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   2. BUSCADOR Y FILTROS
+   ========================================================================== */
+.search-input-wide,
+.filtro-select {
+  background-color: var(--rep-surface-soft) !important;
+  border: 1px solid var(--rep-border) !important;
+  color: var(--bs-body-color) !important;
+  font-size: 0.88rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-input-wide:focus,
+.filtro-select:focus {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.16) !important;
+}
+
+/* ==========================================================================
+   3. TABLA DE AUDITORÍA
+   ========================================================================== */
+.table-reportes {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--bs-body-color);
+}
+
 .table-reportes th {
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #64748b;
+  color: var(--rep-muted);
   font-weight: 700;
-  background-color: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
+  background-color: var(--rep-surface-soft);
+  border-bottom: 1px solid var(--rep-border);
   padding: 0.85rem 1rem;
   white-space: nowrap;
 }
 
 .table-reportes td {
   vertical-align: middle;
-  padding: 0.85rem 1rem;
-  font-size: 0.86rem;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 0.8rem 1rem;
+  font-size: 0.88rem;
+  border-bottom: 1px solid var(--rep-border);
+  background-color: transparent;
 }
 
-.table-reportes tbody tr {
-  transition: background-color var(--admin-speed) ease;
+.table-reportes tbody tr:last-child td {
+  border-bottom: 0;
 }
 
-.table-reportes tbody tr:hover {
-  background-color: #f8fafc;
+.table-reportes tbody tr:hover td {
+  background-color: var(--rep-row-hover);
 }
 
-.table-reportes tr.fila-resuelta {
-  opacity: 0.65;
+/* Reportes ya resueltos: se atenúan solo los datos, las acciones siguen legibles */
+.table-reportes tr.fila-resuelta td:not(.acciones-slot):not(.estado-badge-slot) {
+  opacity: 0.7;
 }
 
-/* Botones de acción compactos */
+/* Etiqueta de tipo de elemento */
+.badge-tipo-elemento {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.38rem 0.75rem;
+  border-radius: 50rem;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.tipo-sala     { background: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
+.tipo-tutoria  { background: #cffafe; color: #155e75; border-color: #a5f3fc; }
+.tipo-mensaje  { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+.tipo-tutor    { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+.tipo-alumno   { background: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
+
+[data-bs-theme="dark"] .tipo-sala     { background: rgba(99, 102, 241, 0.2);  color: #c7d2fe; border-color: rgba(165, 180, 252, 0.3); }
+[data-bs-theme="dark"] .tipo-tutoria  { background: rgba(6, 182, 212, 0.16);  color: #a5f3fc; border-color: rgba(103, 232, 249, 0.28); }
+[data-bs-theme="dark"] .tipo-mensaje  { background: rgba(245, 158, 11, 0.16); color: #fde68a; border-color: rgba(252, 211, 77, 0.28); }
+[data-bs-theme="dark"] .tipo-tutor    { background: rgba(34, 197, 94, 0.14);  color: #bbf7d0; border-color: rgba(134, 239, 172, 0.26); }
+[data-bs-theme="dark"] .tipo-alumno   { background: rgba(59, 130, 246, 0.16); color: #bfdbfe; border-color: rgba(147, 197, 253, 0.28); }
+
+/* Etiqueta de estado del reporte */
+.badge-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.38rem 0.8rem;
+  border-radius: 50rem;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.estado-pendiente  { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+.estado-finalizado { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+.estado-rechazado  { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+
+[data-bs-theme="dark"] .estado-pendiente  { background: rgba(245, 158, 11, 0.16); color: #fde68a; border-color: rgba(252, 211, 77, 0.28); }
+[data-bs-theme="dark"] .estado-finalizado { background: rgba(34, 197, 94, 0.14);  color: #bbf7d0; border-color: rgba(134, 239, 172, 0.26); }
+[data-bs-theme="dark"] .estado-rechazado  { background: rgba(148, 163, 184, 0.14); color: #cbd5e1; border-color: rgba(148, 163, 184, 0.28); }
+
+/* Motivo del reporte */
+.motivo-text {
+  color: #b91c1c;
+  font-weight: 600;
+  font-size: 0.84rem;
+}
+
+[data-bs-theme="dark"] .motivo-text {
+  color: #fca5a5;
+}
+
+/* ==========================================================================
+   4. BOTONES: mismo alto y ancho mínimo, con aire entre ellos
+   ========================================================================== */
 .btn-action-pill {
   font-size: 0.76rem;
   font-weight: 600;
-  padding: 0.35rem 0.75rem;
+  height: 32px;
+  min-width: 92px;
+  padding: 0 0.85rem;
   border-radius: 50rem;
-  transition: all var(--admin-speed) ease;
+  white-space: nowrap;
+  transition: all 0.16s ease;
 }
 
-/* Botón sutil de icono circular (para descartar) */
-.btn-icon-subtle {
-  width: 30px;
-  height: 30px;
-  padding: 0;
+/* Botones del pie del modal de detalle */
+.btn-modal-accion {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.72rem;
-  transition: all var(--admin-speed) ease;
+  gap: 0.5rem;
+  height: 38px;
+  min-width: 120px;
+  padding: 0 1.25rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  border-radius: 50rem;
+  white-space: nowrap;
 }
 
-.btn-icon-subtle:hover {
-  background-color: #fee2e2 !important;
-  color: #ef4444 !important;
-  border-color: #fca5a5 !important;
+/* ==========================================================================
+   5. PAGINACIÓN
+   ========================================================================== */
+.pagination .page-link {
+  background-color: transparent;
+  color: var(--bs-body-color);
+  border-color: var(--rep-border);
 }
 
-[data-bs-theme="dark"] .btn-icon-subtle {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  color: #94a3b8 !important;
+.pagination .page-item.active .page-link {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
 }
 
-[data-bs-theme="dark"] .btn-icon-subtle:hover {
-  background-color: rgba(239, 68, 68, 0.2) !important;
-  color: #f87171 !important;
-  border-color: rgba(239, 68, 68, 0.4) !important;
+.pagination .page-item.disabled .page-link {
+  color: var(--rep-muted);
+  opacity: 0.6;
 }
 
-/* Avatar de usuario creador / reportado */
+/* ==========================================================================
+   6. MODAL DE DETALLE
+   ========================================================================== */
 .avatar-user-badge {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   font-weight: 700;
   background: #e2e8f0;
   color: #334155;
   flex-shrink: 0;
 }
 
-/* Icono insignia de tipo de elemento */
-.badge-tipo-elemento {
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 0.3rem 0.6rem;
-  border-radius: 50rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+.bloque-motivo {
+  background-color: var(--rep-surface-soft);
+  border-color: var(--rep-border) !important;
 }
 
-/* Animación de pulso para reportes críticos */
-.live-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.pulse-warning {
-  background-color: #f59e0b;
-  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
-  animation: pulse-warn 1.8s infinite;
-}
-
-@keyframes pulse-warn {
-  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-  70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-}
-
-/* ==========================================================================
-   2. MODO OSCURO (DATA-BS-THEME="DARK")
-   ========================================================================== */
-[data-bs-theme="dark"] .table-reportes th {
-  background-color: #0f172a;
-  border-bottom-color: rgba(255, 255, 255, 0.12);
-  color: #94a3b8;
-}
-
-[data-bs-theme="dark"] .table-reportes td {
-  border-bottom-color: rgba(255, 255, 255, 0.05);
+[data-bs-theme="dark"] .modal-content {
+  background-color: #1e293b;
   color: #f1f5f9;
 }
 
-[data-bs-theme="dark"] .table-reportes tbody tr:hover {
-  background-color: #162033;
+[data-bs-theme="dark"] .modal-header,
+[data-bs-theme="dark"] .modal-footer {
+  border-color: var(--rep-border) !important;
+  background-color: transparent;
+}
+
+[data-bs-theme="dark"] .modal .border {
+  border-color: var(--rep-border) !important;
 }
 
 [data-bs-theme="dark"] .avatar-user-badge {
   background: #334155;
   color: #f1f5f9;
+}
+
+[data-bs-theme="dark"] .modal .text-secondary,
+[data-bs-theme="dark"] .modal .text-muted {
+  color: #94a3b8 !important;
+}
+
+@media (max-width: 575.98px) {
+  .btn-modal-accion {
+    flex: 1 1 100%;
+  }
 }
