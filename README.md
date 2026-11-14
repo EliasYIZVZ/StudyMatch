@@ -109,8 +109,12 @@ Todas las URLs dinámicas tienen la forma `index.php?r=<ruta>`. Se definen en `a
 | `tutoria`         | `TutoriaController::detalle`       | **Con sesión** | Detalle de una tutoría con su chat (`&id=`). Solo para el alumno y el tutor de esa tutoría |
 | `enviar-mensaje`  | `TutoriaController::enviarMensaje` | **Con sesión** (POST) | Envía un mensaje; responde JSON si se llama con `X-Requested-With: XMLHttpRequest` |
 | `mensajes-tutoria`| `TutoriaController::mensajes`      | **Con sesión** (API) | Mensajes nuevos (`&id=&desde=`); el chat la consulta cada 5 s |
+| `salas-publicas`  | `SalaController::lista`            | **Con sesión** | Salas públicas de Discord (`&rol=alumno` / `&rol=tutor`): mis salas y las de la comunidad |
+| `guardar-sala`    | `SalaController::guardar`          | **Con sesión** (POST) | Publica una sala en `salas_publicas`. Solo enlaces `https://discord.gg/…` o `https://discord.com/invite/…`; máximo 5 por usuario |
+| `eliminar-sala`   | `SalaController::eliminar`         | **Con sesión** (POST) | Elimina una sala propia activa (las suspendidas por moderación no se pueden eliminar) |
 | `foto-perfil`     | `UsuarioController::foto`        | **Con sesión** (API, POST) | Foto de perfil: `accion=avatar&avatar=<clave>`, `accion=subir` + archivo `foto` (JPG/PNG/WEBP, máx. 2 MB; se recorta a 256×256 con GD y se guarda en `public/uploads/usuarios/<id>/`) o `accion=quitar` |
-| `usuario-actual`  | `UsuarioController::actual`           | **Con sesión** (API) | JSON con los datos del usuario logueado |
+| `usuario-actual`  | `UsuarioController::actual`           | **Con sesión** (API) | JSON con los datos del usuario logueado (nombre, correo, carrera, año, Discord, descripción, foto) y las carreras activas para elegir |
+| `actualizar-perfil` | `UsuarioController::actualizarPerfil` | **Con sesión** (API, POST) | Guarda en `usuarios` el nombre, la carrera (sigla de una carrera activa), el año de cursada, el usuario de Discord y la descripción. El correo no se edita |
 | `admin`           | `AdminController::dashboard`          | **Admin**      | Resumen del panel de administración |
 | `admin-usuarios`  | `AdminController::usuarios`           | **Admin**      | Gestión de usuarios |
 | `admin-materias`  | `AdminController::materias`           | **Admin**      | Gestión de carreras y materias |

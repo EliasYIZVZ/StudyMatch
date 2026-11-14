@@ -22,7 +22,8 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Estilos del Dashboard y Perfil -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_iconos">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261113_discord">
+  <link rel="stylesheet" href="public/css/popup-simple.css?v=20261113">
 </head>
 <body class="dashboard-body" data-role="alumno">
 
@@ -134,7 +135,7 @@
 
   <!-- Bootstrap 5.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="public/js/perfil.js"></script>
+  <script src="public/js/perfil.js?v=20261113_perfil"></script>
   <script src="public/js/sidebar.js"></script>
   <script src="public/js/main.js"></script>
   <script src="public/js/buscador-cards.js?v=20261103"></script>

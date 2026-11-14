@@ -1,0 +1,44 @@
+﻿STUDY MATCH - CUENTAS DE PRUEBA
+Generado el 06/11/2026 02:55
+Solo para desarrollo local. No subir este archivo a un repositorio ni compartirlo.
+==============================================================================
+
+[ADMINISTRADOR]
+  Nombre:      Administrador 01
+  Correo:      admin01@alumnos.frh.utn.edu.ar
+  Contraseña:  PdMX4F9yYNS#
+
+[ALUMNO Y TUTOR (2 TUTORíAS)]
+  Nombre:      Lucía Fernández
+  Correo:      lfernandez@alumnos.frh.utn.edu.ar
+  Contraseña:  TvfsF4kYgDD#
+
+  Nombre:      Martín Sosa
+  Correo:      msosa@alumnos.frh.utn.edu.ar
+  Contraseña:  Wk6rDAATPXY#
+
+  Nombre:      Camila Ortega
+  Correo:      cortega@alumnos.frh.utn.edu.ar
+  Contraseña:  xrEBsqJ8DtF#
+
+  Nombre:      Nicolás Benítez
+  Correo:      nbenitez@alumnos.frh.utn.edu.ar
+  Contraseña:  jJpePa8n3Vr#
+
+  Nombre:      Sofía Paredes
+  Correo:      sparedes@alumnos.frh.utn.edu.ar
+  Contraseña:  Zxg2VtsC4Tq#
+
+[ALUMNO (SIN TUTORíAS)]
+  Nombre:      Tomás Aguirre
+  Correo:      taguirre@alumnos.frh.utn.edu.ar
+  Contraseña:  dEaea7CmG2F#
+
+  Nombre:      Agustina Molina
+  Correo:      amolina@alumnos.frh.utn.edu.ar
+  Contraseña:  KbKW3qJVG7i#
+
+  Nombre:      Joaquín Herrera
+  Correo:      jherrera@alumnos.frh.utn.edu.ar
+  Contraseña:  Vag6V6SyiQq#
+

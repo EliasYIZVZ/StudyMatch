@@ -1,0 +1,88 @@
+/* ==========================================================================
+   STUDY MATCH • Pop-up simple (avisos y confirmaciones)
+   Reemplaza a alert() y confirm() del navegador. Sin íconos ni colores:
+   solo escala de grises, ligeramente traslúcido, claro y oscuro según el tema.
+   Uso: <div class="modal fade popup-simple"> ... .popup-simple-content ...
+   ========================================================================== */
+
+.popup-simple .popup-simple-content {
+  --ps-fondo: rgba(255, 255, 255, 0.88);
+  --ps-borde: rgba(15, 23, 42, 0.18);
+  --ps-texto: #0f172a;
+  --ps-texto-suave: #334155;
+  --ps-inverso: #ffffff;
+  background-color: var(--ps-fondo);
+  border: 1px solid var(--ps-borde);
+  border-radius: 1rem;
+  color: var(--ps-texto);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+[data-bs-theme="dark"] .popup-simple .popup-simple-content {
+  --ps-fondo: rgba(15, 23, 42, 0.88);
+  --ps-borde: rgba(255, 255, 255, 0.22);
+  --ps-texto: #f8fafc;
+  --ps-texto-suave: #cbd5e1;
+  --ps-inverso: #0f172a;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.popup-simple .popup-simple-cuerpo {
+  padding: 1.5rem 1.5rem 1.25rem;
+  text-align: center;
+}
+
+.popup-simple .popup-simple-titulo {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ps-texto);
+  text-shadow: none;
+}
+
+.popup-simple .popup-simple-texto {
+  margin: 0 0 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ps-texto-suave);
+  text-shadow: none;
+}
+
+.popup-simple .popup-simple-acciones {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.popup-simple .popup-simple-boton {
+  min-width: 7rem;
+  padding: 0.4rem 1.25rem;
+  border: 1px solid var(--ps-borde);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ps-texto);
+  font-weight: 600;
+}
+
+.popup-simple .popup-simple-boton:hover,
+.popup-simple .popup-simple-boton:focus-visible {
+  background: var(--ps-borde);
+  color: var(--ps-texto);
+  border-color: var(--ps-texto-suave);
+}
+
+/* Acción principal (confirmar): relleno en el color del texto, invertido */
+.popup-simple .popup-simple-boton--principal {
+  background: var(--ps-texto);
+  border-color: var(--ps-texto);
+  color: var(--ps-inverso);
+}
+
+.popup-simple .popup-simple-boton--principal:hover,
+.popup-simple .popup-simple-boton--principal:focus-visible {
+  background: var(--ps-texto-suave);
+  border-color: var(--ps-texto-suave);
+  color: var(--ps-inverso);
+}

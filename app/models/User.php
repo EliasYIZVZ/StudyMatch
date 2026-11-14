@@ -30,7 +30,7 @@ final class User
     {
         $statement = $this->database->prepare(
             'SELECT id_usuario, nombre_usuario, correo_usuario, estado_usuario, rol_usuario,
-                    carrera_usuario, anio_cursada_usuario, foto_usuario
+                    carrera_usuario, anio_cursada_usuario, foto_usuario, discord_usuario, bio_usuario
              FROM usuarios
              WHERE id_usuario = :id
              LIMIT 1'
@@ -118,6 +118,27 @@ final class User
             'email' => $email,
             'password' => $passwordHash,
         ]);
+    }
+
+    /**
+     * Guarda los datos editables del perfil ("Editar mi información"). Los opcionales
+     * (carrera, año, Discord, descripción) van como null cuando se dejan vacíos.
+     * El correo no se edita.
+     */
+    public function actualizarPerfil($id, $nombre, $carrera, $anio, $discord, $bio)
+    {
+        $statement = $this->database->prepare(
+            'UPDATE usuarios
+             SET nombre_usuario = :nombre, carrera_usuario = :carrera, anio_cursada_usuario = :anio,
+                 discord_usuario = :discord, bio_usuario = :bio
+             WHERE id_usuario = :id'
+        );
+        $statement->bindValue(':nombre', $nombre);
+        foreach ([':carrera' => $carrera, ':anio' => $anio, ':discord' => $discord, ':bio' => $bio] as $parametro => $valor) {
+            $statement->bindValue($parametro, $valor, $valor === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+        }
+        $statement->bindValue(':id', (int) $id, PDO::PARAM_INT);
+        $statement->execute();
     }
 
     /**

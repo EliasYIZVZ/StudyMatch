@@ -39,6 +39,11 @@ return [
     'enviar-mensaje'   => ['TutoriaController', 'enviarMensaje', 'page'],
     'mensajes-tutoria' => ['TutoriaController', 'mensajes', 'api'],
 
+    // Salas públicas de Discord (compartido entre alumno y tutor)
+    'salas-publicas' => ['SalaController', 'lista', 'page'],
+    'guardar-sala'   => ['SalaController', 'guardar', 'page'],
+    'eliminar-sala'  => ['SalaController', 'eliminar', 'page'],
+
     // Panel de administración (solo rol_usuario = 'admin')
     'admin'           => ['AdminController', 'dashboard', 'admin'],
     'admin-usuarios'  => ['AdminController', 'usuarios', 'admin'],
@@ -58,4 +63,5 @@ return [
     // API
     'usuario-actual'  => ['UsuarioController', 'actual', 'api'],
     'foto-perfil'     => ['UsuarioController', 'foto', 'api'],
+    'actualizar-perfil' => ['UsuarioController', 'actualizarPerfil', 'api'],
 ];

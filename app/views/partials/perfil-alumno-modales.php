@@ -34,7 +34,7 @@ $avataresPerfil = require APP_PATH . '/config/avatares.php';
                 <label for="editNombre" class="form-label small fw-semibold text-dark mb-2">Nombre y Apellido</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0 text-secondary"><i class="bi bi-person"></i></span>
-                  <input type="text" class="form-control border-start-0 ps-0" id="editNombre" value="" required>
+                  <input type="text" class="form-control border-start-0 ps-0" id="editNombre" name="nombre" value="" maxlength="100" required>
                 </div>
               </div>
 
@@ -53,16 +53,22 @@ $avataresPerfil = require APP_PATH . '/config/avatares.php';
 
               <div class="col-md-6">
                 <label for="editCarrera" class="form-label small fw-semibold text-dark">Carrera</label>
-                <select class="form-select profile-field-readonly" id="editCarrera" disabled>
-                  <option value="Tecnicatura Universitaria en Programación (TUP)" selected>Tecnicatura Universitaria en Programación (TUP)</option>
+                <select class="form-select" id="editCarrera" name="carrera">
+                  <option value="">Sin carrera seleccionada</option>
+                  <!-- Las carreras activas se cargan desde la base de datos (public/js/perfil.js) -->
                 </select>
               </div>
 
               <div class="col-md-6">
                 <label for="editNivel" class="form-label small fw-semibold text-dark">Año de Cursada</label>
-                <select class="form-select" id="editNivel">
-                  <option value="1° Año">1° Año (Ingresante)</option>
-                  <option value="2° Año">2° Año</option>
+                <select class="form-select" id="editNivel" name="nivel">
+                  <option value="">Sin especificar</option>
+                  <option value="1ro">1° Año (Ingresante)</option>
+                  <option value="2do">2° Año</option>
+                  <option value="3ro">3° Año</option>
+                  <option value="4to">4° Año</option>
+                  <option value="5to">5° Año</option>
+                  <option value="graduado">Graduado/a</option>
                 </select>
               </div>
 
@@ -70,20 +76,22 @@ $avataresPerfil = require APP_PATH . '/config/avatares.php';
                 <label for="editDiscord" class="form-label small fw-semibold text-dark">Usuario de Discord</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0" style="color: #2563eb;"><i class="bi bi-discord"></i></span>
-                  <input type="text" class="form-control border-start-0 ps-0" id="editDiscord" value="" placeholder="usuario#0000">
+                  <input type="text" class="form-control border-start-0 ps-0" id="editDiscord" name="discord" value="" maxlength="50" placeholder="usuario#0000">
                 </div>
               </div>
 
               <div class="col-12">
                 <label for="editBio" class="form-label small fw-semibold text-dark"><?= $esTutorPerfil ? 'Materias que enseñás / Experiencia' : 'Materias de interés / Breve descripción' ?></label>
-                <textarea class="form-control" id="editBio" rows="3" placeholder="Ingresa tu descripción..."></textarea>
+                <textarea class="form-control" id="editBio" name="bio" rows="3" maxlength="500" placeholder="Ingresa tu descripción..."></textarea>
               </div>
             </div>
+
+            <div id="perfilError" class="alert alert-danger small py-2 mt-3 mb-0 d-none" role="alert"></div>
           </div>
 
           <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4">
             <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-<?= $colorPerfil ?> px-4 rounded-pill fw-semibold shadow-sm">
+            <button type="submit" class="btn btn-<?= $colorPerfil ?> px-4 rounded-pill fw-semibold shadow-sm" id="btnGuardarPerfil">
               <i class="bi bi-check2 me-1"></i> Guardar Cambios
             </button>
           </div>

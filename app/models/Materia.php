@@ -13,6 +13,19 @@ final class Materia
     }
 
     /**
+     * Carreras activas (para elegir la carrera en el perfil), por nombre.
+     */
+    public function listarCarrerasActivas()
+    {
+        return $this->database->query(
+            'SELECT codigo_carrera AS codigo, nombre_carrera AS nombre
+             FROM carreras
+             WHERE activa = 1
+             ORDER BY nombre_carrera'
+        )->fetchAll();
+    }
+
+    /**
      * Materias de las carreras activas, ordenadas por año del plan y nombre.
      */
     public function listarActivas()

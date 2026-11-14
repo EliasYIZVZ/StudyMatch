@@ -80,6 +80,22 @@
   </div>
 </div>
 
+<!-- ==========================================================================
+     POP-UP DE CONFIRMACIÓN: se muestra cuando el reporte se envió correctamente
+     (reemplaza al alert() del navegador). Simple, sin íconos ni colores.
+     ========================================================================== -->
+<div class="modal fade popup-simple" id="modalReporteEnviado" tabindex="-1" aria-labelledby="modalReporteEnviadoTitulo" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content popup-simple-content">
+      <div class="popup-simple-cuerpo">
+        <h2 class="popup-simple-titulo" id="modalReporteEnviadoTitulo">Reporte enviado</h2>
+        <p class="popup-simple-texto" id="modalReporteEnviadoTexto">Tu reporte fue enviado al equipo de moderación.</p>
+        <button type="button" class="btn popup-simple-boton popup-simple-boton--principal" data-bs-dismiss="modal" id="btnReporteEnviadoAceptar">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   // Motivos permitidos por tipo (vienen del modelo Reporte, que también los valida)
   const MOTIVOS_REPORTE = <?= json_encode(Reporte::MOTIVOS, JSON_UNESCAPED_UNICODE) ?>;
@@ -139,6 +155,15 @@
     }
   }
 
+  /** Muestra el pop-up de "Reporte enviado" con el mensaje del servidor. */
+  function mostrarReporteEnviado(mensaje) {
+    const modalEl = document.getElementById('modalReporteEnviado');
+    if (mensaje) {
+      document.getElementById('modalReporteEnviadoTexto').textContent = mensaje;
+    }
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+  }
+
   function enviarReporteIncidente(e) {
     e.preventDefault();
     const form = document.getElementById('formReportarIncidente');
@@ -163,16 +188,19 @@
       if (data.ok) {
         const modalEl = document.getElementById('modalReportarIncidente');
         const modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) modal.hide();
 
-        alert(data.mensaje || 'Reporte enviado con éxito.');
-      } else {
-        if (alerta) {
-          alerta.textContent = data.error || 'Ocurrió un error al enviar el reporte.';
-          alerta.style.display = 'block';
+        // Se muestra la confirmación cuando termina de cerrarse el formulario
+        // (dos modales de Bootstrap no se superponen bien).
+        const mostrar = () => mostrarReporteEnviado(data.mensaje);
+        if (modal && modalEl.classList.contains('show')) {
+          modalEl.addEventListener('hidden.bs.modal', mostrar, { once: true });
+          modal.hide();
         } else {
-          alert(data.error);
+          mostrar();
         }
+      } else if (alerta) {
+        alerta.textContent = data.error || 'Ocurrió un error al enviar el reporte.';
+        alerta.style.display = 'block';
       }
     })
     .catch(err => {

@@ -4,9 +4,9 @@
  * Panel de administración (solo usuarios con rol_usuario = 'admin').
  * El Router ya verificó el rol antes de llegar aquí.
  *
- * Usuarios, salas, reportes y el resumen (dashboard) leen y escriben en la base
- * de datos. Solo las materias siguen con datos SIMULADOS: están en los métodos
- * datos*() de abajo, hasta que se los reemplace por llamadas a su modelo.
+ * Todas las vistas (resumen, usuarios, materias, salas y reportes) leen y escriben
+ * en la base de datos. El menú lateral es único (partials/sidebar-admin.php) y sus
+ * contadores los agrega renderAdmin().
  */
 final class AdminController extends Controller
 {
@@ -278,7 +278,7 @@ final class AdminController extends Controller
             $salas = $salasModel->listarParaAdmin();
         } catch (Exception $e) {
             error_log('Error al cargar salas: ' . $e->getMessage());
-            $salas = $this->datosSalas()['salas'];
+            $salas = [];
         }
 
         $this->renderAdmin('admin/salas', [
@@ -299,15 +299,12 @@ final class AdminController extends Controller
             'reportesRechazados'  => 0,
             'conteoTipos'         => array_fill_keys(Reporte::TIPOS, 0),
             'errorReportes'       => false,
-            // Contadores del menú lateral
-            'metricas'            => ['alumnos' => ['total' => 0], 'salas' => ['activas' => 0], 'materias' => ['total' => 0]],
         ];
 
         try {
             $db = Database::getConnection();
             $reporteModel = new Reporte($db);
             $metricas = $reporteModel->metricas();
-            $data['metricas'] = (new MetricasAdmin($db))->resumen();
 
             $data['reportes']            = $reporteModel->listarParaAdmin();
             $data['totalReportes']       = $metricas['total'];
@@ -471,13 +468,22 @@ final class AdminController extends Controller
     }
 
     /**
-     * Agrega a la vista los datos del administrador logueado.
+     * Agrega a la vista los datos del administrador logueado y los contadores del
+     * menú lateral (partials/sidebar-admin.php). Se calculan acá, una sola vez y
+     * de la misma forma para todas las vistas, así no cambian al navegar.
      */
     private function renderAdmin($view, array $data)
     {
         $data['adminNombre'] = isset($_SESSION['nombre_usuario']) ? $_SESSION['nombre_usuario'] : 'Administrador';
         $data['adminEmail'] = isset($_SESSION['correo_usuario']) ? $_SESSION['correo_usuario'] : '';
         $data['adminRol'] = 'Superadmin';
+
+        $data['menuAdmin'] = ['usuarios' => 0, 'materias' => 0, 'salas' => 0, 'reportes' => 0];
+        try {
+            $data['menuAdmin'] = (new MetricasAdmin(Database::getConnection()))->contadoresMenu();
+        } catch (PDOException $e) {
+            error_log('Error al cargar los contadores del menú de administración: ' . $e->getMessage());
+        }
 
         $this->render($view, $data);
     }
@@ -491,7 +497,7 @@ final class AdminController extends Controller
             'alumnos'  => ['total' => 0, 'activos' => 0, 'inactivos' => 0, 'tutores' => 0, 'solo_alumnos' => 0],
             'tutores'  => ['activos' => 0, 'inactivos' => 0, 'total' => 0],
             'salas'    => ['activas' => 0, 'suspendidas' => 0, 'total' => 0],
-            'materias' => ['total' => 0, 'carreras' => 0, 'codigos_carreras' => [], 'por_anio' => []],
+            'materias' => ['total' => 0, 'carreras' => 0, 'codigos_carreras' => [], 'por_carrera' => []],
         ];
         $totalReportes = 0;
         $errorMetricas = false;
@@ -516,8 +522,6 @@ final class AdminController extends Controller
         $carreras = [];
         $materias = [];
         $errorMaterias = false;
-        $metricas = ['alumnos' => ['total' => 0], 'salas' => ['activas' => 0], 'materias' => ['total' => 0]];
-        $totalReportes = 0;
 
         try {
             $db = Database::getConnection();
@@ -545,10 +549,6 @@ final class AdminController extends Controller
                     'tutorias'    => (int) $fila['tutorias'],
                 ];
             }
-
-            // Contadores del menú lateral (los mismos que usa el resumen)
-            $metricas = (new MetricasAdmin($db))->resumen();
-            $totalReportes = (int) (new Reporte($db))->metricas()['pendientes'];
         } catch (PDOException $e) {
             error_log('Error al cargar materias y carreras: ' . $e->getMessage());
             $errorMaterias = true;
@@ -557,120 +557,6 @@ final class AdminController extends Controller
         $cantTotal = count($materias);
         $cantCarreras = count($carreras);
 
-        return compact('carreras', 'materias', 'cantTotal', 'cantCarreras', 'errorMaterias', 'metricas', 'totalReportes');
-    }
-
-    // ------------------------------------------------------------------
-    // Datos simulados: salas
-    // ------------------------------------------------------------------
-    private function datosSalas()
-    {
-        /* ==========================================================================
-         * GUÍA DE INTEGRACIÓN BACKEND (PHP PDO + MySQL):
-         * ==========================================================================
-         * Tu compañero de backend podrá conectar esta vista con la base de datos real:
-         * 
-         * $db = Database::getConnection();
-         * 
-         * $sql = "SELECT s.*, m.codigo_materia, m.nombre_materia, u.nombre, u.apellido, u.rol
-         *         FROM salas_publicas s
-         *         JOIN materias m ON s.id_materia = m.id_materia
-         *         JOIN usuarios u ON s.id_usuario = u.id_usuario
-         *         ORDER BY s.estado ASC, s.id_sala DESC
-         *         LIMIT 5";
-         * $stmt = $db->query($sql);
-         * $salas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-         * ========================================================================== */
-
-        // Datos simulados reducidos a 5 salas de estudio representativas
-        $salas = [
-            [
-                'id_sala'           => 1,
-                'titulo'            => 'Programación I • Punteros y Memoria Dinámica (C++)',
-                'descripcion'       => 'Resolución grupal de ejercicios prácticos de la Guía 4 y repaso de estructuras de datos para el 2do parcial.',
-                'materia'           => 'Programación I (C++)',
-                'materia_code'      => 'TUP-01',
-                'creador'           => 'Lucas Benítez',
-                'creador_rol'       => 'Tutor',
-                'creador_avatar'    => 'LB',
-                'discord_url'       => 'https://discord.gg/studymatch-tup01',
-                'estado'            => 'activa',
-                'fecha_creacion'    => 'Hoy, hace 45 min',
-                'reportes'          => 0,
-                'motivo_suspension' => null
-            ],
-            [
-                'id_sala'           => 2,
-                'titulo'            => 'Bases de Datos • Consultas JOIN y Subqueries Complejas',
-                'descripcion'       => 'Taller colaborativo en vivo para diseñar diagramas entidad-relación y consultas SQL avanzadas en MySQL Workbench.',
-                'materia'           => 'Bases de Datos Relacionales (SQL)',
-                'materia_code'      => 'TUP-03',
-                'creador'           => 'Sofía Domínguez',
-                'creador_rol'       => 'Tutor',
-                'creador_avatar'    => 'SD',
-                'discord_url'       => 'https://discord.gg/studymatch-tup03',
-                'estado'            => 'activa',
-                'fecha_creacion'    => 'Hoy, hace 1 h',
-                'reportes'          => 0,
-                'motivo_suspension' => null
-            ],
-            [
-                'id_sala'           => 3,
-                'titulo'            => 'Sistemas de Procesamiento • Arquitectura de Von Neumann',
-                'descripcion'       => 'Mesa de debate sobre registros, buses de datos y microoperaciones con simulador de CPU interactivo.',
-                'materia'           => 'Sistemas de Procesamiento de Datos',
-                'materia_code'      => 'TUP-02',
-                'creador'           => 'Ignacio Roldán',
-                'creador_rol'       => 'Alumno',
-                'creador_avatar'    => 'IR',
-                'discord_url'       => 'https://discord.gg/studymatch-tup02',
-                'estado'            => 'activa',
-                'fecha_creacion'    => 'Hoy, hace 2 h',
-                'reportes'          => 1,
-                'motivo_suspension' => null
-            ],
-            [
-                'id_sala'           => 4,
-                'titulo'            => 'Principios de Administración • Análisis FODA y Estrategia',
-                'descripcion'       => 'Armado en grupos del trabajo integrador práctico: diagnósticos organizacionales y planeamiento.',
-                'materia'           => 'Principios de Administración y Organización',
-                'materia_code'      => 'TGE-01',
-                'creador'           => 'Esteban Morales',
-                'creador_rol'       => 'Alumno',
-                'creador_avatar'    => 'EM',
-                'discord_url'       => 'https://discord.gg/studymatch-tge01',
-                'estado'            => 'activa',
-                'fecha_creacion'    => 'Hoy, hace 3 h',
-                'reportes'          => 0,
-                'motivo_suspension' => null
-            ],
-            [
-                'id_sala'           => 5,
-                'titulo'            => 'Canal General de Charlas y Juegos - Off Topic',
-                'descripcion'       => 'Sala suspendida temporalmente por moderación tras reporte de spam y contenidos fuera de las pautas académicas.',
-                'materia'           => 'Materia General / Libre',
-                'materia_code'      => 'GEN-00',
-                'creador'           => 'Martín Pereyra',
-                'creador_rol'       => 'Alumno',
-                'creador_avatar'    => 'MP',
-                'discord_url'       => 'https://discord.gg/studymatch-offtopic',
-                'estado'            => 'suspendida',
-                'fecha_creacion'    => 'Ayer',
-                'reportes'          => 4,
-                'motivo_suspension' => 'Spam y contenido no académico reiterado'
-            ]
-        ];
-
-        // Métricas de salas
-        $totalSalas       = count($salas);
-        $salasActivas     = count(array_filter($salas, fn($s) => $s['estado'] === 'activa'));
-        $salasSuspendidas = count(array_filter($salas, fn($s) => $s['estado'] === 'suspendida'));
-
-        return compact(
-            'salas',
-            'totalSalas',
-            'salasActivas',
-            'salasSuspendidas'
-        );
+        return compact('carreras', 'materias', 'cantTotal', 'cantCarreras', 'errorMaterias');
     }
 }

@@ -19,11 +19,28 @@ final class MetricasAdmin
     }
 
     /**
+     * Contadores del menú lateral del admin: los mismos en todas las vistas.
+     *
+     * @return array{usuarios:int, materias:int, salas:int, reportes:int}
+     */
+    public function contadoresMenu()
+    {
+        $fila = $this->database->query(
+            "SELECT (SELECT COUNT(*) FROM usuarios WHERE rol_usuario = 'usuario') AS usuarios,
+                    (SELECT COUNT(*) FROM materia) AS materias,
+                    (SELECT COUNT(*) FROM salas_publicas WHERE estado = 'activa') AS salas,
+                    (SELECT COUNT(*) FROM reportes WHERE estado = 'pendiente') AS reportes"
+        )->fetch();
+
+        return array_map('intval', $fila);
+    }
+
+    /**
      * @return array{
      *   alumnos: array{total:int, activos:int, inactivos:int, tutores:int, solo_alumnos:int},
      *   tutores: array{activos:int, inactivos:int, total:int},
      *   salas: array{activas:int, suspendidas:int, total:int},
-     *   materias: array{total:int, carreras:int, codigos_carreras:string[], por_anio:array<string,int>}
+     *   materias: array{total:int, carreras:int, codigos_carreras:string[], por_carrera:array<string,int>}
      * }
      */
     public function resumen()
@@ -48,12 +65,16 @@ final class MetricasAdmin
              FROM salas_publicas"
         )->fetch();
 
-        $anios = [];
+        // Materias por carrera (sigla => cantidad); solo las carreras que tienen materias
+        $porCarrera = [];
         foreach ($this->database->query(
-            'SELECT anio_carrera, COUNT(*) AS cantidad FROM materia GROUP BY anio_carrera ORDER BY (anio_carrera IS NULL), anio_carrera'
+            'SELECT c.codigo_carrera, COUNT(m.id_materia) AS cantidad
+             FROM carreras c
+             JOIN materia m ON m.id_carrera = c.id_carrera
+             GROUP BY c.id_carrera, c.codigo_carrera
+             ORDER BY cantidad DESC, c.codigo_carrera'
         ) as $fila) {
-            $etiqueta = $fila['anio_carrera'] === null ? 'Sin año cargado' : $fila['anio_carrera'] . '° año';
-            $anios[$etiqueta] = (int) $fila['cantidad'];
+            $porCarrera[$fila['codigo_carrera']] = (int) $fila['cantidad'];
         }
 
         $codigos = $this->database->query(
@@ -79,10 +100,10 @@ final class MetricasAdmin
                 'total'       => (int) $s['total'],
             ],
             'materias' => [
-                'total'            => array_sum($anios),
+                'total'            => array_sum($porCarrera),
                 'carreras'         => count($codigos),
                 'codigos_carreras' => $codigos,
-                'por_anio'         => $anios,
+                'por_carrera'      => $porCarrera,
             ],
         ];
     }

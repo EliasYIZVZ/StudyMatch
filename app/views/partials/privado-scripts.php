@@ -3,7 +3,7 @@
   <?php require APP_PATH . '/views/partials/perfil-alumno-modales.php'; ?>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="public/js/perfil.js"></script>
+  <script src="public/js/perfil.js?v=20261113_perfil"></script>
   <script src="public/js/sidebar.js"></script>
   <script src="public/js/main.js"></script>
   <?php foreach (isset($scriptsExtra) ? $scriptsExtra : [] as $script): ?>

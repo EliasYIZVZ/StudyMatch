@@ -1194,6 +1194,35 @@ html[data-bs-theme="dark"] body.dashboard-body .solicitud-descripcion {
   transform: translateY(0);
 }
 
+/* Icono y texto separados siempre (no depende de las clases gap-* del HTML) */
+.btn-discord {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* El icono de Discord gira 360° sobre sí mismo al pasar el mouse. Se dibuja como
+   inline-block de 1em con line-height 1: gira alrededor de su propio centro y no
+   sobresale del botón. */
+.btn-discord .bi-discord {
+  display: inline-block;
+  flex-shrink: 0;
+  line-height: 1;
+  transform-origin: 50% 50%;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-discord:hover .bi-discord {
+  transform: rotate(360deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-discord .bi-discord {
+    transition: none;
+  }
+}
+
 /* Ajustes de contraste para los componentes Bootstrap en modo oscuro */
 html[data-bs-theme="dark"] body.dashboard-body,
 html[data-bs-theme="dark"] body.dashboard-body .text-dark,

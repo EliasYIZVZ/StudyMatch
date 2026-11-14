@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Estilos base compartidos de Dashboards -->
-  <link rel="stylesheet" href="public/css/dashboard.css?v=20261106_iconos">
+  <link rel="stylesheet" href="public/css/dashboard.css?v=20261113_discord">
 
   <!-- Estilos globales de Administración (sidebar claro gris azulado / oscuro grafito) -->
   <link rel="stylesheet" href="public/css/admin-global.css?v=20261101_panel_bg">
@@ -39,91 +39,7 @@
   <!-- ==========================================================================
        SIDEBAR LATERAL IZQUIERDA (MODO ADMIN - FIJO TONO GRAFITO)
        ========================================================================== -->
-  <aside id="mainSidebar" class="sidebar sidebar-admin d-flex flex-column justify-content-between p-3">
-    <div>
-      <!-- Header con Logo Study Match -->
-      <div class="d-flex align-items-center justify-content-between mb-4 px-2 logo-container">
-        <a href="index.php?r=admin" class="d-flex align-items-center gap-2 text-decoration-none overflow-hidden">
-          <svg class="logo-svg flex-shrink-0" width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M28 54 V72 C28 80 72 80 72 72 V54 L50 65 Z" fill="#172554"/>
-            <polygon points="50,20 10,42 50,62" fill="#1e3a8a"/>
-            <polygon points="50,20 90,42 50,62" fill="#1677c8"/>
-            <line x1="78" y1="48" x2="78" y2="70" stroke="#1677c8" stroke-width="3.5" stroke-linecap="round"/>
-            <circle cx="78" cy="68" r="3.5" fill="#1677c8"/>
-            <polygon points="78,68 73,82 83,82" fill="#1677c8"/>
-            <path d="M38 41 L48 51 L76 23 L60 34 L48 44 L42 37 Z" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="2"/>
-          </svg>
-          <div class="lh-1">
-            <span class="fw-bold fs-5 logo-text">Study <span class="text-primary">Match</span></span>
-            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill ms-1 sidebar-hide-collapsed" style="font-size: 0.65rem; padding: 2px 7px;">ADMIN</span>
-          </div>
-        </a>
-      </div>
-
-      <!-- Menú de Navegación: GESTIÓN Y ADMINISTRACIÓN -->
-      <nav class="d-flex flex-column gap-1">
-        <div class="px-3 pb-1 sidebar-section-title sidebar-text">
-          Panel de Control
-        </div>
-
-        <!-- 1. Inicio / Resumen (Métricas) -->
-        <a href="index.php?r=admin" class="sidebar-link" title="Inicio / Resumen">
-          <i class="bi bi-speedometer2 fs-5"></i>
-          <span class="sidebar-text">Inicio / Resumen</span>
-        </a>
-
-        <!-- 2. Gestión de Usuarios -->
-        <a href="index.php?r=admin-usuarios" class="sidebar-link" title="Gestión de Usuarios">
-          <i class="bi bi-people fs-5"></i>
-          <span class="sidebar-text">Gestión de Usuarios</span>
-          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;"><?= (int) $metricas['alumnos']['total']; ?></span>
-        </a>
-
-        <!-- 3. Gestión de Materias (ACTIVO) -->
-        <a href="index.php?r=admin-materias" class="sidebar-link active" title="Gestión de Materias y Carreras">
-          <i class="bi bi-journal-bookmark fs-5"></i>
-          <span class="sidebar-text">Gestión de Materias</span>
-          <span class="badge bg-primary-subtle text-primary ms-auto sidebar-text" style="font-size: 0.68rem;"><?= (int) $cantTotal; ?></span>
-        </a>
-
-        <!-- 4. Salas Públicas -->
-        <a href="index.php?r=admin-salas" class="sidebar-link" title="Salas Públicas">
-          <i class="bi bi-broadcast fs-5 text-danger"></i>
-          <span class="sidebar-text">Salas Públicas</span>
-          <span class="badge bg-danger text-white rounded-pill ms-auto sidebar-text" style="font-size: 0.65rem;"><?= (int) $metricas['salas']['activas']; ?> en vivo</span>
-        </a>
-
-        <!-- 5. Reportes -->
-        <a href="index.php?r=admin-reportes" class="sidebar-link" title="Reportes del Sistema">
-          <i class="bi bi-exclamation-triangle fs-5 text-warning"></i>
-          <span class="sidebar-text">Reportes</span>
-          <span class="badge bg-warning text-dark rounded-pill ms-auto sidebar-text fw-bold" style="font-size: 0.65rem;"><?= (int) $totalReportes; ?></span>
-        </a>
-      </nav>
-    </div>
-
-    <!-- Usuario abajo en el Sidebar: Tarjeta de Administrador -->
-    <div class="border-top border-secondary border-opacity-25 pt-3 mt-auto">
-      <div class="user-sidebar-card p-2 d-flex align-items-center justify-content-between mb-2">
-        <div class="d-flex align-items-center gap-2 overflow-hidden">
-          <div class="avatar-user-display avatar-admin">
-            AD
-          </div>
-          <div class="sidebar-text text-truncate lh-sm">
-            <span class="d-block fw-bold text-white small text-truncate"><?= htmlspecialchars($adminNombre); ?></span>
-            <span class="text-secondary" style="font-size: 0.72rem;">UTN FRH • <?= htmlspecialchars($adminRol); ?></span>
-          </div>
-        </div>
-        <i class="bi bi-shield-check text-primary sidebar-text fs-6 me-1" title="Superadmin verificado"></i>
-      </div>
-
-      <!-- Enlace para Cerrar Sesión -->
-      <a href="index.php?r=logout" class="sidebar-link text-danger p-2" title="Cerrar sesión">
-        <i class="bi bi-box-arrow-left"></i>
-        <span class="sidebar-text">Cerrar sesión</span>
-      </a>
-    </div>
-  </aside>
+  <?php $sidebarAdminActivo = 'materias'; require APP_PATH . '/views/partials/sidebar-admin.php'; ?>
 
   <!-- ==========================================================================
        CONTENIDO PRINCIPAL Y NAVBAR SUPERIOR (CONTAINER-FLUID P-4)
@@ -711,7 +627,7 @@
     });
 
     // ==========================================
-    // 3. Alta, edición y baja (datos reales; la página se recarga al terminar)
+    // 3. Alta, edición y baja (datos reales; al terminar se recarga conservando filtros y página)
     // ==========================================
     const MATERIAS = <?= json_encode(array_column($materias, null, 'id_materia'), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
     const CARRERAS = <?= json_encode(array_column($carreras, null, 'id_carrera'), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
@@ -727,7 +643,53 @@
       bootstrap.Modal.getOrCreateInstance(document.getElementById(id)).show();
     }
 
-    // Envía los datos y, si salió bien, recarga la página para mostrar el catálogo actualizado
+    // --- Estado de la vista (búsqueda, filtros, página y scroll) ---
+    // Tras guardar o eliminar se recarga para mostrar el catálogo y los contadores
+    // actualizados; el estado se guarda antes y se restaura al volver, así no se
+    // pierde el lugar de trabajo.
+    const CLAVE_ESTADO = 'study-match-admin-materias-estado';
+
+    function posicionScroll() {
+      return Math.max(window.scrollY || 0, document.documentElement.scrollTop || 0, document.body.scrollTop || 0);
+    }
+
+    function guardarEstadoVista() {
+      try {
+        sessionStorage.setItem(CLAVE_ESTADO, JSON.stringify({
+          busqueda: searchInput.value,
+          carrera: filtroCarrera.value,
+          anio: filtroAnio.value,
+          pagina: paginaActual,
+          scroll: posicionScroll()
+        }));
+      } catch (e) { /* sin almacenamiento: se pierde el estado, pero todo sigue funcionando */ }
+    }
+
+    function restaurarEstadoVista() {
+      let estado = null;
+      try {
+        estado = JSON.parse(sessionStorage.getItem(CLAVE_ESTADO));
+        sessionStorage.removeItem(CLAVE_ESTADO);
+      } catch (e) { return; }
+      if (!estado || !searchInput) return;
+
+      const poner = (select, valor) => {
+        // Solo si la opción sigue existiendo (p. ej. se editó la sigla de la carrera)
+        if (Array.from(select.options).some(o => o.value === valor)) select.value = valor;
+      };
+      searchInput.value = estado.busqueda || '';
+      poner(filtroCarrera, estado.carrera || '');
+      poner(filtroAnio, estado.anio || '');
+      paginaActual = parseInt(estado.pagina, 10) || 1;   // actualizarCatalogo() la ajusta si ya no existe
+
+      actualizarCatalogo();
+
+      const y = parseInt(estado.scroll, 10) || 0;
+      window.scrollTo(0, y);
+      document.body.scrollTop = y;
+    }
+
+    // Envía los datos y, si salió bien, recarga la página (conservando el estado de la vista)
     function enviar(ruta, datos, boton, idError) {
       mostrarError(idError, '');
       boton.disabled = true;
@@ -737,6 +699,7 @@
         .then(data => {
           if (data.ok) {
             sessionStorage.setItem(CLAVE_MENSAJE, data.mensaje);
+            guardarEstadoVista();
             window.location.reload();
           } else {
             mostrarError(idError, data.error || 'No se pudo completar la acción.');
@@ -846,6 +809,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       aplicarTema(localStorage.getItem('study-match-theme') || 'light');
       actualizarCatalogo();
+      restaurarEstadoVista();   // si venimos de guardar/eliminar, vuelve a filtros, página y scroll
 
       // Mensaje de la acción que originó la recarga (alta, edición o baja)
       const pendiente = sessionStorage.getItem(CLAVE_MENSAJE);

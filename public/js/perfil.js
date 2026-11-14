@@ -3,8 +3,8 @@
  *
  * Lógica compartida del menú de perfil y sus modales
  * (app/views/partials/perfil-alumno-menu.php y perfil-alumno-modales.php):
- * editar datos, foto de perfil, toast de confirmación y carga de los datos
- * del usuario de la sesión (index.php?r=usuario-actual).
+ * editar datos (index.php?r=actualizar-perfil), foto de perfil, toast de confirmación
+ * y carga de los datos del usuario de la sesión (index.php?r=usuario-actual).
  *
  * La foto se guarda en el servidor (index.php?r=foto-perfil): un avatar
  * precargado o una imagen propia (JPG, PNG o WEBP de hasta 2 MB).
@@ -51,44 +51,132 @@
   }
 
   // ==========================================
-  // 1. Edición de perfil (por ahora en el navegador)
+  // 1. Edición de perfil (se guarda en la base de datos: index.php?r=actualizar-perfil)
   // ==========================================
+  var NIVELES = {
+    '1ro': '1° año', '2do': '2° año', '3ro': '3° año',
+    '4to': '4° año', '5to': '5° año', 'graduado': 'Graduado/a'
+  };
+
+  var datosPerfil = null;   // últimos datos guardados en el servidor
+  var modalPerfil = document.getElementById('modalEditarPerfil');
   var formPerfil = document.getElementById('formPerfil');
-  if (formPerfil) {
-    formPerfil.addEventListener('submit', function (e) {
-      e.preventDefault();
+  var perfilError = document.getElementById('perfilError');
+  var btnGuardarPerfil = document.getElementById('btnGuardarPerfil');
 
-      var perfilData = {
-        nombre: document.getElementById('editNombre').value.trim(),
-        email: document.getElementById('editEmail').value.trim(),
-        regional: document.getElementById('editRegional').value,
-        carrera: document.getElementById('editCarrera').value,
-        nivel: document.getElementById('editNivel').value,
-        discord: document.getElementById('editDiscord').value.trim()
-      };
+  // Datos viejos que se guardaban solo en el navegador: ya no se usan
+  try { localStorage.removeItem('study-match-user-profile'); } catch (e) { /* sin almacenamiento */ }
 
-      try { localStorage.setItem('study-match-user-profile', JSON.stringify(perfilData)); } catch (err) { /* sin almacenamiento */ }
-      aplicarDatosPerfil(perfilData);
+  function mostrarErrorPerfil(mensaje) {
+    if (!perfilError) return;
+    perfilError.textContent = mensaje || '';
+    perfilError.classList.toggle('d-none', !mensaje);
+  }
 
-      var modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfil'));
-      if (modalInstance) modalInstance.hide();
-      mostrarToast('¡Perfil actualizado con éxito!');
+  // Carga las carreras activas en el desplegable (si la carrera guardada ya no está, se conserva igual)
+  function llenarCarreras(carreras, actual) {
+    var select = document.getElementById('editCarrera');
+    if (!select) return;
+
+    while (select.options.length > 1) select.remove(1);   // queda "Sin carrera seleccionada"
+
+    var codigos = [];
+    (carreras || []).forEach(function (c) {
+      var opcion = document.createElement('option');
+      opcion.value = c.codigo;
+      opcion.textContent = c.nombre + ' (' + c.codigo + ')';
+      select.appendChild(opcion);
+      codigos.push(c.codigo);
+    });
+
+    if (actual && codigos.indexOf(actual) === -1) {
+      var propia = document.createElement('option');
+      propia.value = actual;
+      propia.textContent = actual;
+      select.appendChild(propia);
+    }
+    select.value = actual || '';
+  }
+
+  // Vuelca los datos guardados en los campos del formulario
+  function llenarFormulario() {
+    if (!datosPerfil) return;
+    document.getElementById('editNombre').value = datosPerfil.nombre || '';
+    document.getElementById('editEmail').value = datosPerfil.email || '';
+    llenarCarreras(datosPerfil.carreras, datosPerfil.carrera);
+    document.getElementById('editNivel').value = datosPerfil.nivel || '';
+    document.getElementById('editDiscord').value = datosPerfil.discord || '';
+    document.getElementById('editBio').value = datosPerfil.bio || '';
+  }
+
+  // Cada vez que se abre el modal vuelve a mostrar lo guardado (descarta cambios sin guardar)
+  if (modalPerfil) {
+    modalPerfil.addEventListener('show.bs.modal', function () {
+      mostrarErrorPerfil('');
+      llenarFormulario();
+      if (btnGuardarPerfil) btnGuardarPerfil.disabled = false;
     });
   }
 
+  if (formPerfil) {
+    formPerfil.addEventListener('submit', function (e) {
+      e.preventDefault();
+      mostrarErrorPerfil('');
+
+      var datos = new FormData();
+      datos.append('nombre', document.getElementById('editNombre').value.trim());
+      datos.append('carrera', document.getElementById('editCarrera').value);
+      datos.append('nivel', document.getElementById('editNivel').value);
+      datos.append('discord', document.getElementById('editDiscord').value.trim());
+      datos.append('bio', document.getElementById('editBio').value.trim());
+
+      if (btnGuardarPerfil) btnGuardarPerfil.disabled = true;
+      fetch('index.php?r=actualizar-perfil', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: datos
+      })
+        .then(function (respuesta) {
+          return respuesta.json().catch(function () {
+            throw new Error('No se pudo guardar el perfil. Intentá nuevamente.');
+          }).then(function (json) {
+            if (!respuesta.ok || !json.ok) throw new Error(json.error || 'No se pudo guardar el perfil.');
+            return json;
+          });
+        })
+        .then(function (json) {
+          aplicarDatosPerfil(json.usuario);
+          var modal = bootstrap.Modal.getInstance(modalPerfil);
+          if (modal) modal.hide();
+          mostrarToast('¡Perfil actualizado con éxito!');
+        })
+        .catch(function (error) {
+          mostrarErrorPerfil(error.message);
+        })
+        .then(function () {
+          if (btnGuardarPerfil) btnGuardarPerfil.disabled = false;
+        });
+    });
+  }
+
+  // Muestra en la interfaz los datos del usuario (nombre, correo, carrera • año, foto)
   function aplicarDatosPerfil(data) {
     if (!data) return;
+    datosPerfil = data;
     nombreActual = data.nombre || nombreActual;
+    fotoActual = typeof data.foto === 'string' && data.foto !== '' ? data.foto : null;
+
     document.querySelectorAll('.userNameSlot').forEach(function (el) { el.textContent = data.nombre; });
     document.querySelectorAll('.userEmailSlot').forEach(function (el) { el.textContent = data.email; });
 
-    var carreraCorta = String(data.carrera || '').indexOf('Programación') !== -1 ? 'TUP' : 'Sistemas';
-    document.querySelectorAll('.userCareerSlot').forEach(function (el) { el.textContent = carreraCorta + ' • ' + data.nivel; });
+    var partes = [];
+    if (data.carrera) partes.push(data.carrera);
+    if (data.nivel && NIVELES[data.nivel]) partes.push(NIVELES[data.nivel]);
+    var textoCarrera = partes.length ? partes.join(' • ') : 'Completá tu perfil';
+    document.querySelectorAll('.userCareerSlot').forEach(function (el) { el.textContent = textoCarrera; });
 
-    var regionalCorta = data.regional ? data.regional.split(' ')[0] : 'FRH';
-    var legajoSlot = document.getElementById('userLegajoSlot');
-    if (legajoSlot) legajoSlot.textContent = 'Legajo: 51294 • ' + regionalCorta;
-
+    llenarFormulario();
     pintarAvatares();
   }
 
@@ -256,19 +344,6 @@
   // ==========================================
   // 4. Datos del usuario de la sesión
   // ==========================================
-  try {
-    var perfilGuardado = localStorage.getItem('study-match-user-profile');
-    if (perfilGuardado) aplicarDatosPerfil(JSON.parse(perfilGuardado));
-  } catch (e) { /* datos viejos o sin almacenamiento */ }
-
-  function aplicarNombreDeSesion(nombre) {
-    nombreActual = nombre;
-    document.querySelectorAll('.userNameSlot').forEach(function (el) { el.textContent = nombre; });
-    var editNombre = document.getElementById('editNombre');
-    if (editNombre) editNombre.value = nombre;
-    pintarAvatares();
-  }
-
   fetch('index.php?r=usuario-actual', { credentials: 'same-origin' })
     .then(function (response) {
       if (!response.ok) throw new Error('No se pudo cargar el usuario de la sesión.');
@@ -279,19 +354,7 @@
         || typeof user.email !== 'string' || user.email.trim() === '') {
         throw new Error('La respuesta del usuario no contiene un nombre o correo válido.');
       }
-      fotoActual = typeof user.foto === 'string' && user.foto !== '' ? user.foto : null;
-      aplicarNombreDeSesion(user.nombre);
-      document.getElementById('editEmail').value = user.email;
-      // La carrera es fija (TUP): no se toma de la base de datos.
-      var nivelPorValorDB = {
-        '1ro': '1° Año', '2do': '2° Año', '3ro': '3° Año',
-        '4to': '4° Año', '5to': '5° Año', 'graduado': 'Graduado'
-      };
-      var editNivel = document.getElementById('editNivel');
-      if (editNivel && typeof user.nivel === 'string' && nivelPorValorDB[user.nivel]) {
-        editNivel.value = nivelPorValorDB[user.nivel];
-      }
-      document.querySelectorAll('.userEmailSlot').forEach(function (el) { el.textContent = user.email; });
+      aplicarDatosPerfil(user);   // nombre, correo, carrera, año, Discord, descripción y foto, desde la base
     })
     .catch(function (error) {
       console.error(error);

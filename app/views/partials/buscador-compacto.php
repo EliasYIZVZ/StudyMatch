@@ -9,10 +9,15 @@
  *   grid        id de la grilla de cards a filtrar
  *   pagina      cards visibles sin filtros (0 = todas; el resto con "Ver más")
  *   placeholder texto de ayuda del campo
- *   materias    [id_materia => nombre] para el filtro
+ *   materias    [valor => etiqueta] del filtro (id_materia => nombre; en Salas públicas, 'propia' => 'Mis salas')
  *   total       cantidad de cards
  *   unidad      lo que se cuenta ("tutores", "tutorías")
+ * Opcionales (por defecto, el filtro de materias):
+ *   todas       texto de la opción sin filtro ("Todas las materias")
+ *   filtro      aria-label del filtro ("Filtrar por materia")
  */
+$textoTodas = isset($buscador['todas']) ? $buscador['todas'] : 'Todas las materias';
+$textoFiltro = isset($buscador['filtro']) ? $buscador['filtro'] : 'Filtrar por materia';
 ?>
       <div class="search-hybrid-card p-2 mb-3" data-buscador
            data-grid="<?= Vista::e($buscador['grid']) ?>"
@@ -30,10 +35,10 @@
             </div>
           </div>
           <div class="col-6 col-sm col-xl-auto">
-            <select id="buscadorMateria" class="form-select" aria-label="Filtrar por materia">
-              <option value="todas">Todas las materias</option>
-              <?php foreach ($buscador['materias'] as $idMateria => $nombreMateria): ?>
-                <option value="<?= (int) $idMateria ?>"><?= Vista::e($nombreMateria) ?></option>
+            <select id="buscadorMateria" class="form-select" aria-label="<?= Vista::e($textoFiltro) ?>">
+              <option value="todas"><?= Vista::e($textoTodas) ?></option>
+              <?php foreach ($buscador['materias'] as $valorFiltro => $nombreFiltro): ?>
+                <option value="<?= Vista::e((string) $valorFiltro) ?>"><?= Vista::e($nombreFiltro) ?></option>
               <?php endforeach; ?>
             </select>
           </div>

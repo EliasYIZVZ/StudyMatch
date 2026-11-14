@@ -2,7 +2,7 @@
 <?php
 /**
  * Menú lateral del modo tutor.
- * Espera $sidebarActivo: 'panel' | 'publicaciones' | 'tutorias' (marca "Mis tutorías"). Usa $contadores (lo agrega Controller::render).
+ * Espera $sidebarActivo: 'panel' | 'publicaciones' | 'tutorias' (marca "Mis tutorías") | 'salas'. Usa $contadores (lo agrega Controller::render).
  */
 $activo = function ($item) use ($sidebarActivo) {
     return isset($sidebarActivo) && $sidebarActivo === $item ? ' active' : '';
@@ -58,6 +58,10 @@ $activo = function ($item) use ($sidebarActivo) {
           <?php if ($cantPendientesTutorias > 0): ?>
             <span id="badgeTutoriasTutor" class="badge rounded-pill ms-auto sidebar-text bg-danger" style="font-size: 0.65rem;" title="<?= htmlspecialchars(implode(' · ', $detallePendientes), ENT_QUOTES, 'UTF-8') ?>"><?= $cantPendientesTutorias ?> <?= $cantPendientesTutorias === 1 ? 'nuevo' : 'nuevos' ?></span>
           <?php endif; ?>
+        </a>
+        <a href="index.php?r=salas-publicas&amp;rol=tutor" class="sidebar-link<?= $activo('salas') ?>" title="Salas públicas de Discord">
+          <i class="bi bi-discord"></i>
+          <span class="sidebar-text">Salas públicas</span>
         </a>
       </nav>
     </div>
